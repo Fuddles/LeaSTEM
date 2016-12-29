@@ -1,8 +1,6 @@
 # Not committed to Git
 
 #
-node_modules 
+node_modules/
 
-node_modules/rpio/.travis.yml
-
-node_modules/rpio/binding.gyp
+#
