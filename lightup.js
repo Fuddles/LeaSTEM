@@ -21,7 +21,7 @@ try {
     //rpio.spiSetClockDivider(4); 	/* divider should be 4 or 8 max to have high-speed display */
     rpio.spiSetClockDivider(128); 	/* divider should be 4 or 8 max to have high-speed display */
 
-    var txbuf = Buffer.allocUnsafe( 4 + 72*4 + 8 ); // 300
+    var txbuf = Buffer.allocUnsafe( 4 + 72*4 + 12 ); // 304
     var i, loop = 0;
 
 //    while (true) {
@@ -68,8 +68,8 @@ try {
         // End frame: at least (n/2) bits of 1, where n = 72 LEDs. Here we send 8 bytes
         // 8 x bytes filled with 0 to init
 
-        for (i = 292; i < 300; i++) {
-            txbuf.writeUInt8( 0xff, i );
+        for (i = 292; i < 304; i++) {
+            txbuf.writeUInt8( 0x00, i );
         }
 
         // Send to the LED strip
