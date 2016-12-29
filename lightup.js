@@ -6,7 +6,6 @@ try {
 
   //var debug = require('debug')('lightup');
 
-
   var rpio = require('rpio');
 
   // We begin!
@@ -16,8 +15,8 @@ try {
   rpio.spiBegin();
 
   // TODO
-  //rpio.spiSetClockDivider(4); 	/* divider should be 4 or 8 max to have high-speed display */
-  rpio.spiSetClockDivider(128); 	/* divider should be 4 or 8 max to have high-speed display */
+  //rpio.spiSetClockDivider(4); 	// divider should be 4 or 8 max to have high-speed display 
+  rpio.spiSetClockDivider(128); 	// divider should be 4 or 8 max to have high-speed display
 
   var txbuf = new Buffer([0x0, 0x0, 0x0, 0x0,
 
