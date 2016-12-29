@@ -30,6 +30,33 @@ try {
         for (i = 0; i < 4; i++) {
             txbuf.writeUInt8( 0x0, i );
         }
+
+        for (i = 0; i < 24; i++) {
+            // 0xef, 0x0, 0x0, 0xff,    // red
+            txbuf.writeUInt8( 0xef, 4 + i * 4);
+            txbuf.writeUInt8( 0x0,  5 + i * 4);
+            txbuf.writeUInt8( 0x0,  6 + i * 4);
+            txbuf.writeUInt8( 0xff, 7 + i * 4);
+        }
+
+        for (i = 0; i < 24; i++) {
+            // 0xef, 0x0, 0xff, 0x0,     // green
+            txbuf.writeUInt8( 0xef, 100 + i * 4);
+            txbuf.writeUInt8( 0x0,  101 + i * 4);
+            txbuf.writeUInt8( 0xff, 102 + i * 4);
+            txbuf.writeUInt8( 0x0,  103 + i * 4);
+        }
+
+        for (i = 0; i < 24; i++) {
+            //0xef, 0xff, 0x0, 0x0,     // blue
+            txbuf.writeUInt8( 0xef, 196 + i * 4);
+            txbuf.writeUInt8( 0xff, 197 + i * 4);
+            txbuf.writeUInt8( 0x0,  198 + i * 4);
+            txbuf.writeUInt8( 0x0,  199 + i * 4);
+        }
+
+
+    /*
         // 72 LEDs  (<0xE0+brightness> <blue> <green> <red>) brightness 0..31
         for (i = 4; i < 292; i += 4) {              // 4 * 72 + 4
             txbuf.writeUInt8( 0xef, i );            // Half brightness
@@ -37,6 +64,7 @@ try {
             txbuf.writeUInt8( Math.floor( 256 * Math.random() ), i + 2 );
             txbuf.writeUInt8( Math.floor( 256 * Math.random() ), i + 3 );
         }
+    */
         // End frame: at least (n/2) bits of 1, where n = 72 LEDs. Here we send 8 bytes
         // 8 x bytes filled with 0 to init
         for (i = 292; i < 300; i++) {
@@ -57,11 +85,11 @@ try {
     var txbuf = new Buffer([0x0, 0x0, 0x0, 0x0,
 
       // Couleur de la 1e LED
-      0xff, 0x0, 0x0, 0xff,
+      0xef, 0x0, 0x0, 0xff,     // red
       // Couleur de la 2e LED
-      0xff, 0x0, 0xff, 0x0,
+      0xef, 0x0, 0xff, 0x0,     // green
       // Couleur de la 3e LED
-      0xff, 0xff, 0x0, 0x0,
+      0xef, 0xff, 0x0, 0x0,     // blue
       // Couleur de la 4e LED
       0xff, 0xff, 0xff, 0xff,
 
