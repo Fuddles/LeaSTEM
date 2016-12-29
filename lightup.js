@@ -21,10 +21,10 @@ try {
     //rpio.spiSetClockDivider(4); 	/* divider should be 4 or 8 max to have high-speed display */
     rpio.spiSetClockDivider(128); 	/* divider should be 4 or 8 max to have high-speed display */
 
-    var txbuf = Buffer.allocUnsafe( 4 + 72*4 + 8 );
+    var txbuf = Buffer.allocUnsafe( 4 + 72*4 + 8 ); // 300
     var i, loop = 0;
 
-    while (true) {
+//    while (true) {
 
         // 4 x bytes filled with 0 to init
         for (i = 0; i < 4; i++) {
@@ -67,6 +67,7 @@ try {
     */
         // End frame: at least (n/2) bits of 1, where n = 72 LEDs. Here we send 8 bytes
         // 8 x bytes filled with 0 to init
+
         for (i = 292; i < 300; i++) {
             txbuf.writeUInt8( 0xff, i );
         }
@@ -77,8 +78,8 @@ try {
         console.log( "\nSPI loop iteration #" + (++loop) + " \t Buffer = " );
         console.log( txbuf );
 
-        rpio.msleep(2000);         // Sleep for n milliseconds
-    }
+//        rpio.msleep(2000);         // Sleep for n milliseconds
+//    }
 
 
 /*
