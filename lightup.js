@@ -25,7 +25,7 @@ try {
     var txbuf    = Buffer.allocUnsafe( startend + 72*4 + startend );
     var i, loop = 0;
 
-//    while (true) {
+    while (true) {
 
         // 4 x bytes filled with 0 to init
         for (i = 0; i < startend; i++) {
@@ -79,8 +79,8 @@ try {
         console.log( "\nSPI loop iteration #" + (++loop) + " \t Buffer = " );
         console.log( txbuf );
 
-//        rpio.msleep(2000);         // Sleep for n milliseconds
-//    }
+        rpio.msleep(2000);         // Sleep for n milliseconds
+    }
 
 
 /*
