@@ -49,6 +49,28 @@ function normalizePort(val) {
   return false;
 }
 
+
+/**
+ *  From now on, does not allow the Node.js server to crash from an uncaught exception
+ *
+ *  uncaughtException should be used to perform synchronous cleanup before shutting down the process.
+ *  It is not safe to resume normal operation after uncaughtException.
+ *  If you do use it, restart your application after every unhandled exception!
+ *  You have been warned.
+ */
+process.on('uncaughtException', function(err) {
+   logerr('\n\nFATAL ERROR !!!! -- Caught exception: ' + err);
+   try {
+       //console.trace( "\nMore info (console.trace):" );
+       logerr( "\n\nError Stack-trace:");
+       logerr( err.stack );
+   }
+   catch (exc) {}
+});
+
+
+
+
 /**
  * Event listener for HTTP server "error" event.
  */
