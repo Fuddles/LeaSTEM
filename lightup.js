@@ -19,9 +19,10 @@ try {
 
     // TODO
     //rpio.spiSetClockDivider(4); 	/* divider should be 4 or 8 max to have high-speed display */
-    rpio.spiSetClockDivider(256); 	/* divider should be 4 or 8 max to have high-speed display */
+    rpio.spiSetClockDivider(4); 	/* divider should be 4 or 8 max to have high-speed display */
 
-    var startend = 32;
+    var startend   = 32;
+    var brightness = 3;
     var txbuf    = Buffer.allocUnsafe( startend + 72*4 + startend );
     var i, loop = 0;
 
@@ -34,26 +35,26 @@ try {
 
         for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0x0, 0xff,    // red
-            txbuf.writeUInt8( 0xef, startend +     i * 4);
-            txbuf.writeUInt8( 0x0,  startend + 1 + i * 4);
-            txbuf.writeUInt8( 0x0,  startend + 2 + i * 4);
-            txbuf.writeUInt8( 0xff, startend + 3 + i * 4);
+            txbuf.writeUInt8( 0xe0 + brightness,    startend +     i * 4);
+            txbuf.writeUInt8( 0x0,                  startend + 1 + i * 4);
+            txbuf.writeUInt8( 0x0,                  startend + 2 + i * 4);
+            txbuf.writeUInt8( 0xff,                 startend + 3 + i * 4);
         }
 
         for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0xff, 0x0,     // green
-            txbuf.writeUInt8( 0xef, startend + 96  + i * 4);
-            txbuf.writeUInt8( 0x0,  startend + 97  + i * 4);
-            txbuf.writeUInt8( 0xff, startend + 98  + i * 4);
-            txbuf.writeUInt8( 0x0,  startend + 99  + i * 4);
+            txbuf.writeUInt8( 0xe0 + brightness,    startend + 96  + i * 4);
+            txbuf.writeUInt8( 0x0,                  startend + 97  + i * 4);
+            txbuf.writeUInt8( 0xff,                 startend + 98  + i * 4);
+            txbuf.writeUInt8( 0x0,                  startend + 99  + i * 4);
         }
 
         for (i = 0; i < 24; i++) {
             //0xef, 0xff, 0x0, 0x0,     // blue
-            txbuf.writeUInt8( 0xef, startend + 192 + i * 4);
-            txbuf.writeUInt8( 0xff, startend + 193 + i * 4);
-            txbuf.writeUInt8( 0x0,  startend + 194 + i * 4);
-            txbuf.writeUInt8( 0x0,  startend + 195 + i * 4);
+            txbuf.writeUInt8( 0xe0 + brightness,    startend + 192 + i * 4);
+            txbuf.writeUInt8( 0xff,                 startend + 193 + i * 4);
+            txbuf.writeUInt8( 0x0,                  startend + 194 + i * 4);
+            txbuf.writeUInt8( 0x0,                  startend + 195 + i * 4);
         }
 
 
