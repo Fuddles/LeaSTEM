@@ -1,5 +1,7 @@
 // Light up the LED strip. 72 LEDs
 
+console.log("Begin lightup");
+
 var debug = require('debug')('lightup');
 
 
