@@ -44,7 +44,7 @@ app.use(function(err, req, res, next) {
 });
 
 // -----------
-require("lightup.js");
+require("./lightup.js");
 
 
 module.exports = app;
