@@ -31,15 +31,15 @@ try {
             txbuf.writeUInt8( 0x0, i );
         }
         // 72 LEDs  (<0xE0+brightness> <blue> <green> <red>) brightness 0..31
-        for (i = 4; i < 76; i += 4) {
-            txbuf.writeUInt8( 0xff, i );
+        for (i = 4; i < 292; i += 4) {              // 4 * 72 + 4
+            txbuf.writeUInt8( 0xef, i );            // Half brightness
             txbuf.writeUInt8( Math.floor( 256 * Math.random() ), i + 1 );
             txbuf.writeUInt8( Math.floor( 256 * Math.random() ), i + 2 );
             txbuf.writeUInt8( Math.floor( 256 * Math.random() ), i + 3 );
         }
         // End frame: at least (n/2) bits of 1, where n = 72 LEDs. Here we send 8 bytes
         // 8 x bytes filled with 0 to init
-        for (i = 76; i < 84; i++) {
+        for (i = 292; i < 300; i++) {
             txbuf.writeUInt8( 0xff, i );
         }
 
@@ -48,7 +48,7 @@ try {
 
         console.log( "\nSPI loop iteration #" + (++loop) + " \t Buffer = " );
         console.log( txbuf );
-        
+
         rpio.msleep(2000);         // Sleep for n milliseconds
     }
 
