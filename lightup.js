@@ -45,6 +45,8 @@ try {
 
         // Send to the LED strip
         rpio.spiWrite(txbuf, txbuf.length);
+
+        rpio.msleep(500);         // Sleep for n milliseconds
     }
 
 
