@@ -21,38 +21,39 @@ try {
     //rpio.spiSetClockDivider(4); 	/* divider should be 4 or 8 max to have high-speed display */
     rpio.spiSetClockDivider(128); 	/* divider should be 4 or 8 max to have high-speed display */
 
-    var txbuf = Buffer.allocUnsafe( 4 + 72*4 + 12 ); // 304
+    var startend = 16;
+    var txbuf    = Buffer.allocUnsafe( startend + 72*4 + startend );
     var i, loop = 0;
 
 //    while (true) {
 
         // 4 x bytes filled with 0 to init
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < startend; i++) {
             txbuf.writeUInt8( 0x0, i );
         }
 
         for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0x0, 0xff,    // red
-            txbuf.writeUInt8( 0xef, 4 + i * 4);
-            txbuf.writeUInt8( 0x0,  5 + i * 4);
-            txbuf.writeUInt8( 0x0,  6 + i * 4);
-            txbuf.writeUInt8( 0xff, 7 + i * 4);
+            txbuf.writeUInt8( 0xef, startend +     i * 4);
+            txbuf.writeUInt8( 0x0,  startend + 1 + i * 4);
+            txbuf.writeUInt8( 0x0,  startend + 2 + i * 4);
+            txbuf.writeUInt8( 0xff, startend + 3 + i * 4);
         }
 
         for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0xff, 0x0,     // green
-            txbuf.writeUInt8( 0xef, 100 + i * 4);
-            txbuf.writeUInt8( 0x0,  101 + i * 4);
-            txbuf.writeUInt8( 0xff, 102 + i * 4);
-            txbuf.writeUInt8( 0x0,  103 + i * 4);
+            txbuf.writeUInt8( 0xef, startend + 96  + i * 4);
+            txbuf.writeUInt8( 0x0,  startend + 97  + i * 4);
+            txbuf.writeUInt8( 0xff, startend + 98  + i * 4);
+            txbuf.writeUInt8( 0x0,  startend + 99  + i * 4);
         }
 
         for (i = 0; i < 24; i++) {
             //0xef, 0xff, 0x0, 0x0,     // blue
-            txbuf.writeUInt8( 0xef, 196 + i * 4);
-            txbuf.writeUInt8( 0xff, 197 + i * 4);
-            txbuf.writeUInt8( 0x0,  198 + i * 4);
-            txbuf.writeUInt8( 0x0,  199 + i * 4);
+            txbuf.writeUInt8( 0xef, startend + 192 + i * 4);
+            txbuf.writeUInt8( 0xff, startend + 193 + i * 4);
+            txbuf.writeUInt8( 0x0,  startend + 194 + i * 4);
+            txbuf.writeUInt8( 0x0,  startend + 195 + i * 4);
         }
 
 
@@ -68,8 +69,8 @@ try {
         // End frame: at least (n/2) bits of 1, where n = 72 LEDs. Here we send 8 bytes
         // 8 x bytes filled with 0 to init
 
-        for (i = 292; i < 304; i++) {
-            txbuf.writeUInt8( 0x00, i );
+        for (i = 0; i < startend; i++) {
+            txbuf.writeUInt8( 0x00, 292 + i );
         }
 
         // Send to the LED strip
