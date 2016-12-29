@@ -1,16 +1,13 @@
-try {
+// Light up the LED strip. 72 LEDs
 
-    // Light up the LED strip. 72 LEDs
+try {
 
     console.log("Begin lightup");
 
     //var debug = require('debug')('lightup');
-
-
     var rpio = require('rpio');
 
     // We begin!
-
     console.log("Begin rpio SPI");
 
     rpio.init({
