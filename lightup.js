@@ -2,14 +2,14 @@
 
 console.log("Begin lightup");
 
-var debug = require('debug')('lightup');
+//var debug = require('debug')('lightup');
 
 
 var rpio = require('rpio');
 
 // We begin!
 
-debug("Begin rpio SPI");
+console.log("Begin rpio SPI");
 
 rpio.spiBegin();
 
@@ -35,3 +35,5 @@ var txbuf = new Buffer([0x0, 0x0, 0x0, 0x0,
 rpio.spiWrite(txbuf, txbuf.length);
 
 rpio.spiEnd();
+
+console.log("End rpio SPI");
