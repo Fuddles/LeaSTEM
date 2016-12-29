@@ -22,7 +22,7 @@ try {
     rpio.spiSetClockDivider(128); 	/* divider should be 4 or 8 max to have high-speed display */
 
     var txbuf = Buffer.allocUnsafe( 4 + 72*4 + 8 );
-    var i;
+    var i, loop = 0;
 
     while (true) {
 
@@ -46,7 +46,10 @@ try {
         // Send to the LED strip
         rpio.spiWrite(txbuf, txbuf.length);
 
-        rpio.msleep(500);         // Sleep for n milliseconds
+        console.log( "\nSPI loop iteration #" + (++loop) + " \t Buffer = " );
+        console.log( txbuf );
+        
+        rpio.msleep(2000);         // Sleep for n milliseconds
     }
 
 
