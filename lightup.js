@@ -81,7 +81,7 @@ try {
         console.log( "\nSPI loop iteration #" + (++loop) + " \t Buffer = " );
         console.log( txbuf );
 
-        rpio.msleep(10);         // Sleep for n milliseconds
+        rpio.msleep(1);         // Sleep for n milliseconds
     }
 
 
