@@ -21,8 +21,8 @@ try {
     //rpio.spiSetClockDivider(4); 	// divider should be 4 or 8 max to have high-speed display
     rpio.spiSetClockDivider(64); 	// divider should be 4 or 8 max to have high-speed display
 
-    var startPadBytes = 4;
-    var endPadBytes   = 32;
+    var startPadBytes = 128;   // 4;
+    var endPadBytes   = 128;   // 32;
     var brightness = 7;
     var txbuf    = Buffer.allocUnsafe( startPadBytes + 72*4 + endPadBytes );
     var i, loop = 0;
@@ -81,7 +81,7 @@ try {
         console.log( "\nSPI loop iteration #" + (++loop) + " \t Buffer = " );
         console.log( txbuf );
 
-        rpio.msleep(2000);         // Sleep for n milliseconds
+        rpio.msleep(3000);         // Sleep for n milliseconds
     }
 
 
