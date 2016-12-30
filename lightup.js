@@ -21,8 +21,8 @@ try {
     //rpio.spiSetClockDivider(4); 	// divider should be 4 or 8 max to have high-speed display
     rpio.spiSetClockDivider(64); 	// divider should be 4 or 8 max to have high-speed display
 
-    var startPadBytes = 256;    // 4;
-    var endPadBytes   = 9;   // 32; // 4 + ceil(72 / 16)
+    var startPadBytes = 4;    // 4;
+    var endPadBytes   = 5;   // 32; // 4 + ceil(72 / 16)
     var brightness = 7;
     var txbuf    = Buffer.allocUnsafe( startPadBytes + 72*4 + endPadBytes );
     var i, loop = 0;
@@ -31,17 +31,11 @@ try {
 
         // 4 x bytes filled with 0 to init
         for (i = 0; i < startPadBytes; i++) {
-            txbuf.writeUInt8( 255, i );
+            txbuf.writeUInt8( 0, i );
         }
 
-        i = 0;
-        txbuf.writeUInt8( 0,        startPadBytes +     i * 4);
-        txbuf.writeUInt8( 0,        startPadBytes + 1 + i * 4);
-        txbuf.writeUInt8( 0,        startPadBytes + 2 + i * 4);
-        txbuf.writeUInt8( 0,        startPadBytes + 3 + i * 4);
 
-
-        for (i = 1; i < 24; i++) {
+        for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0x0, 0xff,    // red
             txbuf.writeUInt8( 255,    startPadBytes +     i * 4);
             txbuf.writeUInt8( 0,      startPadBytes + 1 + i * 4);
@@ -90,7 +84,7 @@ try {
         // 8 x bytes filled with 0 to init
 
         for (i = 0; i < endPadBytes; i++) {
-            txbuf.writeUInt8( 0, startPadBytes + 4*72 + i );
+            txbuf.writeUInt8( 255, startPadBytes + 4*72 + i );
         }
 
         // Send to the LED strip
