@@ -19,10 +19,10 @@ try {
 
     // TODO
     //rpio.spiSetClockDivider(4); 	// divider should be 4 or 8 max to have high-speed display
-    rpio.spiSetClockDivider(64); 	// divider should be 4 or 8 max to have high-speed display
+    rpio.spiSetClockDivider(32); 	// divider should be 4 or 8 max to have high-speed display
 
     var startPadBytes = 4;    // 4;
-    var endPadBytes   = 12;   // 32; // 4 + ceil(72 / 16)
+    var endPadBytes   = 4;   // 32; // 4 + ceil(72 / 16)
     var nbLEDs        = 72;   // 72
 
     //var brightness = 7;
