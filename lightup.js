@@ -38,25 +38,25 @@ try {
         for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0x0, 0xff,    // red
             txbuf.writeUInt8( 255,    startPadBytes +     i * 4);
-            txbuf.writeUInt8( 0,      startPadBytes + 1 + i * 4);
-            txbuf.writeUInt8( 0,      startPadBytes + 2 + i * 4);
+            txbuf.writeUInt8( 1,      startPadBytes + 1 + i * 4);
+            txbuf.writeUInt8( 1,      startPadBytes + 2 + i * 4);
             txbuf.writeUInt8( 255,    startPadBytes + 3 + i * 4);
         }
 
         for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0xff, 0x0,     // green
             txbuf.writeUInt8( 255,    startPadBytes + 96  + i * 4);
-            txbuf.writeUInt8( 0,      startPadBytes + 97  + i * 4);
+            txbuf.writeUInt8( 1,      startPadBytes + 97  + i * 4);
             txbuf.writeUInt8( 255,    startPadBytes + 98  + i * 4);
-            txbuf.writeUInt8( 0,      startPadBytes + 99  + i * 4);
+            txbuf.writeUInt8( 1,      startPadBytes + 99  + i * 4);
         }
 
         for (i = 0; i < 24; i++) {
             //0xef, 0xff, 0x0, 0x0,     // blue
             txbuf.writeUInt8( 255,    startPadBytes + 192 + i * 4);
             txbuf.writeUInt8( 255,    startPadBytes + 193 + i * 4);
-            txbuf.writeUInt8( 0,      startPadBytes + 194 + i * 4);
-            txbuf.writeUInt8( 0,      startPadBytes + 195 + i * 4);
+            txbuf.writeUInt8( 1,      startPadBytes + 194 + i * 4);
+            txbuf.writeUInt8( 1,      startPadBytes + 195 + i * 4);
         }
 
 
