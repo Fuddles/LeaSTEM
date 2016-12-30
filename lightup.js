@@ -26,7 +26,7 @@ try {
     //rpio.spiSetDataMode(0);
 
 
-    var startPadBytes = 4;    // 4;
+    var startPadBytes = 8;    // 4;
     var endPadBytes   = 8;   // 32; // 4 + ceil(72 / 16)
     var nbLEDs        = 72;   // 72
 
@@ -37,6 +37,22 @@ try {
 
     var     i, loop = 0;
 
+    // init ALL WHITE
+    // 4 x bytes filled with 0 to init
+    for (i = 0; i < startPadBytes; i+=4) {
+        rpio.spiWrite(txbuf0, 4);
+    }
+    for (i = 0; i < nbLEDs; i++) {
+        rpio.spiWrite(txbuf1, 4);
+    }
+    for (i = 0; i < endPadBytes; i += 4) {
+        //rpio.spiWrite(txbuf1, 4);
+        rpio.spiWrite(txbuf0, 4);
+    }
+    rpio.msleep(3000);         // Sleep for n milliseconds
+
+
+    // Loop
     while (true) {
 
         // 4 x bytes filled with 0 to init
@@ -61,12 +77,11 @@ try {
         for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0x0, 0xff,    // red
             txbuf.writeUInt8( 255, 0);
-            txbuf.writeUInt8( 255, 1);
-            txbuf.writeUInt8( 255, 2);
+            txbuf.writeUInt8( 0,   1);
+            txbuf.writeUInt8( 0,   2);
             txbuf.writeUInt8( 255, 3);
             rpio.spiWrite(txbuf, 4);
         }
-        rpio.msleep(10);         // Sleep for n milliseconds
 
         for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0xff, 0x0,     // green
@@ -76,7 +91,6 @@ try {
             txbuf.writeUInt8( 0,   3);
             rpio.spiWrite(txbuf, 4);
         }
-        rpio.msleep(10);         // Sleep for n milliseconds
 
         for (i = 0; i < 24; i++) {
             //0xef, 0xff, 0x0, 0x0,     // blue
@@ -86,7 +100,6 @@ try {
             txbuf.writeUInt8( 0,   3);
             rpio.spiWrite(txbuf, 4);
         }
-        rpio.msleep(10);         // Sleep for n milliseconds
 
 /*
         // 72 LEDs  (<0xE0+brightness> <blue> <green> <red>) brightness 0..31
