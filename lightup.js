@@ -23,7 +23,7 @@ try {
 
     var startPadBytes = 4;    // 4;
     var endPadBytes   = 12;   // 32; // 4 + ceil(72 / 16)
-    var nbLEDs        = 1;    // 72
+    var nbLEDs        = 2;    // 72
 
     //var brightness = 7;
     var txbuf    = Buffer.allocUnsafe( startPadBytes + 4 * nbLEDs + endPadBytes );
@@ -37,6 +37,12 @@ try {
         }
 
         i = 0;
+        txbuf.writeUInt8( 255,    startPadBytes +     i * 4);
+        txbuf.writeUInt8( 0,      startPadBytes + 1 + i * 4);
+        txbuf.writeUInt8( 0,      startPadBytes + 2 + i * 4);
+        txbuf.writeUInt8( 0,      startPadBytes + 3 + i * 4);
+
+        i = 1;
         txbuf.writeUInt8( 255,    startPadBytes +     i * 4);
         txbuf.writeUInt8( 255,    startPadBytes + 1 + i * 4);
         txbuf.writeUInt8( 255,    startPadBytes + 2 + i * 4);
