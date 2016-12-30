@@ -31,34 +31,34 @@ try {
 
         // 4 x bytes filled with 0 to init
         for (i = 0; i < startPadBytes; i++) {
-            txbuf.writeUInt8( 0x0, i );
+            txbuf.writeUInt8( 0, i );
         }
 
-/*
+
         for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0x0, 0xff,    // red
-            txbuf.writeUInt8( 0xe0 + brightness,    startPadBytes +     i * 4);
-            txbuf.writeUInt8( 0x0,                  startPadBytes + 1 + i * 4);
-            txbuf.writeUInt8( 0x0,                  startPadBytes + 2 + i * 4);
-            txbuf.writeUInt8( 0xff,                 startPadBytes + 3 + i * 4);
+            txbuf.writeUInt8( 255,    startPadBytes +     i * 4);
+            txbuf.writeUInt8( 0,      startPadBytes + 1 + i * 4);
+            txbuf.writeUInt8( 0,      startPadBytes + 2 + i * 4);
+            txbuf.writeUInt8( 255,    startPadBytes + 3 + i * 4);
         }
 
         for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0xff, 0x0,     // green
-            txbuf.writeUInt8( 0xe0 + brightness,    startPadBytes + 96  + i * 4);
-            txbuf.writeUInt8( 0x0,                  startPadBytes + 97  + i * 4);
-            txbuf.writeUInt8( 0xff,                 startPadBytes + 98  + i * 4);
-            txbuf.writeUInt8( 0x0,                  startPadBytes + 99  + i * 4);
+            txbuf.writeUInt8( 255,    startPadBytes + 96  + i * 4);
+            txbuf.writeUInt8( 0,      startPadBytes + 97  + i * 4);
+            txbuf.writeUInt8( 255,    startPadBytes + 98  + i * 4);
+            txbuf.writeUInt8( 0,      startPadBytes + 99  + i * 4);
         }
 
         for (i = 0; i < 24; i++) {
             //0xef, 0xff, 0x0, 0x0,     // blue
-            txbuf.writeUInt8( 0xe0 + brightness,    startPadBytes + 192 + i * 4);
-            txbuf.writeUInt8( 0xff,                 startPadBytes + 193 + i * 4);
-            txbuf.writeUInt8( 0x0,                  startPadBytes + 194 + i * 4);
-            txbuf.writeUInt8( 0x0,                  startPadBytes + 195 + i * 4);
+            txbuf.writeUInt8( 255,    startPadBytes + 192 + i * 4);
+            txbuf.writeUInt8( 255,    startPadBytes + 193 + i * 4);
+            txbuf.writeUInt8( 0,      startPadBytes + 194 + i * 4);
+            txbuf.writeUInt8( 0,      startPadBytes + 195 + i * 4);
         }
-*/
+
 
 /*
         // 72 LEDs  (<0xE0+brightness> <blue> <green> <red>) brightness 0..31
@@ -69,7 +69,6 @@ try {
             txbuf.writeUInt8( Math.floor( 256 * Math.random() ), i + startPadBytes + 3 );
         }
 
-*/
 
         // 72 LEDs  (<0xE0+brightness> <blue> <green> <red>) brightness 0..31
         for (i = 0; i < 4*72; i += 4) {              // 4 * 72 + 4
@@ -78,13 +77,14 @@ try {
             txbuf.writeUInt8( 0x0, i + startPadBytes + 2 );
             txbuf.writeUInt8( 0xff, i + startPadBytes + 3 );
         }
+*/
 
 
         // End frame: at least (n/2) bits of 1, where n = 72 LEDs. Here we send 8 bytes
         // 8 x bytes filled with 0 to init
 
         for (i = 0; i < endPadBytes; i++) {
-            txbuf.writeUInt8( 0x00, startPadBytes + 4*72 + i );
+            txbuf.writeUInt8( 0, startPadBytes + 4*72 + i );
         }
 
         // Send to the LED strip
