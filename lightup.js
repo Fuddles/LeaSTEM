@@ -27,7 +27,7 @@ try {
     var txbuf    = Buffer.allocUnsafe( startPadBytes + 72*4 + endPadBytes );
     var i, loop = 0;
 
-    while (true) {
+//    while (true) {
 
         // 4 x bytes filled with 0 to init
         for (i = 0; i < startPadBytes; i++) {
@@ -60,6 +60,7 @@ try {
         }
 */
 
+/*
         // 72 LEDs  (<0xE0+brightness> <blue> <green> <red>) brightness 0..31
         for (i = 0; i < 4*72; i += 4) {              // 4 * 72 + 4
             txbuf.writeUInt8( 0xef,                              i + startPadBytes );            // Half brightness
@@ -67,6 +68,17 @@ try {
             txbuf.writeUInt8( Math.floor( 256 * Math.random() ), i + startPadBytes + 2 );
             txbuf.writeUInt8( Math.floor( 256 * Math.random() ), i + startPadBytes + 3 );
         }
+
+*/
+
+        // 72 LEDs  (<0xE0+brightness> <blue> <green> <red>) brightness 0..31
+        for (i = 0; i < 4*72; i += 4) {              // 4 * 72 + 4
+            txbuf.writeUInt8( 0xef,                              i + startPadBytes );            // Half brightness
+            txbuf.writeUInt8( 0xff, i + startPadBytes + 1 );
+            txbuf.writeUInt8( 0x0,  i + startPadBytes + 2 );
+            txbuf.writeUInt8( 0x0,  i + startPadBytes + 3 );
+        }
+
 
         // End frame: at least (n/2) bits of 1, where n = 72 LEDs. Here we send 8 bytes
         // 8 x bytes filled with 0 to init
@@ -81,8 +93,8 @@ try {
         console.log( "\nSPI loop iteration #" + (++loop) + " \t Buffer = " );
         console.log( txbuf );
 
-        rpio.msleep(1);         // Sleep for n milliseconds
-    }
+        rpio.msleep(1000);         // Sleep for n milliseconds
+//    }
 
 
 /*
