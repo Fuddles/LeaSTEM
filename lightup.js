@@ -18,10 +18,10 @@ try {
     rpio.spiBegin();
 
     // TODO
-    //rpio.spiSetClockDivider(4); 	/* divider should be 4 or 8 max to have high-speed display */
-    rpio.spiSetClockDivider(512); 	/* divider should be 4 or 8 max to have high-speed display */
+    //rpio.spiSetClockDivider(4); 	// divider should be 4 or 8 max to have high-speed display
+    rpio.spiSetClockDivider(512); 	// divider should be 4 or 8 max to have high-speed display
 
-    var startend   = 32;
+    var startend   = 8;
     var brightness = 3;
     var txbuf    = Buffer.allocUnsafe( startend + 72*4 + startend );
     var i, loop = 0;
