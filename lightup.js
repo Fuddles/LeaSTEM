@@ -63,40 +63,54 @@ try {
         for (i = 0; i < startPadBytes; i+=4) {
             //rpio.spiWrite(txbuf0, 4);
             rpio.spiTransfer(txbuf0, rxbuf, 4);
-            console.log(rxbuf);
+            //console.log(rxbuf);
         }
 
+        var shiftpix = (loop-1) % 20;
+
         // Red / Green / Blue strip
+        for (i = shiftpix; i < 24; i++) {
+            // 0xef, 0x0, 0x0, 0xff,    // red
+            txbuf.writeUInt8( 0xe7, 0);
+            txbuf.writeUInt8( 0,   1);
+            txbuf.writeUInt8( 0,   2);
+            txbuf.writeUInt8( 255, 3);
+            rpio.spiWrite(txbuf, 4);
+            //rpio.spiTransfer(txbuf, rxbuf, 4);
+            //console.log(rxbuf);
+        }
+
         for (i = 0; i < 24; i++) {
+            // 0xef, 0x0, 0xff, 0x0,     // green
+            txbuf.writeUInt8( 0xe7, 0);
+            txbuf.writeUInt8( 0,   1);
+            txbuf.writeUInt8( 255, 2);
+            txbuf.writeUInt8( 0,   3);
+            rpio.spiWrite(txbuf, 4);
+            //rpio.spiTransfer(txbuf, rxbuf, 4);
+        }
+
+        for (i = 0; i < 24 + shiftpix; i++) {
+            //0xef, 0xff, 0x0, 0x0,     // blue
+            txbuf.writeUInt8( 0xe7, 0);
+            txbuf.writeUInt8( 255, 1);
+            txbuf.writeUInt8( 0,   2);
+            txbuf.writeUInt8( 0,   3);
+            rpio.spiWrite(txbuf, 4);
+            //rpio.spiTransfer(txbuf, rxbuf, 4);
+        }
+
+        for (i = 0; i < shiftpix; i++) {
             // 0xef, 0x0, 0x0, 0xff,    // red
             txbuf.writeUInt8( 255, 0);
             txbuf.writeUInt8( 0,   1);
             txbuf.writeUInt8( 0,   2);
             txbuf.writeUInt8( 255, 3);
-            //rpio.spiWrite(txbuf, 4);
-            rpio.spiTransfer(txbuf, rxbuf, 4);
-            console.log(rxbuf);
+            rpio.spiWrite(txbuf, 4);
+            //rpio.spiTransfer(txbuf, rxbuf, 4);
+            //console.log(rxbuf);
         }
 
-        for (i = 0; i < 24; i++) {
-            // 0xef, 0x0, 0xff, 0x0,     // green
-            txbuf.writeUInt8( 255, 0);
-            txbuf.writeUInt8( 0,   1);
-            txbuf.writeUInt8( 255, 2);
-            txbuf.writeUInt8( 0,   3);
-            //rpio.spiWrite(txbuf, 4);
-            rpio.spiTransfer(txbuf, rxbuf, 4);
-        }
-
-        for (i = 0; i < 24; i++) {
-            //0xef, 0xff, 0x0, 0x0,     // blue
-            txbuf.writeUInt8( 255, 0);
-            txbuf.writeUInt8( 255, 1);
-            txbuf.writeUInt8( 0,   2);
-            txbuf.writeUInt8( 0,   3);
-            //rpio.spiWrite(txbuf, 4);
-            rpio.spiTransfer(txbuf, rxbuf, 4);
-        }
 
 /*
         // 72 LEDs  (<0xE0+brightness> <blue> <green> <red>) brightness 0..31
@@ -122,9 +136,9 @@ try {
         // 8 x bytes filled with 0 to init
         for (i = 0; i < endPadBytes; i += 4) {
             //rpio.spiWrite(txbuf1, 4);
-            //rpio.spiWrite(txbuf0, 4);
-            rpio.spiTransfer(txbuf0, rxbuf, 4);
-            console.log(rxbuf);
+            rpio.spiWrite(txbuf0, 4);
+            //rpio.spiTransfer(txbuf0, rxbuf, 4);
+            //console.log(rxbuf);
         }
 
         // Send to the LED strip
@@ -132,7 +146,7 @@ try {
         //console.log( "\nSPI loop iteration #" + (++loop) + " \t Buffer = " );
         //console.log( txbuf );
 
-        rpio.msleep(3000);         // Sleep for n milliseconds
+        rpio.msleep(10);         // Sleep for n milliseconds
     }
 
     rpio.spiEnd();
