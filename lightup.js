@@ -23,7 +23,7 @@ try {
 
     //rpio.spiChipSelect(0);                  /* Use CE0 */
     //rpio.spiSetCSPolarity(0, rpio.HIGH);    /* AT93C46 chip select is active-high */
-    rpio.spiSetDataMode(1);
+    rpio.spiSetDataMode(2);
 
 
     var startPadBytes = 8;    // 4;
