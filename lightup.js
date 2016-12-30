@@ -21,9 +21,9 @@ try {
     //rpio.spiSetClockDivider(4); 	// divider should be 4 or 8 max to have high-speed display
     rpio.spiSetClockDivider(64); 	// divider should be 4 or 8 max to have high-speed display
 
-    //rpio.spiChipSelect(0);                  /* Use CE0 */
-    //rpio.spiSetCSPolarity(0, rpio.HIGH);    /* AT93C46 chip select is active-high */
-    rpio.spiSetDataMode(3);
+    //rpio.spiChipSelect(0);                  // Use CE0
+    //rpio.spiSetCSPolarity(0, rpio.HIGH);    // AT93C46 chip select is active-high
+    rpio.spiSetDataMode(0);
 
 
     var startPadBytes = 8;    // 4;
@@ -32,55 +32,50 @@ try {
 
     //var brightness = 7;
     var     txbuf    = Buffer.allocUnsafe( 4 );
+    var     rxbuf    = Buffer.alloc(4, 0);
     const   txbuf0   = Buffer.alloc(4, 0);
     const   txbuf1   = Buffer.alloc(4, 255);
-
     var     i, loop = 0;
 
     // init ALL WHITE
     // 4 x bytes filled with 0 to init
     for (i = 0; i < startPadBytes; i+=4) {
-        rpio.spiWrite(txbuf0, 4);
+        // rpio.spiWrite(txbuf0, 4);
+        rpio.spiTransfer(txbuf0, rxbuf, 4);
     }
     for (i = 0; i < nbLEDs; i++) {
-        rpio.spiWrite(txbuf1, 4);
+        //rpio.spiWrite(txbuf1, 4);
+        rpio.spiTransfer(txbuf1, rxbuf, 4);
     }
     for (i = 0; i < endPadBytes; i += 4) {
         //rpio.spiWrite(txbuf1, 4);
-        rpio.spiWrite(txbuf0, 4);
+        //rpio.spiWrite(txbuf0, 4);
+        rpio.spiTransfer(txbuf0, rxbuf, 4);
     }
     rpio.msleep(3000);         // Sleep for n milliseconds
 
 
     // Loop
     while (true) {
+        console.log( "\nSPI loop iteration #" + (++loop) + " \t RX Buffer = " );
 
         // 4 x bytes filled with 0 to init
         for (i = 0; i < startPadBytes; i+=4) {
-            rpio.spiWrite(txbuf0, 4);
+            //rpio.spiWrite(txbuf0, 4);
+            rpio.spiTransfer(txbuf0, rxbuf, 4);
+            console.log(rxbuf);
         }
 
-/*
-        i = 0;
-        txbuf.writeUInt8( 0,      startPadBytes +     i * 4);
-        txbuf.writeUInt8( 255,      startPadBytes + 1 + i * 4);
-        txbuf.writeUInt8( 0,      startPadBytes + 2 + i * 4);
-        txbuf.writeUInt8( 255,      startPadBytes + 3 + i * 4);
-
-        i = 1;
-        txbuf.writeUInt8( 0,    startPadBytes +     i * 4);
-        txbuf.writeUInt8( 0,    startPadBytes + 1 + i * 4);
-        txbuf.writeUInt8( 255,    startPadBytes + 2 + i * 4);
-        txbuf.writeUInt8( 255,    startPadBytes + 3 + i * 4);
-*/
-
+        // Red / Green / Blue strip
         for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0x0, 0xff,    // red
             txbuf.writeUInt8( 255, 0);
             txbuf.writeUInt8( 0,   1);
             txbuf.writeUInt8( 0,   2);
             txbuf.writeUInt8( 255, 3);
-            rpio.spiWrite(txbuf, 4);
+            //rpio.spiWrite(txbuf, 4);
+            rpio.spiTransfer(txbuf, rxbuf, 4);
+            console.log(rxbuf);
         }
 
         for (i = 0; i < 24; i++) {
@@ -89,7 +84,8 @@ try {
             txbuf.writeUInt8( 0,   1);
             txbuf.writeUInt8( 255, 2);
             txbuf.writeUInt8( 0,   3);
-            rpio.spiWrite(txbuf, 4);
+            //rpio.spiWrite(txbuf, 4);
+            rpio.spiTransfer(txbuf, rxbuf, 4);
         }
 
         for (i = 0; i < 24; i++) {
@@ -98,7 +94,8 @@ try {
             txbuf.writeUInt8( 255, 1);
             txbuf.writeUInt8( 0,   2);
             txbuf.writeUInt8( 0,   3);
-            rpio.spiWrite(txbuf, 4);
+            //rpio.spiWrite(txbuf, 4);
+            rpio.spiTransfer(txbuf, rxbuf, 4);
         }
 
 /*
@@ -125,13 +122,14 @@ try {
         // 8 x bytes filled with 0 to init
         for (i = 0; i < endPadBytes; i += 4) {
             //rpio.spiWrite(txbuf1, 4);
-            rpio.spiWrite(txbuf0, 4);
+            //rpio.spiWrite(txbuf0, 4);
+            rpio.spiTransfer(txbuf0, rxbuf, 4);
+            console.log(rxbuf);
         }
 
         // Send to the LED strip
         // rpio.spiWrite(txbuf, txbuf.length);
-
-        console.log( "\nSPI loop iteration #" + (++loop) + " \t Buffer = " );
+        //console.log( "\nSPI loop iteration #" + (++loop) + " \t Buffer = " );
         //console.log( txbuf );
 
         rpio.msleep(3000);         // Sleep for n milliseconds
