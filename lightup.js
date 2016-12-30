@@ -21,7 +21,7 @@ try {
     //rpio.spiSetClockDivider(4); 	// divider should be 4 or 8 max to have high-speed display
     rpio.spiSetClockDivider(64); 	// divider should be 4 or 8 max to have high-speed display
 
-    var startPadBytes = 9;    // 4;
+    var startPadBytes = 256;    // 4;
     var endPadBytes   = 9;   // 32; // 4 + ceil(72 / 16)
     var brightness = 7;
     var txbuf    = Buffer.allocUnsafe( startPadBytes + 72*4 + endPadBytes );
