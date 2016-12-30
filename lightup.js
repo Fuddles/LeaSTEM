@@ -23,11 +23,11 @@ try {
 
     //rpio.spiChipSelect(0);                  /* Use CE0 */
     //rpio.spiSetCSPolarity(0, rpio.HIGH);    /* AT93C46 chip select is active-high */
-    rpio.spiSetDataMode(3);
+    //rpio.spiSetDataMode(0);
 
 
     var startPadBytes = 4;    // 4;
-    var endPadBytes   = 4;   // 32; // 4 + ceil(72 / 16)
+    var endPadBytes   = 8;   // 32; // 4 + ceil(72 / 16)
     var nbLEDs        = 72;   // 72
 
     //var brightness = 7;
@@ -66,6 +66,7 @@ try {
             txbuf.writeUInt8( 255, 3);
             rpio.spiWrite(txbuf, 4);
         }
+        rpio.msleep(10);         // Sleep for n milliseconds
 
         for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0xff, 0x0,     // green
@@ -75,6 +76,7 @@ try {
             txbuf.writeUInt8( 0,   3);
             rpio.spiWrite(txbuf, 4);
         }
+        rpio.msleep(10);         // Sleep for n milliseconds
 
         for (i = 0; i < 24; i++) {
             //0xef, 0xff, 0x0, 0x0,     // blue
@@ -84,6 +86,7 @@ try {
             txbuf.writeUInt8( 0,   3);
             rpio.spiWrite(txbuf, 4);
         }
+        rpio.msleep(10);         // Sleep for n milliseconds
 
 /*
         // 72 LEDs  (<0xE0+brightness> <blue> <green> <red>) brightness 0..31
@@ -108,7 +111,8 @@ try {
         // End frame: at least (n/2) bits of 1, where n = 72 LEDs. Here we send 8 bytes
         // 8 x bytes filled with 0 to init
         for (i = 0; i < endPadBytes; i += 4) {
-            rpio.spiWrite(txbuf1, 4);
+            //rpio.spiWrite(txbuf1, 4);
+            rpio.spiWrite(txbuf0, 4);
         }
 
         // Send to the LED strip
