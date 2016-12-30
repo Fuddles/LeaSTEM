@@ -56,8 +56,8 @@ try {
         for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0x0, 0xff,    // red
             txbuf.writeUInt8( 255, 0);
-            txbuf.writeUInt8( 0,   1);
-            txbuf.writeUInt8( 0,   2);
+            txbuf.writeUInt8( 255, 1);
+            txbuf.writeUInt8( 255, 2);
             txbuf.writeUInt8( 255, 3);
             rpio.spiWrite(txbuf, 4);
         }
