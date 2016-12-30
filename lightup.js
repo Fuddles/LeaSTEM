@@ -37,14 +37,14 @@ try {
         }
 
         i = 0;
-        txbuf.writeUInt8( 255,    startPadBytes +     i * 4);
+        txbuf.writeUInt8( 0,      startPadBytes +     i * 4);
         txbuf.writeUInt8( 255,      startPadBytes + 1 + i * 4);
-        txbuf.writeUInt8( 255,      startPadBytes + 2 + i * 4);
+        txbuf.writeUInt8( 0,      startPadBytes + 2 + i * 4);
         txbuf.writeUInt8( 255,      startPadBytes + 3 + i * 4);
 
         i = 1;
-        txbuf.writeUInt8( 255,    startPadBytes +     i * 4);
-        txbuf.writeUInt8( 255,    startPadBytes + 1 + i * 4);
+        txbuf.writeUInt8( 0,    startPadBytes +     i * 4);
+        txbuf.writeUInt8( 0,    startPadBytes + 1 + i * 4);
         txbuf.writeUInt8( 255,    startPadBytes + 2 + i * 4);
         txbuf.writeUInt8( 255,    startPadBytes + 3 + i * 4);
 
