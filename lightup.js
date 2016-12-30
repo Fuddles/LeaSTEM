@@ -22,9 +22,11 @@ try {
     rpio.spiSetClockDivider(64); 	// divider should be 4 or 8 max to have high-speed display
 
     var startPadBytes = 4;    // 4;
-    var endPadBytes   = 64;   // 32; // 4 + ceil(72 / 16)
-    var brightness = 7;
-    var txbuf    = Buffer.allocUnsafe( startPadBytes + 72*4 + endPadBytes );
+    var endPadBytes   = 12;   // 32; // 4 + ceil(72 / 16)
+    var nbLEDs        = 1;    // 72
+
+    //var brightness = 7;
+    var txbuf    = Buffer.allocUnsafe( startPadBytes + 4 * nbLEDs + endPadBytes );
     var i, loop = 0;
 
 //    while (true) {
@@ -34,7 +36,14 @@ try {
             txbuf.writeUInt8( 0, i );
         }
 
+        i = 0;
+        txbuf.writeUInt8( 255,    startPadBytes +     i * 4);
+        txbuf.writeUInt8( 255,    startPadBytes + 1 + i * 4);
+        txbuf.writeUInt8( 255,    startPadBytes + 2 + i * 4);
+        txbuf.writeUInt8( 255,    startPadBytes + 3 + i * 4);
 
+
+/*
         for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0x0, 0xff,    // red
             txbuf.writeUInt8( 255,    startPadBytes +     i * 4);
@@ -58,7 +67,7 @@ try {
             txbuf.writeUInt8( 1,      startPadBytes + 194 + i * 4);
             txbuf.writeUInt8( 1,      startPadBytes + 195 + i * 4);
         }
-
+*/
 
 /*
         // 72 LEDs  (<0xE0+brightness> <blue> <green> <red>) brightness 0..31
@@ -84,7 +93,7 @@ try {
         // 8 x bytes filled with 0 to init
 
         for (i = 0; i < endPadBytes; i++) {
-            txbuf.writeUInt8( 255, startPadBytes + 4*72 + i );
+            txbuf.writeUInt8( 0, startPadBytes + 4 * nbLEDs + i );
         }
 
         // Send to the LED strip
@@ -113,7 +122,8 @@ try {
     ]);
 */
 
-    rpio.spiEnd();
+// FIXME
+//    rpio.spiEnd();
 
     console.log("End rpio SPI");
 }
