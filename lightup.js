@@ -21,40 +21,41 @@ try {
     //rpio.spiSetClockDivider(4); 	// divider should be 4 or 8 max to have high-speed display
     rpio.spiSetClockDivider(512); 	// divider should be 4 or 8 max to have high-speed display
 
-    var startend   = 8;
+    var startPadBytes = 4;
+    var endPadBytes   = 8;
     var brightness = 3;
-    var txbuf    = Buffer.allocUnsafe( startend + 72*4 + startend );
+    var txbuf    = Buffer.allocUnsafe( startPadBytes + 72*4 + endPadBytes );
     var i, loop = 0;
 
     while (true) {
 
         // 4 x bytes filled with 0 to init
-        for (i = 0; i < startend; i++) {
+        for (i = 0; i < startPadBytes; i++) {
             txbuf.writeUInt8( 0x0, i );
         }
 
         for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0x0, 0xff,    // red
-            txbuf.writeUInt8( 0xe0 + brightness,    startend +     i * 4);
-            txbuf.writeUInt8( 0x0,                  startend + 1 + i * 4);
-            txbuf.writeUInt8( 0x0,                  startend + 2 + i * 4);
-            txbuf.writeUInt8( 0xff,                 startend + 3 + i * 4);
+            txbuf.writeUInt8( 0xe0 + brightness,    startPadBytes +     i * 4);
+            txbuf.writeUInt8( 0x0,                  startPadBytes + 1 + i * 4);
+            txbuf.writeUInt8( 0x0,                  startPadBytes + 2 + i * 4);
+            txbuf.writeUInt8( 0xff,                 startPadBytes + 3 + i * 4);
         }
 
         for (i = 0; i < 24; i++) {
             // 0xef, 0x0, 0xff, 0x0,     // green
-            txbuf.writeUInt8( 0xe0 + brightness,    startend + 96  + i * 4);
-            txbuf.writeUInt8( 0x0,                  startend + 97  + i * 4);
-            txbuf.writeUInt8( 0xff,                 startend + 98  + i * 4);
-            txbuf.writeUInt8( 0x0,                  startend + 99  + i * 4);
+            txbuf.writeUInt8( 0xe0 + brightness,    startPadBytes + 96  + i * 4);
+            txbuf.writeUInt8( 0x0,                  startPadBytes + 97  + i * 4);
+            txbuf.writeUInt8( 0xff,                 startPadBytes + 98  + i * 4);
+            txbuf.writeUInt8( 0x0,                  startPadBytes + 99  + i * 4);
         }
 
         for (i = 0; i < 24; i++) {
             //0xef, 0xff, 0x0, 0x0,     // blue
-            txbuf.writeUInt8( 0xe0 + brightness,    startend + 192 + i * 4);
-            txbuf.writeUInt8( 0xff,                 startend + 193 + i * 4);
-            txbuf.writeUInt8( 0x0,                  startend + 194 + i * 4);
-            txbuf.writeUInt8( 0x0,                  startend + 195 + i * 4);
+            txbuf.writeUInt8( 0xe0 + brightness,    startPadBytes + 192 + i * 4);
+            txbuf.writeUInt8( 0xff,                 startPadBytes + 193 + i * 4);
+            txbuf.writeUInt8( 0x0,                  startPadBytes + 194 + i * 4);
+            txbuf.writeUInt8( 0x0,                  startPadBytes + 195 + i * 4);
         }
 
 
@@ -70,8 +71,8 @@ try {
         // End frame: at least (n/2) bits of 1, where n = 72 LEDs. Here we send 8 bytes
         // 8 x bytes filled with 0 to init
 
-        for (i = 0; i < startend; i++) {
-            txbuf.writeUInt8( 0x00, 292 + i );
+        for (i = 0; i < endPadBytes; i++) {
+            txbuf.writeUInt8( 0x00, startPadBytes + 292 + i );
         }
 
         // Send to the LED strip
