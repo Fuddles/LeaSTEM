@@ -90,7 +90,7 @@ try {
             //rpio.spiTransfer(txbuf, rxbuf, 4);
         }
 
-        for (i = 0; i < 24 + shiftpix; i++) {
+        for (i = 0; i < 24; i++) {
             //0xef, 0xff, 0x0, 0x0,     // blue
             txbuf.writeUInt8( 0xe7, 0);
             txbuf.writeUInt8( 255, 1);
@@ -102,7 +102,7 @@ try {
 
         for (i = 0; i < shiftpix; i++) {
             // 0xef, 0x0, 0x0, 0xff,    // red
-            txbuf.writeUInt8( 255, 0);
+            txbuf.writeUInt8( 0xe7, 0);
             txbuf.writeUInt8( 0,   1);
             txbuf.writeUInt8( 0,   2);
             txbuf.writeUInt8( 255, 3);
