@@ -31,11 +31,17 @@ try {
 
         // 4 x bytes filled with 0 to init
         for (i = 0; i < startPadBytes; i++) {
-            txbuf.writeUInt8( 0, i );
+            txbuf.writeUInt8( 255, i );
         }
 
+        i = 0;
+        txbuf.writeUInt8( 0,        startPadBytes +     i * 4);
+        txbuf.writeUInt8( 0,        startPadBytes + 1 + i * 4);
+        txbuf.writeUInt8( 0,        startPadBytes + 2 + i * 4);
+        txbuf.writeUInt8( 0,        startPadBytes + 3 + i * 4);
 
-        for (i = 0; i < 24; i++) {
+
+        for (i = 1; i < 24; i++) {
             // 0xef, 0x0, 0x0, 0xff,    // red
             txbuf.writeUInt8( 255,    startPadBytes +     i * 4);
             txbuf.writeUInt8( 0,      startPadBytes + 1 + i * 4);
