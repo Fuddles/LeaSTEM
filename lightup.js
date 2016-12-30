@@ -19,7 +19,12 @@ try {
 
     // TODO
     //rpio.spiSetClockDivider(4); 	// divider should be 4 or 8 max to have high-speed display
-    rpio.spiSetClockDivider(32); 	// divider should be 4 or 8 max to have high-speed display
+    rpio.spiSetClockDivider(64); 	// divider should be 4 or 8 max to have high-speed display
+
+    //rpio.spiChipSelect(0);                  /* Use CE0 */
+    //rpio.spiSetCSPolarity(0, rpio.HIGH);    /* AT93C46 chip select is active-high */
+    rpio.spiSetDataMode(0);
+
 
     var startPadBytes = 4;    // 4;
     var endPadBytes   = 4;   // 32; // 4 + ceil(72 / 16)
