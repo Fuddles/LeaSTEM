@@ -75,7 +75,7 @@ try {
         for (i = 0; i < 4*72; i += 4) {              // 4 * 72 + 4
             txbuf.writeUInt8( 0xff,                              i + startPadBytes );            // Half brightness
             txbuf.writeUInt8( 0xff, i + startPadBytes + 1 );
-            txbuf.writeUInt8( 0xff, i + startPadBytes + 2 );
+            txbuf.writeUInt8( 0x0, i + startPadBytes + 2 );
             txbuf.writeUInt8( 0xff, i + startPadBytes + 3 );
         }
 
