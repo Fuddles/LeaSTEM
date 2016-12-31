@@ -49,16 +49,18 @@ app.use(function(err, req, res, next) {
 
 const cropResizePromise = require('./process/image-functions').cropResizePromise;
 
-let fname = 'wheel.jpg';
-cropResizePromise( fname, 300 )
-.then( img => {
-    console.log( "SUCCESS in app.js > cropResizePromise for image " + fname );
-})
-.catch( err => {
-    console.error("ERROR in app.js > cropResizePromise. err =");
-    console.error( err );
-});
+let filenames = ['wheel.jpg', 'wheel2.jpg', 'yoda.jpg', 'feedly.png'];
 
+for (let fname of filenames) {
+    cropResizePromise( fname, 300 )
+    .then( img => {
+        console.log( "SUCCESS in app.js > cropResizePromise for image " + fname );
+    })
+    .catch( err => {
+        console.error("ERROR in app.js > cropResizePromise. err =");
+        console.error( err );
+    });
+}
 
 // ---------------------------------
 
