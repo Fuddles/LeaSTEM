@@ -43,8 +43,23 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-// -----------
-require("./lightup.js");
 
+// ----------- TESTS LEA -----------
+// require("./lightup.js");
+
+import {cropResizePromise} from 'process/image-functions';
+
+let fname = 'wheel.jpg';
+cropResizePromise( fname, 300 )
+.then( img => {
+    console.log( "SUCCESS in app.js > cropResizePromise for image " + fname );
+})
+.catch( err => {
+    console.error("ERROR in app.js > cropResizePromise. err =");
+    console.error( err );
+});
+
+
+// ---------------------------------
 
 module.exports = app;
