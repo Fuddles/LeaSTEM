@@ -47,7 +47,7 @@ app.use(function(err, req, res, next) {
 // ----------- TESTS LEA -----------
 // require("./lightup.js");
 
-import {cropResizePromise} from 'process/image-functions';
+const cropResizePromise = require('process/image-functions').cropResizePromise;
 
 let fname = 'wheel.jpg';
 cropResizePromise( fname, 300 )
