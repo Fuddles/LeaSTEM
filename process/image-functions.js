@@ -9,7 +9,7 @@ const RESIZED_DIR = process.env.RESIZED_DIR || "/var/www/resized-images/";
 
 
 // Crop and resize image in UPLOAD_DIR
-export function cropResizePromise( filename, finalsize ) {
+function cropResizePromise( filename, finalsize ) {
 
     return new Promise( function(resolve, reject) {
 
@@ -61,3 +61,6 @@ export function cropResizePromise( filename, finalsize ) {
         });
     });
 }
+
+
+module.exports.cropResizePromise = cropResizePromise;
