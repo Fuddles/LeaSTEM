@@ -3,9 +3,57 @@
 
 const fs = require('fs');
 const gm = require('gm');
+const gp = require("get-pixels");
 
 const UPLOAD_DIR  = process.env.UPLOAD_DIR  || "/var/www/uploaded-images/";
 const RESIZED_DIR = process.env.RESIZED_DIR || "/var/www/resized-images/";
+
+// Number of LEDs on the strip
+const NUM_LEDS    = process.env.NUM_LEDS    || 72;
+// Distance between the LED strip and the center of the wheel -> ratio dist / radius
+const DELTA       = process.env.DELTA       || 0.05;
+
+
+// Takes resized image and angle, and returns an array of rgb pixels
+// Angle in degrees [0..360[
+function getPixels( angle, resizedImageFileName, imgSize ) {
+
+    return new Promise( function(resolve, reject) {
+
+        if( !resizedImageFileName || resizedImageFileName.indexOf('/') >= 0 ) {
+            throw new Error ("Bad filename in getPixels");
+        }
+        if( !imgSize || imgSize < 50 ) {
+            throw new Error ("Bad imgSize in getPixels");
+        }
+
+        // Reads all the pixels from url into an ndarray:
+        // Returns An ndarray of pixels in raster order having shape equal to [width, height, channels].
+        gp( RESIZED_DIR + resizedImageFileName, function(err, pixels) {
+
+            if (err) {
+                console.error("Error in getPixels after gp(). Err is:");
+                console.error(err);
+                return reject(err);
+            }
+
+            // Now we have our array of pixels[x][y][c]
+            let resArray   = new Array( NUM_LEDS );
+            let angleInRad = Math.PI / 180.0 * angle;
+            let cosAngle   = Math.cos( angleInRad );
+            let sinAngle   = Math.sin( angleInRad );
+            for (let i = 0; i < NUM_LEDS; i++) {
+                let pt = calcLEDPosition( cosAngle, sinAngle, i );      // Return pt.x and pt.y to be multiplied by imgSize/2
+                let x  = Math.floor( pt.x * imgSize / 2 );
+                let y  = Math.floor( pt.y * imgSize / 2 );
+                resArray[i] = [ pixels[x][y][0], pixels[x][y][1], pixels[x][y][2], pixels[x][y][3] ];
+            }
+            return resolve( resArray );
+
+        });
+    }
+}
+
 
 
 // Crop and resize image in UPLOAD_DIR
@@ -61,6 +109,9 @@ function cropResizePromise( filename, finalsize ) {
         });
     });
 }
+
+
+
 
 
 module.exports.cropResizePromise = cropResizePromise;
