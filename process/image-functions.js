@@ -16,7 +16,7 @@ const DELTA       = process.env.DELTA       || 0.05;
 
 // Takes resized image and angle, and returns an array of rgb pixels
 // Angle in degrees [0..360[
-function getPixels( angle, resizedImageFileName, imgSize ) {
+function getPixelsPromise( angle, resizedImageFileName, imgSize ) {
 
     return new Promise( function(resolve, reject) {
 
@@ -44,8 +44,14 @@ function getPixels( angle, resizedImageFileName, imgSize ) {
             let sinAngle   = Math.sin( angleInRad );
             for (let i = 0; i < NUM_LEDS; i++) {
                 let pt = calcLEDPosition( cosAngle, sinAngle, i );      // Return pt.x and pt.y to be multiplied by imgSize/2
-                let x  = Math.floor( pt.x * imgSize / 2 );
-                let y  = Math.floor( pt.y * imgSize / 2 );
+                let x  = Math.round( pt.x * imgSize / 2 );
+                if ( x >= imgSize ) {
+                    x = imgSize - 1;
+                }
+                let y  = Math.round( pt.y * imgSize / 2 );
+                if ( y >= imgSize ) {
+                    y = imgSize - 1;
+                }
                 resArray[i] = [ pixels[x][y][0], pixels[x][y][1], pixels[x][y][2], pixels[x][y][3] ];
             }
             return resolve( resArray );
@@ -53,6 +59,17 @@ function getPixels( angle, resizedImageFileName, imgSize ) {
         });
     }
 }
+
+
+//
+function calcLEDPosition( cosAngle, sinAngle, idx ) {
+    let d = 2 * idx / NUM_LEDS - 1;
+    return {
+        x: 1 + d * sinAngle - DELTA * cosAngle;
+        y: 1 - d * cosAngle - DELTA * sinAngle;
+    }
+}
+
 
 
 
@@ -115,3 +132,4 @@ function cropResizePromise( filename, finalsize ) {
 
 
 module.exports.cropResizePromise = cropResizePromise;
+module.exports.getPixelsPromise  = getPixelsPromise;
