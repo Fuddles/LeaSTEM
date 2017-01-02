@@ -33,13 +33,13 @@ var router = express.Router();
 const cropResizePromise = require("../process/image-functions").cropResizePromise;
 
 // See multer doc at https://www.npmjs.com/package/multer
-router.post('/upload-photo', uploadWithMulter.single('myImage'), function(req, res, next) {
+router.post('/upload-photo', uploadWithMulter.single('myphoto'), function(req, res, next) {
 
     console.log(" API /upload-photo called, file [" + req.file.filename + "] saved! ");
 
     // TODO: call cropAndResize + display on LED
 
-    return;
+    return res.send(200);
 });
 
 

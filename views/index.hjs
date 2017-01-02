@@ -12,7 +12,7 @@
     <form action="/upload-photo" method="post">
 
         Upload your photo here:
-        <input type="file" name="myImage" accept="image/png,image/gif,image/jpeg" />
+        <input type="file" name="myphoto" accept="image/png,image/gif,image/jpeg" />
 
         <br/>
         <input type="submit" value="Upload">
