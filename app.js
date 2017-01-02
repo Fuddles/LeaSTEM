@@ -22,6 +22,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// --- Serve uploaded-images
+const RESIZED_DIR = require("../process/image-functions").RESIZED_DIR;
+app.use('/resized-images', express.static( RESIZED_DIR ));
+
+
 app.use('/', index);
 app.use('/users', users);
 
