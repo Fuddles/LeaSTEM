@@ -35,7 +35,8 @@ const cropResizePromise = require("../process/image-functions").cropResizePromis
 // See multer doc at https://www.npmjs.com/package/multer
 router.post('/upload-photo', uploadWithMulter.single('myphoto'), function(req, res, next) {
 
-    console.log(" API /upload-photo called, file [" + req.file.filename + "] saved! ");
+    console.log(" API /upload-photo called, file saved?? ");
+    //console.log(" API /upload-photo called, file [" + req.file.filename + "] saved! ");
 
     // TODO: call cropAndResize + display on LED
 
