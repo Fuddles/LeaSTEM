@@ -21,7 +21,7 @@ var uploadWithMulter = multer({
     dest:       UPLOAD_DIR,
     fileFilter: function(req, file, cb) {
             // Check that it is an image:
-            if ( req.file.mimeType == 'image/png' || req.file.mimeType == 'image/gif' || req.file.mimeType == 'image/jpeg' ) {
+            if ( file.mimeType == 'image/png' || file.mimeType == 'image/gif' || file.mimeType == 'image/jpeg' ) {
                 // To accept the file pass `true`, like so:
                 cb(null, true);
                 return;
