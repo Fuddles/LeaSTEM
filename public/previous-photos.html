@@ -36,18 +36,18 @@
            // Check HTTP status
            if ( response.status >= 200 && response.status < 300 ) {  // We're good!
                try {
-                   let jsonRes = response.json();                   // Try to parse the json
-                   console.log(jsonRes);
+                   response.json().then( function(jsonRes) {                    // Try to parse the json
+                       console.log(jsonRes);
 
-                   // Remove all previously displayed photos
-                   $("#image-placeholder").empty();
-                   for (photoname of jsonRes) {
-                       $("#image-placeholder").append(
-                           '<img src="/resized-images/'+ encodeURIComponent(photoname) +'" '
-                           + 'style="width:150px; height:150px;" onclick="touchPhoto('+ JSON.stringify(photoname) +');" /> '
-                       );
-                   }
-
+                       // Remove all previously displayed photos
+                       $("#image-placeholder").empty();
+                       for (photoname of jsonRes) {
+                           $("#image-placeholder").append(
+                               '<img src="/resized-images/'+ encodeURIComponent(photoname) +'" '
+                               + 'style="width:150px; height:150px;" onclick="touchPhoto('+ JSON.stringify(photoname) +');" /> '
+                           );
+                       }
+                   });
                }
                catch (exc) {
                    console.log('Fetch error parsing JSON ');
