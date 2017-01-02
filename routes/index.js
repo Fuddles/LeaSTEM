@@ -14,8 +14,8 @@ router.get('/', function(req, res, next) {
 
 const multer  = require('multer');
 
-const UPLOAD_DIR        = require(../process/image-functions).UPLOAD_DIR;
-const cropResizePromise = require(../process/image-functions).cropResizePromise;
+const UPLOAD_DIR        = require("../process/image-functions").UPLOAD_DIR;
+const cropResizePromise = require("../process/image-functions").cropResizePromise;
 
 var uploadWithMulter = multer({
     dest:       UPLOAD_DIR,
