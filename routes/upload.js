@@ -4,22 +4,32 @@ const multer = require('multer');
 
 const UPLOAD_DIR     = require("../process/image-functions").UPLOAD_DIR;
 
-var uploadWithMulter = multer({
-    // dest:       UPLOAD_DIR
-    dest:       "/tmp/"
+
+var multerStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, '/tmp/');              // FIXME UPLOAD_DIR
+    },
+    filename: function (req, file, cb) {
+        let fname = file.originalname;
+        if ( !fname || fname.indexOf('.') < 0 )
+            fname = "photo" + (file.mimetype == 'image/png' ? ".png" : ".jpg");
+        let p   = fname.lastIndexOf('.');
+        let tim = Date.now() % 10000;
+        cb( null, fname.substring(0,p) + '-' + tim + fname.substring(p) );
+    }
 });
-/*
+
 var uploadWithMulter = multer({
-    dest:       UPLOAD_DIR,
+    storage:    multerStorage,
     fileFilter: function(req, file, cb) {
-            console.log( "In fileFilter, with file.originalname = "+ file.originalname +", and file.mimeType = " + file.mimeType );
+            console.log( "In fileFilter, with file.originalname = "+ file.originalname +", and file.mimetype = " + file.mimetype );
             // Check that it is an image:
-            if ( file.mimeType == 'image/png' || file.mimeType == 'image/gif' || file.mimeType == 'image/jpeg' ) {
+            if ( file.mimetype == 'image/png' || file.mimetype == 'image/gif' || file.mimetype == 'image/jpeg' ) {
                 // To accept the file pass `true`, like so:
                 cb(null, true);
                 return;
             }
-            console.error("ERROR in multer upload: WRONG MIME TYPE (not an image) = " + req.file.mimeType );
+            console.error("ERROR in multer upload: WRONG MIME TYPE (not an image) = " + file.mimetype );
             // To reject this file pass `false`, like so:
             return cb(null, false);
         },
@@ -27,7 +37,7 @@ var uploadWithMulter = multer({
             fileSize: 100000000          // in bytes. Image size max is 100MB
         }
 });
-*/
+
 
 
 // ---------------- Upload of a new photo --------------------------------------
