@@ -37,6 +37,7 @@
            if ( response.status >= 200 && response.status < 300 ) {  // We're good!
                try {
                    let jsonRes = response.json();                   // Try to parse the json
+                   console.log(jsonRes);
 
                    // Remove all previously displayed photos
                    $("#image-placeholder").empty();
