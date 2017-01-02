@@ -21,8 +21,8 @@ rpio.init({
 });
 rpio.spiBegin();
 //rpio.spiSetClockDivider(4); 	// divider should be 4 or 8 max to have high-speed display
-rpio.spiSetClockDivider(8); 	// divider should be 4 or 8 max to have high-speed display
-//rpio.spiSetDataMode(0);
+rpio.spiSetClockDivider(64); 	// divider should be 4 or 8 max to have high-speed display
+rpio.spiSetDataMode(0);
 
 
 // TODO: Define endLed to close SPI
@@ -35,7 +35,6 @@ rpio.spiSetClockDivider(8); 	// divider should be 4 or 8 max to have high-speed 
 
 const   TXBUF0   = Buffer.alloc(4, 0);
 
-
 //
 // colors is a two dimensional array colors[ledIndex][channel]
 function ledLightUp( colors ) {
@@ -44,14 +43,15 @@ function ledLightUp( colors ) {
         throw new Error("Colors Array not long enough in ledLightUp: length=" + colors.length);
     }
 
-    let txbuf    = Buffer.allocUnsafe( 4 );
+    let txbuf = Buffer.allocUnsafe( 4 );
+    let i;
 
     // 4 x bytes filled with 0 to init
-    for ( let i = 0; i < START_PAD_BYTES; i += 4 ) {
+    for ( i = 0; i < START_PAD_BYTES; i += 4 ) {
         rpio.spiWrite(TXBUF0, 4);
     }
 
-    for (let i = 0; i < NUM_LEDS; i++) {
+    for ( i = 0; i < NUM_LEDS; i++) {
         // brightness (0..31), blue, green, red
         txbuf.writeUInt8( 0xe0 | BRIGHTNESS, 0 );
         txbuf.writeUInt8( colors[i][2],      1 );
@@ -61,7 +61,7 @@ function ledLightUp( colors ) {
     }
 
     // 8 x bytes filled with 0 to finish
-    for (let i = 0; i < END_PAD_BYTES; i += 4) {
+    for ( i = 0; i < END_PAD_BYTES; i += 4) {
         rpio.spiWrite(TXBUF0, 4);
     }
     return;
