@@ -54,7 +54,7 @@ function uploadPhotoPost(req, res, next) {
 
     // TODO: call cropAndResize + display on LED
     if (req.file) {
-        return res.redirect('/');
+        return res.redirect('/?upload=ok');
     }
     return res.sendStatus(500);
 }
