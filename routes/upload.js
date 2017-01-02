@@ -7,14 +7,16 @@ const UPLOAD_DIR     = require("../process/image-functions").UPLOAD_DIR;
 
 var multerStorage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, '/tmp/');              // FIXME UPLOAD_DIR
+        console.log("Info in multerStorage > destination: upload dir = " + UPLOAD_DIR);
+        //cb(null, '/tmp/');
+        cb(null, UPLOAD_DIR);
     },
     filename: function (req, file, cb) {
         let fname = file.originalname;
         if ( !fname || fname.indexOf('.') < 0 )
             fname = "photo" + (file.mimetype == 'image/png' ? ".png" : ".jpg");
         let p   = fname.lastIndexOf('.');
-        let tim = Date.now() % 10000;
+        let tim = Date.now() % 100000;
         cb( null, fname.substring(0,p) + '-' + tim + fname.substring(p) );
     }
 });
@@ -52,7 +54,7 @@ function uploadPhotoPost(req, res, next) {
 
     // TODO: call cropAndResize + display on LED
     if (req.file) {
-        return res.sendStatus(200);
+        return res.redirect('/');
     }
     return res.sendStatus(500);
 }
