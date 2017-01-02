@@ -62,7 +62,7 @@ for (let fname of filenames) {
         for ( let ang = 0; ang < 10*360; ang++ ) {
 
             let angle = ang % 360;
-            setTimeOut( function() {
+            setTimeout( function() {
 
                 console.log( "Starting getPixelsPromise in app.js > for angle = " + angle );
                 getPixelsPromise( angle, fname, 300 )  // angle, resizedImageFileName, imgSize
