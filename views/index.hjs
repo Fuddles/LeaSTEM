@@ -12,12 +12,21 @@
     <form action="/upload-photo" method="post" enctype="multipart/form-data">
 
         Upload your photo here:
-        <input type="file" name="myphoto" accept="image/png,image/gif,image/jpeg" />
+        <input type="file" name="myphoto" accept="image/png,image/gif,image/jpeg"
+                onclick="document.getElementById('uploadDone').style.display = none;" />
 
         <br/>
         <input type="submit" value="Upload">
 
     </form>
+
+    <div id="uploadDone" style="display:none; margin:30 0 0 30;">Success! Upload done!</div>
+
+    <script type="text/javascript">
+        if (window.location.href.indexOf('?upload=ok') > 0) {
+            document.getElementById('uploadDone').style.display = block;
+        }
+    </script>
 
   </body>
 </html>
