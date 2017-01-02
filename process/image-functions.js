@@ -1,6 +1,8 @@
 // Functions to crop, resize and exctract pixels
 // Lea, Dec 2016
 
+// WARNING: when vertical, the LED strip must have led #0 at the top and be left of the wheel
+
 const fs = require('fs');
 const gm = require('gm');
 const gp = require("get-pixels");
@@ -133,3 +135,4 @@ function cropResizePromise( filename, finalsize ) {
 
 module.exports.cropResizePromise = cropResizePromise;
 module.exports.getPixelsPromise  = getPixelsPromise;
+module.exports.NUM_LEDS  = NUM_LEDS;
