@@ -5,7 +5,8 @@ const multer = require('multer');
 const UPLOAD_DIR     = require("../process/image-functions").UPLOAD_DIR;
 
 var uploadWithMulter = multer({
-    dest:       UPLOAD_DIR
+    // dest:       UPLOAD_DIR
+    dest:       "/tmp/"
 });
 /*
 var uploadWithMulter = multer({
@@ -43,7 +44,7 @@ function uploadPhotoPost(req, res, next) {
     if (req.file) {
         return res.sendStatus(200);
     }
-    return res.sendStatus(500);    
+    return res.sendStatus(500);
 }
 
 
