@@ -11,11 +11,10 @@
 
     <form action="/upload-photo" method="post" enctype="multipart/form-data">
 
-        Upload your photo here:
+        Upload your photo here:<br/>
         <input type="file" name="myphoto" accept="image/png,image/gif,image/jpeg"
                 onchange="document.getElementById('uploadDone').style.display = 'none';" />
-
-        <br/>
+        nbsp;
         <input type="submit" value="Upload">
 
     </form>
