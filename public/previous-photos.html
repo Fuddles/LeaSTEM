@@ -46,7 +46,9 @@
                        for (photoname of jsonRes) {
                            $("#image-placeholder").append(
                                '<img src="/resized-images/'+ encodeURIComponent(photoname) +'" '
-                               + 'style="width:150px; height:150px;" onclick="touchPhoto(\''+ JSON.stringify(photoname) +'\');" /> '
+                               + 'style="width:150px; height:150px;" '
+                               + "onclick='touchPhoto("+ JSON.stringify(photoname) +");' "      // JSON.stringify adds double-quotes
+                               + ' /> '
                            );
                        }
                    });
