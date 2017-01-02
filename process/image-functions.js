@@ -139,4 +139,5 @@ function cropResizePromise( filename, finalsize ) {
 
 module.exports.cropResizePromise = cropResizePromise;
 module.exports.getPixelsPromise  = getPixelsPromise;
-module.exports.NUM_LEDS  = NUM_LEDS;
+module.exports.NUM_LEDS   = NUM_LEDS;
+module.exports.UPLOAD_DIR = UPLOAD_DIR;

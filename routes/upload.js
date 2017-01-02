@@ -2,14 +2,14 @@
 
 const multer = require('multer');
 
-const UPLOAD_DIR     = require("../process/image-functions").UPLOAD_DIR;
+const UPLOAD_DIR = require("../process/image-functions").UPLOAD_DIR;
 
 
 var multerStorage = multer.diskStorage({
     destination: function (req, file, cb) {
         console.log("Info in multerStorage > destination: upload dir = " + UPLOAD_DIR);
         //cb(null, '/tmp/');
-        cb(null, UPLOAD_DIR);
+        cb( null, UPLOAD_DIR );
     },
     filename: function (req, file, cb) {
         let fname = file.originalname;
