@@ -58,6 +58,29 @@ const cropResizePromise = require('./process/image-functions').cropResizePromise
 const getPixelsPromise  = require('./process/image-functions').getPixelsPromise;
 const ledLightUp        = require('./process/led').ledLightUp;
 
+
+
+global.currentImageFileName = process.env.CURRENT_IMAGE_FILENAME || ''; // getMostRecentResizedImage();    // TODO !!!!
+
+// TODO: get most recent image of the RESIZED_DIR
+//  if no global.currentImageFileName defined
+
+// TODO: launch thread to read gyroscope
+//      global current rotational speed with timestamp
+//      In Node.js, "high resolution time" is made available via process.hrtime.
+//      It returns a array with first element the time in seconds, and second element the remaining nanoseconds.
+//          https://nodejs.org/dist/latest-v6.x/docs/api/process.html#process_process_hrtime_time
+//      Eg: To get current time in microseconds, do the following:
+//          var hrTime = process.hrtime()
+//          console.log(hrTime[0] * 1000000 + hrTime[1] / 1000);
+
+
+// TODO: Launch interval func to refresh LED display:
+//          setTimeout 1ms, but wait for async signal that previous have finished
+//          => inside the callback
+
+
+
 //let filenames = ['wheel.jpg', 'wheel2.jpg', 'yoda.jpg', 'feedly.png'];
 let filenames = ['feedly.png'];
 
