@@ -59,11 +59,11 @@ function normalizePort(val) {
  *  You have been warned.
  */
 process.on('uncaughtException', function(err) {
-   logerr('\n\nFATAL ERROR !!!! -- Caught exception: ' + err);
+   console.error('\n\nFATAL ERROR !!!! -- Caught exception: ' + err);
    try {
        //console.trace( "\nMore info (console.trace):" );
-       logerr( "\n\nError Stack-trace:");
-       logerr( err.stack );
+       console.error( "\n\nError Stack-trace:");
+       console.error( err.stack );
    }
    catch (exc) {}
 });
