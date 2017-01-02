@@ -30,18 +30,20 @@ router.get('/list-photos', function(req, res, next) {
         console.log( files );
 
         Promise.all( files.map( fname => {
-            fs.stat( RESIZED_DIR + fname, (err, stats) => {
-                if (err) {
-                    return Promise.reject(err);
-                }
-                console.log( "\nInfo in list-photos, stat'ing file " + fname );
-                console.log( stats );
+            return new Promise( function(resolve, reject) {
+                fs.stat( RESIZED_DIR + fname, (err, stats) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    console.log( "\nInfo in list-photos, stat'ing file " + fname );
+                    console.log( stats );
 
-                return Promise.resolve({
-                    name: fname,
-                    time: stats.mtime.getTime()
+                    return resolve({
+                        name: fname,
+                        time: stats.mtime.getTime()
+                    });
                 });
-            });
+            })
         }))
         .then( fnametimes => {
 
