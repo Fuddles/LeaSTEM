@@ -26,6 +26,9 @@ router.get('/list-photos', function(req, res, next) {
             return res.sendStatus( 500 );
         }
 
+        console.log( "\nInfo in list-photos, readdir files: ");
+        console.log( files );
+
         Promise.all( files.map( fname => {
             fs.stat( RESIZED_DIR + fname, (err, stats) => {
                 if (err) {
@@ -38,6 +41,10 @@ router.get('/list-photos', function(req, res, next) {
             });
         }))
         .then( fnametimes => {
+
+            console.log( "\nInfo in list-photos, after stat'ing files: ");
+            console.log( fnametimes );
+
             let resTimeSortedFilenames =
                 fnametimes.sort( function(a, b) { return b.time - a.time; } )     // Descending order
                           .map( fnt => { return fnt.name; } );
