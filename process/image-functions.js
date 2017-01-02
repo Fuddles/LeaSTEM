@@ -59,7 +59,7 @@ function getPixelsPromise( angle, resizedImageFileName, imgSize ) {
             return resolve( resArray );
 
         });
-    }
+    });
 }
 
 
