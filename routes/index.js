@@ -5,6 +5,11 @@ var express = require('express');
 const multer = require('multer');
 
 const UPLOAD_DIR     = require("../process/image-functions").UPLOAD_DIR;
+
+var uploadWithMulter = multer({
+    dest:       UPLOAD_DIR
+});
+/*
 var uploadWithMulter = multer({
     dest:       UPLOAD_DIR,
     fileFilter: function(req, file, cb) {
@@ -23,7 +28,7 @@ var uploadWithMulter = multer({
             fileSize: 100000000          // in bytes. Image size max is 100MB
         }
 });
-
+*/
 
 var router = express.Router();
 
@@ -40,7 +45,7 @@ router.post('/upload-photo', uploadWithMulter.single('myphoto'), function(req, r
 
     // TODO: call cropAndResize + display on LED
 
-    return res.send(200);
+    return res.sendStatus(200);
 });
 
 
