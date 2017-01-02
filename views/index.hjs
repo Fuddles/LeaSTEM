@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{{ title }}</title>
+    <title>{{ Lea 7th grade STEM Project }}</title>
     <link rel='stylesheet' href='/css/style.css' />
   </head>
   <body>
     <h1>{{ title }}</h1>
-    <p>Lea welcomes you to {{ title }}</p>
+    <p>Lea welcomes you to her STEM project, the LED bike lights!</p>
 
 
     <form action="/upload-photo" method="post">
