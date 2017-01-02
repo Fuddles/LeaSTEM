@@ -66,3 +66,7 @@ function ledLightUp( colors ) {
     }
     return;
 }
+
+
+
+module.exports.ledLightUp = ledLightUp;

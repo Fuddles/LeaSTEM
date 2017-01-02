@@ -48,19 +48,41 @@ app.use(function(err, req, res, next) {
 // require("./lightup.js");
 
 const cropResizePromise = require('./process/image-functions').cropResizePromise;
+const getPixelsPromise  = require('./process/image-functions').getPixelsPromise;
+const ledLightUp        = require('./process/led').ledLightUp;
 
-let filenames = ['wheel.jpg', 'wheel2.jpg', 'yoda.jpg', 'feedly.png'];
+//let filenames = ['wheel.jpg', 'wheel2.jpg', 'yoda.jpg', 'feedly.png'];
+let filenames = ['feedly.png'];
 
 for (let fname of filenames) {
     cropResizePromise( fname, 300 )
     .then( img => {
         console.log( "SUCCESS in app.js > cropResizePromise for image " + fname );
+
+        getPixelsPromise( 0, fname, 300 )  // angle, resizedImageFileName, imgSize
+        .then( colors => {
+            console.log( "SUCCESS in app.js > getPixelsPromise for image " + fname );
+
+            ledLightUp( colors );     //colors
+
+        })
+        .catch( err => {
+            console.error("ERROR in app.js > getPixelsPromise. err =");
+            console.error( err );
+        });
+
+
+
     })
     .catch( err => {
         console.error("ERROR in app.js > cropResizePromise. err =");
         console.error( err );
     });
 }
+
+
+
+
 
 // ---------------------------------
 
