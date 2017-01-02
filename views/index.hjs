@@ -26,10 +26,6 @@
         <a href="/previous-photos.html" style="margin-left: 50px;">View Previous Photos</a>
     </div>
 
-    <!-- FIXME -->
-    <img src="/resized-images/yoda.jpg" />
-
-
     <!-- script to show success message  -->
     <script type="text/javascript">
         if (window.location.href.indexOf('?upload=ok') > 0) {

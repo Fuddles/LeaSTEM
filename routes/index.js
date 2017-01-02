@@ -26,8 +26,8 @@ router.get('/list-photos', function(req, res, next) {
             return res.sendStatus( 500 );
         }
 
-        console.log( "\nInfo in list-photos, readdir files: ");
-        console.log( files );
+        //console.log( "\nInfo in list-photos, readdir files: ");
+        //console.log( files );
 
         Promise.all( files.map( fname => {
             return new Promise( function(resolve, reject) {
@@ -35,8 +35,8 @@ router.get('/list-photos', function(req, res, next) {
                     if (err) {
                         return reject(err);
                     }
-                    console.log( "\nInfo in list-photos, stat'ing file " + fname );
-                    console.log( stats );
+                    //console.log( "\nInfo in list-photos, stat'ing file " + fname );
+                    //console.log( stats );
 
                     return resolve({
                         name: fname,
@@ -47,8 +47,8 @@ router.get('/list-photos', function(req, res, next) {
         }))
         .then( fnametimes => {
 
-            console.log( "\nInfo in list-photos, after stat'ing files: ");
-            console.log( fnametimes );
+            //console.log( "\nInfo in list-photos, after stat'ing files: ");
+            //console.log( fnametimes );
 
             let resTimeSortedFilenames =
                 fnametimes.sort( function(a, b) { return b.time - a.time; } )     // Descending order
