@@ -47,7 +47,6 @@ app.use(function(err, req, res, next) {
 // ----------- TESTS LEA -----------
 // require("./lightup.js");
 
-const rpio = require('rpio');
 const cropResizePromise = require('./process/image-functions').cropResizePromise;
 const getPixelsPromise  = require('./process/image-functions').getPixelsPromise;
 const ledLightUp        = require('./process/led').ledLightUp;
@@ -63,20 +62,22 @@ for (let fname of filenames) {
         for ( let ang = 0; ang < 10*360; ang++ ) {
 
             let angle = ang % 360;
-            getPixelsPromise( angle, fname, 300 )  // angle, resizedImageFileName, imgSize
-            .then( colors => {
-                console.log( "SUCCESS in app.js > getPixelsPromise for image " + fname + " with angle=" + angle );
-                // console.log( colors );
+            setTimeOut( function() {
+                getPixelsPromise( angle, fname, 300 )  // angle, resizedImageFileName, imgSize
+                .then( colors => {
+                    console.log( "SUCCESS in app.js > getPixelsPromise for image " + fname + " with angle=" + angle );
+                    // console.log( colors );
 
-                ledLightUp( colors );     //colors
+                    ledLightUp( colors );     //colors
 
-            })
-            .catch( err => {
-                console.error("ERROR in app.js > getPixelsPromise. err =");
-                console.error( err );
-            });
+                })
+                .catch( err => {
+                    console.error("ERROR in app.js > getPixelsPromise. err =");
+                    console.error( err );
+                });
 
-            rpio.msleep(50);         // Sleep for n milliseconds
+            }, ang * 100 );
+
         }
     })
     .catch( err => {
