@@ -59,21 +59,24 @@ for (let fname of filenames) {
     .then( img => {
         console.log( "SUCCESS in app.js > cropResizePromise for image " + fname );
 
-        getPixelsPromise( 90, fname, 300 )  // angle, resizedImageFileName, imgSize
-        .then( colors => {
-            console.log( "SUCCESS in app.js > getPixelsPromise for image " + fname );
-            console.log( colors );
+        for ( let ang = 0; ang < 20*360; ang++ ) {
 
-            ledLightUp( colors );     //colors
+            let angle = ang % 360;
+            getPixelsPromise( angle, fname, 300 )  // angle, resizedImageFileName, imgSize
+            .then( colors => {
+                console.log( "SUCCESS in app.js > getPixelsPromise for image " + fname + " with angle=" + angle );
+                console.log( colors );
 
-        })
-        .catch( err => {
-            console.error("ERROR in app.js > getPixelsPromise. err =");
-            console.error( err );
-        });
+                ledLightUp( colors );     //colors
 
+            })
+            .catch( err => {
+                console.error("ERROR in app.js > getPixelsPromise. err =");
+                console.error( err );
+            });
 
-
+            rpio.msleep(50);         // Sleep for n milliseconds
+        }
     })
     .catch( err => {
         console.error("ERROR in app.js > cropResizePromise. err =");
