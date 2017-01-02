@@ -59,7 +59,7 @@ for (let fname of filenames) {
     .then( img => {
         console.log( "SUCCESS in app.js > cropResizePromise for image " + fname );
 
-        for ( let ang = 0; ang < 10*360; ang++ ) {
+        for ( let ang = 0; ang < 10*360; ang+=10 ) {
 
             let angle = ang % 360;
             setTimeout( function() {
@@ -78,7 +78,7 @@ for (let fname of filenames) {
                     console.error( err );
                 });
 
-            }, ang * 100 );
+            }, ang * 1000 );
 
         }
     })
