@@ -54,7 +54,7 @@ router.get('/list-photos', function(req, res, next) {
                 fnametimes.sort( function(a, b) { return b.time - a.time; } )     // Descending order
                           .map( fnt => { return fnt.name; } );
 
-            return res.json( resFnames );
+            return res.json( resTimeSortedFilenames );
         })
         .catch( err => {
             console.error("ERROR in list-photos > sorting. err =");
