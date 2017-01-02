@@ -12,3 +12,7 @@ a {
 input[type=submit] {
     background-color: #7CFC00;
 }
+
+input[type=file] {
+    background-color: #87CEFA;
+}
