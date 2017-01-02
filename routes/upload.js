@@ -2,7 +2,9 @@
 
 const multer = require('multer');
 
-const UPLOAD_DIR = require("../process/image-functions").UPLOAD_DIR;
+const UPLOAD_DIR         = require("../process/image-functions").UPLOAD_DIR;
+const RESIZED_IMAGE_SIZE = require("../process/image-functions").RESIZED_IMAGE_SIZE;
+const cropResizePromise  = require("../process/image-functions").cropResizePromise;
 
 
 var multerStorage = multer.diskStorage({
@@ -44,18 +46,31 @@ var uploadWithMulter = multer({
 
 // ---------------- Upload of a new photo --------------------------------------
 
-const cropResizePromise = require("../process/image-functions").cropResizePromise;
-
 // See multer doc at https://www.npmjs.com/package/multer
 function uploadPhotoPost(req, res, next) {
 
-    console.log(" API /upload-photo called, file saved?? ");
-    //console.log(" API /upload-photo called, file [" + req.file.filename + "] saved! ");
-
-    // TODO: call cropAndResize + display on LED
     if (req.file) {
+        let fname = req.file.filename;
+        console.log(" API /upload-photo called, file [" + fname + "] saved! ");
+
+        // TODO: call cropAndResize + display on LED
+        cropResizePromise( fname, RESIZED_IMAGE_SIZE )
+        .then( img => {
+            console.log( "SUCCESS in upload.js > cropResizePromise for image " + fname );
+            global.currentImageFileName = fname;
+
+            // TODO: trigger the LED display!!
+
+        })
+        .catch( err => {
+            console.error("ERROR in upload.js > cropResizePromise. err =");
+            console.error( err );
+        });
+
         return res.redirect('/?upload=ok');
     }
+
+    console.error("ERROR in API /upload-photo, file saving FAILED");
     return res.sendStatus(500);
 }
 

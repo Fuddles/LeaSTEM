@@ -15,6 +15,9 @@ const NUM_LEDS    = process.env.NUM_LEDS    || 72;
 // Distance between the LED strip and the center of the wheel -> ratio dist / radius
 const DELTA       = process.env.DELTA       || 0.05;
 
+// Size of the resized image
+const RESIZED_IMAGE_SIZE = process.env.RESIZED_IMAGE_SIZE   || 300;
+
 
 // Takes resized image and angle, and returns an array of rgb pixels
 // Angle in degrees [0..360[
@@ -141,3 +144,4 @@ module.exports.cropResizePromise = cropResizePromise;
 module.exports.getPixelsPromise  = getPixelsPromise;
 module.exports.NUM_LEDS   = NUM_LEDS;
 module.exports.UPLOAD_DIR = UPLOAD_DIR;
+module.exports.RESIZED_IMAGE_SIZE = RESIZED_IMAGE_SIZE;
