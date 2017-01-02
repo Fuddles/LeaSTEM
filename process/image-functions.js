@@ -67,9 +67,9 @@ function getPixelsPromise( angle, resizedImageFileName, imgSize ) {
 function calcLEDPosition( cosAngle, sinAngle, idx ) {
     let d = 2 * idx / NUM_LEDS - 1;
     return {
-        x: 1 + d * sinAngle - DELTA * cosAngle;
-        y: 1 - d * cosAngle - DELTA * sinAngle;
-    }
+        x: 1 + d * sinAngle - DELTA * cosAngle,
+        y: 1 - d * cosAngle - DELTA * sinAngle
+    };
 }
 
 
