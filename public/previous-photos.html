@@ -19,6 +19,8 @@
   <script type="text/javascript">
 
     function touchPhoto(escPhotoName) {
+        console.log("touchPhoto for photo named:");
+        console.log(escPhotoName);
         var photoname = JSON.parse(escPhotoName);
         fetch( "/touch-photo?name=" + encodeURIComponent(photoname) )
         .then( function(response) {
