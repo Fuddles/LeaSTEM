@@ -68,7 +68,7 @@ for (let fname of filenames) {
                 getPixelsPromise( angle, fname, 300 )  // angle, resizedImageFileName, imgSize
                 .then( colors => {
                     console.log( "SUCCESS in app.js > getPixelsPromise for image " + fname + " with angle=" + angle );
-                    // console.log( colors );
+                    console.log( colors );
 
                     ledLightUp( colors );     //colors
 
@@ -78,7 +78,7 @@ for (let fname of filenames) {
                     console.error( err );
                 });
 
-            }, ang * 1000 );
+            }, ang * 500 );     // steps 10 deg * 500 ms = every 5 secs
 
         }
     })
