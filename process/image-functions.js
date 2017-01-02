@@ -144,4 +144,5 @@ module.exports.cropResizePromise = cropResizePromise;
 module.exports.getPixelsPromise  = getPixelsPromise;
 module.exports.NUM_LEDS   = NUM_LEDS;
 module.exports.UPLOAD_DIR = UPLOAD_DIR;
+module.exports.RESIZED_DIR = RESIZED_DIR;
 module.exports.RESIZED_IMAGE_SIZE = RESIZED_IMAGE_SIZE;
