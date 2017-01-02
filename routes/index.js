@@ -65,5 +65,29 @@ router.get('/list-photos', function(req, res, next) {
 });
 
 
+// ---------- Touch photo to make it latest (last modified) --------------------
+
+const touch = require("touch");
+
+router.get('/touch-photo', function(req, res, next) {
+    let fname = req.query.name;
+    if (!fname) {
+        console.log("\nWarning in /touch-photo: query param name NULL");
+        console.log(req.query);
+        return;
+    }
+
+    // Just perform a unix 'touch' on the file
+    touch( RESIZED_DIR + fname, function(err) {
+        if (!err) {
+            return res.sendStatus( 200 );
+        }
+        console.error("\nERROR in /touch-photo > touch: err=");
+        console.error(err);
+        return res.sendStatus( 500 );
+    });
+});
+
+
 
 module.exports = router;
