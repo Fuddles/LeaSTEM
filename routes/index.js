@@ -1,25 +1,14 @@
 // Lea, Jan 2017
 
 var express = require('express');
-var router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Lea 7th grade 2017 STEM Project ' });
-});
+const multer = require('multer');
 
-
-
-// ---------------- Upload of a new photo --------------------------------------
-
-const multer  = require('multer');
-
-const UPLOAD_DIR        = require("../process/image-functions").UPLOAD_DIR;
-const cropResizePromise = require("../process/image-functions").cropResizePromise;
-
+const UPLOAD_DIR     = require("../process/image-functions").UPLOAD_DIR;
 var uploadWithMulter = multer({
     dest:       UPLOAD_DIR,
     fileFilter: function(req, file, cb) {
+            console.log( "In fileFilter, with file.originalname = "+ file.originalname +", and file.mimeType = " + file.mimeType );
             // Check that it is an image:
             if ( file.mimeType == 'image/png' || file.mimeType == 'image/gif' || file.mimeType == 'image/jpeg' ) {
                 // To accept the file pass `true`, like so:
@@ -35,6 +24,14 @@ var uploadWithMulter = multer({
         }
 });
 
+
+var router = express.Router();
+
+
+// ---------------- Upload of a new photo --------------------------------------
+
+const cropResizePromise = require("../process/image-functions").cropResizePromise;
+
 // See multer doc at https://www.npmjs.com/package/multer
 router.post('/upload-photo', uploadWithMulter.single('myImage'), function(req, res, next) {
 
@@ -46,6 +43,14 @@ router.post('/upload-photo', uploadWithMulter.single('myImage'), function(req, r
 });
 
 
+
+
+// ---------------- Home page --------------------------------------
+
+/* GET home page. */
+router.get('/', function(req, res, next) {
+  res.render('index', { title: 'Lea 7th grade 2017 STEM Project ' });
+});
 
 
 module.exports = router;
