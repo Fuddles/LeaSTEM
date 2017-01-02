@@ -7,7 +7,7 @@ const rpio = require('rpio');
 // Number of LEDs on the strip
 const NUM_LEDS    = require("./image-functions").NUM_LEDS;
 // Padding of zeros for APA102C
-const START_PAD_BYTES = 4;
+const START_PAD_BYTES = 8;
 const END_PAD_BYTES   = 8;   // 4 + ceil(72 / 16)
 // Brightness
 const BRIGHTNESS      = 7;
