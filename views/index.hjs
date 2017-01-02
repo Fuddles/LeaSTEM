@@ -21,6 +21,12 @@
 
     <div id="uploadDone" style="display:none; color:green; margin:30px 0px 0px 30px;">Success! Upload done!</div>
 
+    <div style="margin: 50px 0px 0px 30px;">
+        <a href="/simulate.html"> Simulate </a>
+        <a href="/previous-photos.html" style="margin-left: 50px;"> View Previous Photos </a>
+    </div>
+
+    <!-- script to show success message  -->
     <script type="text/javascript">
         if (window.location.href.indexOf('?upload=ok') > 0) {
             document.getElementById('uploadDone').style.display = "block";

@@ -53,7 +53,7 @@ function uploadPhotoPost(req, res, next) {
         let fname = req.file.filename;
         console.log(" API /upload-photo called, file [" + fname + "] saved! ");
 
-        // TODO: call cropAndResize + display on LED
+        // Call cropResize + display on LED
         cropResizePromise( fname, RESIZED_IMAGE_SIZE )
         .then( img => {
             console.log( "SUCCESS in upload.js > cropResizePromise for image " + fname );
