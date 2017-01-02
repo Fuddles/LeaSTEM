@@ -9,7 +9,7 @@
     <p>Lea welcomes you to her STEM project, the LED bike lights!</p>
 
 
-    <form action="/upload-photo" method="post">
+    <form action="/upload-photo" method="post" enctype="multipart/form-data">
 
         Upload your photo here:
         <input type="file" name="myphoto" accept="image/png,image/gif,image/jpeg" />
