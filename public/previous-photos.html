@@ -6,39 +6,61 @@
   <script src="js/jquery-3.1.1.min"></script>
 </head>
 <body>
+  <div style="margin: 0px 0px 20px 0px;">
+      <a href="/">&lt; Back to homepage</a>
+  </div>
+
   <h1>View Previous Photos</h1>
 
-
   <div id="image-placeholder">
-
   </div>
 
 
   <script type="text/javascript">
+
+    function touchPhoto(escPhotoName) {
+        var photoname = JSON.parse(escPhotoName);
+        fetch( "/touch-photo?name=" + encodeURIComponent(photoname) )
+        .then( function(response) {
+            if ( response.status >= 200 && response.status < 300 ) {  // We're good!
+                alert("New photo displayed is " + photoname);
+                return;
+            }
+        }
+    }
+
+
     $(document).ready( function() {
         fetch( "/list-photos")
         .then( function(response) {
            // Check HTTP status
-           if ( response.status >= 200 && response.status < 300 ) {            // We're good!
-               // Try to parse the json
+           if ( response.status >= 200 && response.status < 300 ) {  // We're good!
                try {
-                   let jsonRes = response.json();
-                   resolve( jsonRes );     // Empty or null values are allowed
+                   let jsonRes = response.json();                   // Try to parse the json
+
+                   // Remove all previously displayed photos
+                   $("#image-placeholder").empty();
+                   for (photoname of jsonRes) {
+                       $("#image-placeholder").append(
+                           '<img src="/resized-images/'+ encodeURIComponent(photoname) +'" '
+                           + 'style="width:150px; height:150px;" onclick="touchPhoto('+ JSON.stringify(photoname) +');" /> '
+                       );
+                   }
+
                }
                catch (exc) {
-                   reject( { errorMsg: "Exception parsing JSON", exception: exc, response: response } );
+                   console.log('Fetch error parsing JSON ');
+                   console.log(response);
                }
                return;
            }
-
-           // ERROR TODO
-
+           // Error
+           console.log('Fetch error response.status= ' + response.status);
+           console.log(response);
         })
         .catch( function(error) {
-            // Check common errors that can be handled here
             console.log('Fetch error (bad arguments, timeout...): ');
             console.log(error);
-            reject( { errorMsg: "Fetch error (bad arguments, timeout...)", exception: error } );
         });
     });
   </script>
