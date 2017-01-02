@@ -34,6 +34,9 @@ router.get('/list-photos', function(req, res, next) {
                 if (err) {
                     return Promise.reject(err);
                 }
+                console.log( "\nInfo in list-photos, stat'ing file " + fname );
+                console.log( stats );
+
                 return Promise.resolve({
                     name: fname,
                     time: stats.mtime.getTime()
