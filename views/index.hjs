@@ -7,5 +7,17 @@
   <body>
     <h1>{{ title }}</h1>
     <p>Lea welcomes you to {{ title }}</p>
+
+
+    <form action="/upload-photo" method="post">
+
+        Upload your photo here:
+        <input type="file" name="myImage" accept="image/png,image/gif,image/jpeg" />
+
+        <br/>
+        <input type="submit" value="Upload">
+
+    </form>
+
   </body>
 </html>

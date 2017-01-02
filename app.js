@@ -54,6 +54,7 @@ const ledLightUp        = require('./process/led').ledLightUp;
 //let filenames = ['wheel.jpg', 'wheel2.jpg', 'yoda.jpg', 'feedly.png'];
 let filenames = ['feedly.png'];
 
+/* FIXME
 for (let fname of filenames) {
     cropResizePromise( fname, 300 )
     .then( img => {
@@ -87,6 +88,7 @@ for (let fname of filenames) {
         console.error( err );
     });
 }
+*/
 
 
 
