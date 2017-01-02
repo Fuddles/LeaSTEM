@@ -15,4 +15,5 @@ input[type=submit] {
 
 input[type=file] {
     background-color: #87CEFA;
+    color: black;
 }
