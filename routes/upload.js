@@ -42,7 +42,7 @@ function uploadPhotoPost(req, res, next) {
     // TODO: call cropAndResize + display on LED
 
     return res.sendStatus(200);
-});
+}
 
 
 module.exports.uploadWithMulter = uploadWithMulter;
