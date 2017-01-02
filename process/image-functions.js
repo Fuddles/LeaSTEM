@@ -33,9 +33,9 @@ function getPixelsPromise( angle, resizedImageFileName, imgSize ) {
         // Returns An ndarray of pixels in raster order having shape equal to [width, height, channels].
         gp( RESIZED_DIR + resizedImageFileName, function(err, pixels) {
 
-            console.error( pixels );
+            // console.error( pixels );
 
-            if (err || !pixels) {
+            if (err || !pixels || !pixels.data) {
                 console.error("Error in getPixels after gp(). Err is:");
                 console.error(err);
                 return reject(err);
@@ -56,7 +56,9 @@ function getPixelsPromise( angle, resizedImageFileName, imgSize ) {
                 if ( y >= imgSize ) {
                     y = imgSize - 1;
                 }
-                resArray[i] = [ pixels[x][y][0], pixels[x][y][1], pixels[x][y][2], pixels[x][y][3] ];
+                let pix = pixels.data;
+                let pos = 4 * (x + y * imgSize);
+                resArray[i] = [ pix[pos], pix[pos+1], pix[pos+2], pix[pos+3] ];
             }
             return resolve( resArray );
 
