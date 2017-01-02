@@ -40,8 +40,10 @@ function uploadPhotoPost(req, res, next) {
     //console.log(" API /upload-photo called, file [" + req.file.filename + "] saved! ");
 
     // TODO: call cropAndResize + display on LED
-
-    return res.sendStatus(200);
+    if (req.file) {
+        return res.sendStatus(200);
+    }
+    return res.sendStatus(500);    
 }
 
 
