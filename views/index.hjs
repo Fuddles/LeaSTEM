@@ -14,7 +14,7 @@
         Upload your photo here:<br/>
         <input type="file" name="myphoto" accept="image/png,image/gif,image/jpeg"
                 onchange="document.getElementById('uploadDone').style.display = 'none';" />
-        nbsp;
+        &nbsp;
         <input type="submit" value="Upload">
 
     </form>
