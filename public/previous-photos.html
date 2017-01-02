@@ -3,11 +3,49 @@
 <head>
   <title>View Previous Photos</title>
   <link rel='stylesheet' href='/css/style.css' />
+  <script src="js/jquery-3.1.1.min"></script>
 </head>
 <body>
   <h1>View Previous Photos</h1>
 
 
+  <div id="image-placeholder">
+
+  </div>
+
+
+  <script type="text/javascript">
+    $(document).ready( function() {
+        fetch( "/list-photos")
+        .then( function(response) {
+           // Check HTTP status
+           if ( response.status >= 200 && response.status < 300 ) {            // We're good!
+               // Try to parse the json
+               try {
+                   let jsonRes = response.json();
+                   resolve( jsonRes );     // Empty or null values are allowed
+               }
+               catch (exc) {
+                   reject( { errorMsg: "Exception parsing JSON", exception: exc, response: response } );
+               }
+               return;
+           }
+
+           // ERROR TODO
+
+        })
+        .catch( function(error) {
+            // Check common errors that can be handled here
+            console.log('Fetch error (bad arguments, timeout...): ');
+            console.log(error);
+            reject( { errorMsg: "Fetch error (bad arguments, timeout...)", exception: error } );
+        });
+    });
+  </script>
+
+
+  <!-- FIXME -->
+  <img src="/resized-images/yoda.jpg" />
 
 </body>
 </html>
