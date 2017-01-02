@@ -59,7 +59,7 @@ for (let fname of filenames) {
     .then( img => {
         console.log( "SUCCESS in app.js > cropResizePromise for image " + fname );
 
-        getPixelsPromise( 0, fname, 300 )  // angle, resizedImageFileName, imgSize
+        getPixelsPromise( 45, fname, 300 )  // angle, resizedImageFileName, imgSize
         .then( colors => {
             console.log( "SUCCESS in app.js > getPixelsPromise for image " + fname );
             console.log( colors );
