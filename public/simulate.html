@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Lea STEM Project, Jan 2017 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Simulate LED strip</title>
+    <link rel='stylesheet' href='/css/style.css' />
+    <script src="js/jquery-3.1.1.min.js"></script>
+</head>
+<body>
+    <div style="margin: 0px 0px 20px 0px;">
+      <a href="/">&lt; Back to homepage</a>
+    </div>
+
+    <h1>Simulate LED strip</h1>
+
+    <p>Touch the canvas to select the LED strip angle</p>
+
+    <canvas id="ledCanvas" width="300" height="300">
+        Simulates the LED strip
+    </canvas>
+
+
+
+
+    <script type="text/javascript">
+
+        // Canvas 2d context
+        var canvas, ctx2d = null, siz = 0, half = 0;
+
+        // When canvas touched / onclick
+        function touchCanvas( evt ) {
+
+            // Get the touch point coordinates
+            var tx = evt.pageX - canvas.offsetLeft;
+            var ty = evt.pageY - canvas.offsetTop;
+
+            // Clear the canvas
+            ctx2d.clearRect(0, 0, siz, siz);
+
+            // Compute the angle
+            var dx = tx - half;
+            var dy = ty - half;
+
+            // Draw a line with an arrow
+
+
+
+            // Draw dots with colors
+
+            return;
+        }
+
+          // FIXME
+          /*
+          console.log("touchPhoto for photo named:");
+          console.log(photoname);
+          $.ajax( "/touch-photo?name=" + encodeURIComponent(photoname) )
+          .done( function(data, textStatus) {
+              alert("New photo displayed is " + photoname);
+              return;
+          });
+          */
+
+
+      $(document).ready( function() {
+
+          canvas = document.getElementById("ledCanvas");
+          ctx2d  = canvas.getContext("2d");
+
+          siz    = canvas.width;
+          if (canvas.width != canvas.height) {
+              alert("canvas expected to be square!!")
+              siz = Math.min( canvas.width, canvas.height );
+          }
+          half = Math.floor( siz / 2 );
+
+          // Add event listener for click/touch events.
+          canvas.addEventListener('click', touchCanvas, false);                 // useCapture
+      });
+
+
+
+          /*
+          $.ajax( "/list-photos", { dataType: 'json' } )
+          .done( function(jsonRes, textStatus) {
+             // Check HTTP status
+             if ( jsonRes ) {
+                 console.log(jsonRes);
+
+                 // Remove all previously displayed photos
+                 $("#image-placeholder").empty();
+                 for (photoname of jsonRes) {
+                     $("#image-placeholder").append(
+                         '<img src="/resized-images/'+ encodeURIComponent(photoname) +'" '
+                         + 'style="width:150px; height:150px;" '
+                         + "onclick='touchPhoto("+ JSON.stringify(photoname) +");' "      // JSON.stringify adds double-quotes
+                         + ' /> '
+                     );
+                 }
+                 return;
+             }
+             // Error
+             console.log('Fetch error textStatus= ' + textStatus);
+          })
+          .fail( function(error) {
+              console.log('Fetch error (bad arguments, timeout...): ');
+              console.log(error);
+          });
+          */
+
+    </script>
+
+</body>
+</html>
