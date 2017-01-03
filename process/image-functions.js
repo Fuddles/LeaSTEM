@@ -174,6 +174,9 @@ function cropResizePromise( filename, finalsize = RESIZED_IMAGE_SIZE) {
             }
             else if (w > h) {
                 img = img.crop( h, h, (w-h)/2, 0 );
+                // FIXME: Test !!!!
+                img.write( UPLOAD_DIR + "temp-cropped-" + filename, (err)=>{} );
+                console.log("\nInfo in cropResizePromise. Image cropped [temp-cropped-%s] written to disk\n", filename);
             }
             // if w == h nothing to do
 
