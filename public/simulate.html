@@ -35,18 +35,38 @@
             var tx = evt.pageX - canvas.offsetLeft;
             var ty = evt.pageY - canvas.offsetTop;
 
-            // Clear the canvas
+            // --- Clear the canvas
             ctx2d.clearRect(0, 0, siz, siz);
 
-            // Compute the angle
+            // --- Compute the angle between vectors (0,-1) and (dx,dy): vertical up is negative on canvas Y-axis
             var dx = tx - half;
             var dy = ty - half;
+            var angleInRad = Math.atan2(dx, -dy);                               // Math.atan2(y, x) y first!
+            var angle      = (180 / Math.PI * angleInRad + 360) % 360;          // From ]-PI..PI] to [0..360[
 
-            // Draw a line with an arrow
+            // --- Draw a line with an arrow
+            ctx2d.fillStyle   = "red";
+            ctx2d.strokeStyle = "red";
+            // Arrow line
+            ctx2d.beginPath();
+            ctx2d.moveTo( half, half );
+            ctx2d.lineTo( tx, ty );
+            ctx2d.lineWidth = 3;
+            ctx2d.stroke();
+            // Arrow triangle
+            ctx2d.lineWidth = 1;
+            ctx2d.beginPath();
+            ctx2d.moveTo( tx, ty );
+            ctx2d.rotate( angleInRad );                     // Rotate the transformation matrix
+            ctx2d.lineTo( tx-5, ty );
+            ctx2d.lineTo( tx,   ty+10 );
+            ctx2d.lineTo( tx+5, ty );
+            ctx2d.closePath();
+            ctx2d.fill();
+            // Reset current transformation matrix to the identity matrix
+            ctx2d.setTransform(1, 0, 0, 1, 0, 0);
 
-
-
-            // Draw dots with colors
+            // --- Draw dots with colors
 
             return;
         }
