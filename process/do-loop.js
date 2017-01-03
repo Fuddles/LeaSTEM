@@ -1,8 +1,10 @@
 // Lea, Jan 2017
 
+const getResizedImageSortedListPromise = require("./image-functions").getResizedImageSortedListPromise;
 
 
 // ----------------- Set currently displayed photos ----------------------------
+
 function setCurrentPhotoPromise( resizedPhotoFilename ) {
     return new Promise( function (resolve, reject) {
 
