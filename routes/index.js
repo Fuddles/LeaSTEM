@@ -21,7 +21,7 @@ router.get('/list-photos', function(req, res, next) {
         return res.json( resTimeSortedFilenames );
     })
     .catch( err => {
-        console.error("ERROR in list-photos: err =");
+        console.error("ERROR in /list-photos: err =");
         console.error( err );
         return res.sendStatus( 500 );
     });
@@ -62,6 +62,42 @@ router.get('/touch-photo', function(req, res, next) {
             console.error( err );
             return res.sendStatus( 500 );
         });
+    });
+});
+
+
+
+// -------------------- Dots coordinates and colors ----------------------------
+
+
+const getPixelsPromise = require("../process/image-functions").getPixelsPromise;
+const getLEDPositions  = require("../process/image-functions").getLEDPositions;
+const getCurrentPhoto  = require("../process/do-loop").getCurrentPhoto;
+
+
+router.get('/dot-coords', function(req, res, next) {
+
+    let angle = req.query.angle || 0;               // ?angle=  in degrees
+    return res.json( getLEDPositions( angle ) );
+});
+
+
+router.get('/dot-colors', function(req, res, next) {
+
+    let angle = req.query.angle || 0;               // ?angle=  in degrees
+    let resizedImageFileName = getCurrentPhoto();
+    if (!resizedImageFileName) {
+        return res.status(404).send('No photos found: upload a photo first!');
+    }
+
+    getPixelsPromise( angle, resizedImageFileName )
+    .then( colors => {
+        return res.json( colors );
+    })
+    .catch( err => {
+        console.error("ERROR in /dot-colors: err =");
+        console.error( err );
+        return res.sendStatus( 500 );
     });
 });
 

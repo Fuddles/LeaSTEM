@@ -21,7 +21,7 @@ const RESIZED_IMAGE_SIZE = process.env.RESIZED_IMAGE_SIZE   || 300;
 
 // Takes resized image and angle, and returns an array of rgb pixels
 // Angle in degrees [0..360[
-function getPixelsPromise( angle, resizedImageFileName, imgSize ) {
+function getPixelsPromise( angle, resizedImageFileName, imgSize = RESIZED_IMAGE_SIZE ) {
 
     return new Promise( function(resolve, reject) {
 
@@ -50,7 +50,7 @@ function getPixelsPromise( angle, resizedImageFileName, imgSize ) {
             let cosAngle   = Math.cos( angleInRad );
             let sinAngle   = Math.sin( angleInRad );
             for (let i = 0; i < NUM_LEDS; i++) {
-                let pt = calcLEDPosition( cosAngle, sinAngle, i );      // Return pt.x and pt.y to be multiplied by imgSize/2
+                let pt = _calcLEDPosition( cosAngle, sinAngle, i );      // Return pt.x and pt.y to be multiplied by imgSize/2
                 let x  = Math.round( pt.x * imgSize / 2 );
                 if ( x >= imgSize ) {
                     x = imgSize - 1;
@@ -70,8 +70,8 @@ function getPixelsPromise( angle, resizedImageFileName, imgSize ) {
 }
 
 
-//
-function calcLEDPosition( cosAngle, sinAngle, idx ) {
+// Internal
+function _calcLEDPosition( cosAngle, sinAngle, idx ) {
     let d = 2 * idx / NUM_LEDS - 1;
     return {
         x: 1 + d * sinAngle - DELTA * cosAngle,
@@ -79,11 +79,36 @@ function calcLEDPosition( cosAngle, sinAngle, idx ) {
     };
 }
 
+// Exportable version of computing position function. angle in degrees.
+// Returns an array of {x:, y:}
+function getLEDPositions( angle ) {
+
+    let resArray   = new Array( NUM_LEDS );
+    let angleInRad = Math.PI / 180.0 * angle;
+    let cosAngle   = Math.cos( angleInRad );
+    let sinAngle   = Math.sin( angleInRad );
+    let halfSize   = RESIZED_IMAGE_SIZE / 2;
+
+    for (let i = 0; i < NUM_LEDS; i++) {
+        let pt = _calcLEDPosition( cosAngle, sinAngle, i );      // Return pt.x and pt.y to be multiplied by imgSize/2
+        let x  = Math.round( pt.x * halfSize );
+        if ( x >= RESIZED_IMAGE_SIZE ) {
+            x = RESIZED_IMAGE_SIZE - 1;
+        }
+        let y  = Math.round( pt.y * halfSize );
+        if ( y >= RESIZED_IMAGE_SIZE ) {
+            y = RESIZED_IMAGE_SIZE - 1;
+        }
+        resArray[i] = { x: x, y: y };
+    }
+    return { coords: resArray, delta: DELTA * halfSize };
+}
+
 
 
 
 // Crop and resize image in UPLOAD_DIR
-function cropResizePromise( filename, finalsize ) {
+function cropResizePromise( filename, finalsize = RESIZED_IMAGE_SIZE) {
 
     return new Promise( function(resolve, reject) {
 
@@ -223,6 +248,7 @@ function getResizedImageSortedListPromise() {
 module.exports.cropResizePromise = cropResizePromise;
 module.exports.getPixelsPromise  = getPixelsPromise;
 module.exports.getResizedImageSortedListPromise  = getResizedImageSortedListPromise;
+module.exports.getLEDPositions   = getLEDPositions;
 module.exports.NUM_LEDS   = NUM_LEDS;
 module.exports.UPLOAD_DIR = UPLOAD_DIR;
 module.exports.RESIZED_DIR = RESIZED_DIR;
