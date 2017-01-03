@@ -132,8 +132,8 @@ function cropResizePromise( filename, finalsize = RESIZED_IMAGE_SIZE) {
             throw new Error ("Bad finalsize in cropResize");
         }
 
-        // Retrieve the image and correct its orientation right away
-        var img = gm( UPLOAD_DIR + filename ).autoOrient();
+        // Retrieve the image
+        var img = gm( UPLOAD_DIR + filename );
 
         /* / --- Correct Orientation first!
         img.orientation( function(err, value) {
@@ -177,8 +177,8 @@ function cropResizePromise( filename, finalsize = RESIZED_IMAGE_SIZE) {
             }
             // if w == h nothing to do
 
-            // --- Resize
-            img = img.resize(finalsize, finalsize).noProfile();     // noProfile() removes EXIF info, to solve orientation pb
+            // --- Resize, then correct its orientation and remove EXIF info
+            img = img.resize(finalsize, finalsize).autoOrient().noProfile();     // noProfile() removes EXIF info, to solve orientation pb
 
             // Save image
             img.write(RESIZED_DIR + filename, function(err) {
