@@ -12,10 +12,10 @@ a {
 
 input[type=submit] {
     background-color: #7CFC00;
+    font-size: 16pt;
 }
 
 input[type=file] {
     background-color: #87CEFA;
     color: black;
-    font-size: 16pt;
 }
