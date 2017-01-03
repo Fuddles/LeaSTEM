@@ -45,8 +45,7 @@ function getPixelsPromise( angle, resizedImageFileName, imgSize = RESIZED_IMAGE_
 
             // Check dimensions
             let numChannels = pixels.shape[2];         // Should be 4
-            if (  ( numChannels != 3 && numChannels != 4 )
-               || pixels.shape[0] != imgSize || pixels.shape[1] != imgSize ) {
+            if (  (numChannels != 3 && numChannels != 4) || pixels.shape[0] != imgSize || pixels.shape[1] != imgSize ) {
                 console.error("\n--------------------\n");
                 console.error("WRONG DIMENSIONS in getPixels > gp(), for file=[%s]. Look at shape array: \n", resizedImageFileName);
                 console.error( pixels );
@@ -168,6 +167,7 @@ function cropResizePromise( filename, finalsize = RESIZED_IMAGE_SIZE) {
             // value.width and value.height
             let w = value.width;
             let h = value.height;
+            console.log("\nInfo in cropResizePromise. Image [%s] size is W=%d, H=%d\n", filename, w, h);
 
             if (h > w) {
                 img = img.crop( w, w, 0, (h-w)/2 );
