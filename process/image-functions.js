@@ -117,7 +117,7 @@ function cropResizePromise( filename, finalsize ) {
             */
 
             // noProfile() removes EXIF info, to solve orientation pb
-            img.autoOrient().noProfile();
+            img = img.autoOrient().noProfile();
 
             img.size( function(err, value) {
                 if (err || !value) {
