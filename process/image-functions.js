@@ -176,12 +176,18 @@ function cropResizePromise( filename, finalsize = RESIZED_IMAGE_SIZE) {
                 img = img.crop( h, h, (w-h)/2, 0 );
                 // FIXME: Test !!!!
                 img.write( UPLOAD_DIR + "temp-cropped-" + filename, (err)=>{} );
-                console.log("\nInfo in cropResizePromise. Image cropped [temp-cropped-%s] written to disk\n", filename);
+                console.log("Info in cropResizePromise. Image cropped [temp-cropped-%s] written to disk\n", filename);
             }
             // if w == h nothing to do
 
             // --- Resize, then correct its orientation and remove EXIF info
-            img = img.resize(finalsize, finalsize).autoOrient().noProfile();     // noProfile() removes EXIF info, to solve orientation pb
+            img = img.resize(finalsize, finalsize);
+            // FIXME: Test !!!!
+            img.write( UPLOAD_DIR + "temp-resized-" + filename, (err)=>{} );
+            console.log("Info in cropResizePromise. Image cropped [temp-resized-%s] written to disk\n", filename);
+
+            // --- Correct its orientation and remove EXIF info
+            img = img.autoOrient().noProfile();     // noProfile() removes EXIF info, to solve orientation pb
 
             // Save image
             img.write(RESIZED_DIR + filename, function(err) {
