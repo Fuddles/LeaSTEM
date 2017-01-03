@@ -155,49 +155,54 @@ function cropResizePromise( filename, finalsize = RESIZED_IMAGE_SIZE) {
             // if (!value || value == "TopLeft") --> OK
             // Rotate the image to correct, and then erase EXIF profile with .noProfile();
             img = img.rotate( "black", rotationAngleCW ).noProfile();
+            img.write( UPLOAD_DIR + "temp-rotated-" + filename, function(err) {
 
-            // Retrieve size
-            img.size( function(err, value) {
-                if (err || !value) {
-                    console.error("Error in cropResize after size(). Err is:");
-                    console.error(err);
-                    return reject(err);
-                }
+                // Create a new object to prevent messing up with orientation!
+                img = gm( UPLOAD_DIR + "temp-rotated-" + filename );
 
-                // --- Crop
-
-                // value.width and value.height
-                let w = value.width;
-                let h = value.height;
-                console.log("\nInfo in cropResizePromise. Image [%s] size is W=%d, H=%d\n", filename, w, h);
-
-                if (h > w) {
-                    img = img.crop( w, w, 0, (h-w)/2 );
-                }
-                else if (w > h) {
-                    img = img.crop( h, h, (w-h)/2, 0 );
-                    // FIXME: Test !!!!
-                    img.write( UPLOAD_DIR + "temp-cropped-" + filename, (err)=>{} );
-                    console.log("Info in cropResizePromise. Image cropped [temp-cropped-%s] written to disk\n", filename);
-                }
-                // if w == h nothing to do
-
-                // --- Resize, then correct its orientation and remove EXIF info
-                img = img.resize(finalsize, finalsize);
-                // FIXME: Test !!!!
-                //img.write( UPLOAD_DIR + "temp-resized-" + filename, (err)=>{} );
-                //console.log("Info in cropResizePromise. Image cropped [temp-resized-%s] written to disk\n", filename);
-
-                // --- Save image
-                img.write(RESIZED_DIR + filename, function(err) {
-                    if (err) {
-                        console.error("Error in cropResize after write(). Err is:");
+                // Retrieve size
+                img.size( function(err, value) {
+                    if (err || !value) {
+                        console.error("Error in cropResize after size(). Err is:");
                         console.error(err);
                         return reject(err);
                     }
 
-                    // Here image is saved!
-                    return resolve(img);
+                    // --- Crop
+
+                    // value.width and value.height
+                    let w = value.width;
+                    let h = value.height;
+                    console.log("\nInfo in cropResizePromise. Image [%s] size is W=%d, H=%d\n", filename, w, h);
+
+                    if (h > w) {
+                        img = img.crop( w, w, 0, (h-w)/2 );
+                    }
+                    else if (w > h) {
+                        img = img.crop( h, h, (w-h)/2, 0 );
+                        // FIXME: Test !!!!
+                        //img.write( UPLOAD_DIR + "temp-cropped-" + filename, (err)=>{} );
+                        //console.log("Info in cropResizePromise. Image cropped [temp-cropped-%s] written to disk\n", filename);
+                    }
+                    // if w == h nothing to do
+
+                    // --- Resize, then correct its orientation and remove EXIF info
+                    img = img.resize(finalsize, finalsize);
+                    // FIXME: Test !!!!
+                    //img.write( UPLOAD_DIR + "temp-resized-" + filename, (err)=>{} );
+                    //console.log("Info in cropResizePromise. Image cropped [temp-resized-%s] written to disk\n", filename);
+
+                    // --- Save image
+                    img.write(RESIZED_DIR + filename, function(err) {
+                        if (err) {
+                            console.error("Error in cropResize after write(). Err is:");
+                            console.error(err);
+                            return reject(err);
+                        }
+
+                        // Here image is saved!
+                        return resolve(img);
+                    });
                 });
             });
         });
