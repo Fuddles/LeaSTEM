@@ -88,10 +88,18 @@
                         isDrawing = false;
                         return;
                     }
+                    if ( dotLocations.length != dotColors.length ) {
+                        console.error( "Error in _fetchDotCoordinates and _fetchDotColors: different array length !!!" );
+                        isDrawing = false;
+                        return;
+                    }
 
                     // --- Draw dots with colors
+                    for (var i = 0; i < dotLocations.length; i++ ) {
+                        var pt    = dotLocations[i];        // {x:, y:}
+                        var color = dotColors[i];
 
-                    // TODO !!!!!
+                    }
 
                     isDrawing = false;
                     return;
@@ -105,7 +113,7 @@
         function _fetchDotCoordinates( angle, cb ) {
             console.log("_fetchDotCoordinates with angle = " + angle);
 
-            $.ajax( "/dot-coords", { dataType: 'json' } )
+            $.ajax( "/dot-coords?angle="+angle, { dataType: 'json' } )
             .done( function(jsonRes, textStatus) {
                 if ( !jsonRes ) {
                    console.error('ERROR in _fetchDotCoordinates textStatus= ' + textStatus);
@@ -128,7 +136,7 @@
         function _fetchDotColors( angle, cb ) {
             console.log("_fetchDotColors with angle = " + angle);
 
-            $.ajax( "/dot-colors", { dataType: 'json' } )
+            $.ajax( "/dot-colors?angle="+angle, { dataType: 'json' } )
             .done( function(jsonRes, textStatus) {
                 if ( !jsonRes ) {
                    console.error('ERROR in _fetchDotColors textStatus= ' + textStatus);

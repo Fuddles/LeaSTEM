@@ -77,14 +77,14 @@ const getCurrentPhoto  = require("../process/do-loop").getCurrentPhoto;
 
 router.get('/dot-coords', function(req, res, next) {
 
-    let angle = req.query.angle || 0;               // ?angle=  in degrees
+    let angle = Number.parseFloat(req.query.angle) || 0;               // ?angle=  in degrees
     return res.json( getLEDPositionsWithDelta( angle ) );
 });
 
 
 router.get('/dot-colors', function(req, res, next) {
 
-    let angle = req.query.angle || 0;               // ?angle=  in degrees
+    let angle = Number.parseFloat(req.query.angle) || 0;               // ?angle=  in degrees
     let resizedImageFileName = getCurrentPhoto();
     if (!resizedImageFileName) {
         return res.status(404).send('No photos found: upload a photo first!');
