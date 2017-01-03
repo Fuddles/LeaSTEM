@@ -103,18 +103,21 @@ function cropResizePromise( filename, finalsize ) {
                 console.error(err);
                 return reject(err);
             }
+            console.log("Info in cropResize: Orientation is " + value);
+            /*
+            let rotationAngleCW = 0;
+            if (value == "RightTop") {
+                rotationAngleCW = 90;               // turn 90 CW
+            }
+            else if (value == "BottomRight") {
+                rotationAngleCW = 180;              // turn 180 CW
+            }
+            // if (!value || value == "TopLeft") --> OK
+            // Rotate the image to correct, and then erase EXIF profile with .noProfile();
+            */
 
-            console.log("Orientation is:");
-            console.log(value);
-            // Orientation	int16u	IFD0
-            // 1 = Horizontal (normal)
-            // 2 = Mirror horizontal
-            // 3 = Rotate 180
-            // 4 = Mirror vertical
-            // 5 = Mirror horizontal and rotate 270 CW
-            // 6 = Rotate 90 CW
-            // 7 = Mirror horizontal and rotate 90 CW
-            // 8 = Rotate 270 CW
+            // noProfile() removes EXIF info, to solve orientation pb
+            img.autoOrient().noProfile();
 
             img.size( function(err, value) {
                 if (err || !value) {
@@ -139,7 +142,7 @@ function cropResizePromise( filename, finalsize ) {
 
                 // --- Resize
 
-                img = img.resize(finalsize, finalsize).noProfile();         // noProfile() removes EXIF info, to solve orientation pb
+                img = img.resize(finalsize, finalsize);
 
                 // Save image
 
