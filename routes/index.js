@@ -31,7 +31,9 @@ router.get('/list-photos', function(req, res, next) {
 // ---------- Touch photo to make it latest (last modified) --------------------
 
 const touch = require("touch");
+
 const setCurrentPhotoPromise = require('../process/do-loop').setCurrentPhotoPromise;
+const RESIZED_DIR            = require("../process/image-functions").RESIZED_DIR;
 
 router.get('/touch-photo', function(req, res, next) {
     let fname = req.query.name;
