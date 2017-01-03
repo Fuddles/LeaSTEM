@@ -182,7 +182,7 @@
 
           $.ajax( "/list-photos", { dataType: 'json' } )
           .done( function(jsonRes, textStatus) {
-              if ( jsonRes & jsonRes.length > 0 ) {
+              if ( jsonRes && jsonRes.length > 0 ) {
 
                   $("#ledPhoto").attr('src', '/resized-images/'+ encodeURIComponent(jsonRes[0]) );
                   return;
