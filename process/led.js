@@ -36,7 +36,7 @@ rpio.spiSetDataMode(0);
 const   TXBUF0   = Buffer.alloc(4, 0);
 
 //
-// colors is a two dimensional array colors[ledIndex][channel]
+// colors is a two dimensional array colors[ledIndex][channel]  3 channels RGB, no A!
 function ledLightUp( colors ) {
 
     if ( colors.length < NUM_LEDS ) {

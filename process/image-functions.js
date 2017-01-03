@@ -19,7 +19,7 @@ const DELTA       = process.env.DELTA       || 0.05;
 const RESIZED_IMAGE_SIZE = process.env.RESIZED_IMAGE_SIZE   || 300;
 
 
-// Takes resized image and angle, and returns an array of rgb pixels
+// Takes resized image and angle, and returns an array of RGB pixels 3 channels only!
 // Angle in degrees [0..360[
 function getPixelsPromise( angle, resizedImageFileName, imgSize = RESIZED_IMAGE_SIZE ) {
 
@@ -36,24 +36,29 @@ function getPixelsPromise( angle, resizedImageFileName, imgSize = RESIZED_IMAGE_
         // Returns An ndarray of pixels in raster order having shape equal to [width, height, channels].
         gp( RESIZED_DIR + resizedImageFileName, function(err, pixels) {
 
-            console.log("\n--------------------\n");
-            console.log( pixels );
-            console.log("\n--------------------\n");
-
-            if (err || !pixels || !pixels.data) {
+            //console.log( pixels );
+            if (err || !pixels || !pixels.data || !pixels.shape) {
                 console.error("Error in getPixels after gp(). Err is:");
                 console.error(err);
                 return reject(err);
             }
 
+            // Check dimensions
+            let numChannels = pixels.shape[2];         // Should be 4
+            if (  ( numChannels != 3 && numChannels != 4 )
+               || pixels.shape[0] != imgSize || pixels.shape[1] != imgSize ) {
+                console.error("\n--------------------\n");
+                console.error("WRONG DIMENSIONS in getPixels > gp(), for file=[%s]. Look at shape array: \n", resizedImageFileName);
+                console.error( pixels );
+                console.error("\n--------------------\n");
+            }
+            let pix = pixels.data;
+
             // Now we have our array of pixels[x][y][c]
             let resArray    = new Array( NUM_LEDS );
-            let numChannels = 0;
-
             let angleInRad = Math.PI / 180.0 * angle;
             let cosAngle   = Math.cos( angleInRad );
             let sinAngle   = Math.sin( angleInRad );
-
 
             for (let i = 0; i < NUM_LEDS; i++) {
                 let pt = _calcLEDPosition( cosAngle, sinAngle, i );      // Return pt.x and pt.y to be multiplied by imgSize/2
@@ -65,11 +70,13 @@ function getPixelsPromise( angle, resizedImageFileName, imgSize = RESIZED_IMAGE_
                 if ( y >= imgSize ) {
                     y = imgSize - 1;
                 }
-                let pix = pixels.data;
-                let pos = 4 * (x + y * imgSize);
-                resArray[i] = [ pix[pos], pix[pos+1], pix[pos+2], pix[pos+3] ];     // FIXME: Some values are null !!!!!!
-
-                // FIXME: Are they all RGBA ????  Example of the monkey !!!!! (Photo iPhone)
+                let pos = numChannels * (x + y * imgSize);
+                if (pos + 2 >= pix.length ) {
+                    console.error( "ERROR in getPixels > gp() getting the color: OUT OF BOUNDS!! [pos=%d]", pos );
+                    resArray[i] = [0, 0, 0];
+                    continue;
+                }
+                resArray[i] = [ pix[pos], pix[pos+1], pix[pos+2] ];
             }
             return resolve( resArray );
 
@@ -126,9 +133,10 @@ function cropResizePromise( filename, finalsize = RESIZED_IMAGE_SIZE) {
             throw new Error ("Bad finalsize in cropResize");
         }
 
-        var img = gm( UPLOAD_DIR + filename );
+        // Retrieve the image and correct its orientation right away
+        var img = gm( UPLOAD_DIR + filename ).autoOrient();
 
-        // --- Correct Orientation first!
+        /* / --- Correct Orientation first!
         img.orientation( function(err, value) {
             if (err || !value) {
                 console.error("Error in cropResize after orientation(). Err is:");
@@ -136,7 +144,7 @@ function cropResizePromise( filename, finalsize = RESIZED_IMAGE_SIZE) {
                 return reject(err);
             }
             console.log("Info in cropResize: Orientation is " + value);
-            /*
+            / *
             let rotationAngleCW = 0;
             if (value == "RightTop") {
                 rotationAngleCW = 90;               // turn 90 CW
@@ -148,46 +156,40 @@ function cropResizePromise( filename, finalsize = RESIZED_IMAGE_SIZE) {
             // Rotate the image to correct, and then erase EXIF profile with .noProfile();
             */
 
-            // noProfile() removes EXIF info, to solve orientation pb
-            img = img.autoOrient().noProfile();
+        img.size( function(err, value) {
+            if (err || !value) {
+                console.error("Error in cropResize after size(). Err is:");
+                console.error(err);
+                return reject(err);
+            }
 
-            img.size( function(err, value) {
-                if (err || !value) {
-                    console.error("Error in cropResize after size(). Err is:");
+            // --- Crop
+
+            // value.width and value.height
+            let w = value.width;
+            let h = value.height;
+
+            if (h > w) {
+                img = img.crop( w, w, 0, (h-w)/2 );
+            }
+            else if (w > h) {
+                img = img.crop( h, h, (w-h)/2, 0 );
+            }
+            // if w == h nothing to do
+
+            // --- Resize
+            img = img.resize(finalsize, finalsize).noProfile();     // noProfile() removes EXIF info, to solve orientation pb
+
+            // Save image
+            img.write(RESIZED_DIR + filename, function(err) {
+                if (err) {
+                    console.error("Error in cropResize after write(). Err is:");
                     console.error(err);
                     return reject(err);
                 }
 
-                // --- Crop
-
-                // value.width and value.height
-                let w = value.width;
-                let h = value.height;
-
-                if (h > w) {
-                    img = img.crop( w, w, 0, (h-w)/2 );
-                }
-                else if (w > h) {
-                    img = img.crop( h, h, (w-h)/2, 0 );
-                }
-                // if w == h nothing to do
-
-                // --- Resize
-
-                img = img.resize(finalsize, finalsize);
-
-                // Save image
-
-                img.write(RESIZED_DIR + filename, function(err) {
-                    if (err) {
-                        console.error("Error in cropResize after write(). Err is:");
-                        console.error(err);
-                        return reject(err);
-                    }
-
-                    // Here image is saved!
-                    return resolve(img);
-                });
+                // Here image is saved!
+                return resolve(img);
             });
         });
     });
