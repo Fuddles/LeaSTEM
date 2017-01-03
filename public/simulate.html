@@ -56,11 +56,12 @@
             // Arrow triangle
             ctx2d.lineWidth = 1;
             ctx2d.beginPath();
-            ctx2d.moveTo( tx, ty );
+            ctx2d.translate( tx, ty );
             ctx2d.rotate( angleInRad );                     // Rotate the transformation matrix
-            ctx2d.lineTo( tx-5, ty );
-            ctx2d.lineTo( tx,   ty+10 );
-            ctx2d.lineTo( tx+5, ty );
+            ctx2d.moveTo(  0, 0 );
+            ctx2d.lineTo( -5, 0 );
+            ctx2d.lineTo(  0, 10 );
+            ctx2d.lineTo(  5, 0 );
             ctx2d.closePath();
             ctx2d.fill();
             // Reset current transformation matrix to the identity matrix
