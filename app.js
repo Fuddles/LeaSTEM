@@ -65,7 +65,7 @@ const ledLightUp             = require('./process/led').ledLightUp;
 const setCurrentPhotoPromise = require('./process/do-loop').setCurrentPhotoPromise;
 
 
-setCurrentPhotoPromise( process.env.CURRENT_IMAGE_FILENAME )
+setCurrentPhotoPromise( process.env.CURRENT_PHOTO_FILENAME )
 .then( fname => {
 
     // TODO: get most recent image of the RESIZED_DIR

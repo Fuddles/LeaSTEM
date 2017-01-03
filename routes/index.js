@@ -43,21 +43,23 @@ router.get('/touch-photo', function(req, res, next) {
 
     // Just perform a unix 'touch' on the file
     touch( RESIZED_DIR + fname, function(err) {
-        if (!err) {
-            // Set the image as the new current one !!
-            setCurrentPhotoPromise( process.env.CURRENT_IMAGE_FILENAME )
-            .then( fname => {
-                return res.sendStatus( 200 );
-            })
-            .catch( err => {
-                console.error("ERROR in /touch-photo > setCurrentPhotoPromise: err =");
-                console.error( err );
-                return res.sendStatus( 500 );
-            });
+        if (err) {
+            console.error("\nERROR in /touch-photo > touch: err=");
+            console.error(err);
+            return res.sendStatus( 500 );
         }
-        console.error("\nERROR in /touch-photo > touch: err=");
-        console.error(err);
-        return res.sendStatus( 500 );
+
+        // Set the image as the new current one !!
+        console.log("\nInfo in /touch-photo: TOUCH succeeded, setting current photo ["+ fname +"] now");
+        setCurrentPhotoPromise( fname )
+        .then( fname => {
+            return res.sendStatus( 200 );
+        })
+        .catch( err => {
+            console.error("ERROR in /touch-photo > setCurrentPhotoPromise: err =");
+            console.error( err );
+            return res.sendStatus( 500 );
+        });
     });
 });
 

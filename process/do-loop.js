@@ -31,8 +31,8 @@ function setCurrentPhotoPromise( resizedPhotoFilename ) {
         .catch( err => {
             console.error("ERROR in setCurrentPhotoPromise: err =");
             console.error( err );
+            return reject(err);
         });
-        return;
     });
 }
 
