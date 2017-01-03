@@ -112,10 +112,9 @@
                    cb( null );
                 }
 
-                // TODO !!!!!!
                 console.log("INFO in _fetchDotCoordinates: ");
                 console.log( jsonRes );
-
+                cb( jsonRes );
             })
             .fail( function(err) {
                 console.error('Error in _fetchDotCoordinates: ');
@@ -136,9 +135,9 @@
                    cb( null );
                 }
 
-                // TODO !!!!!!
                 console.log("INFO in _fetchDotColors: ");
                 console.log( jsonRes );
+                cb( jsonRes );
 
             })
             .fail( function(err) {
