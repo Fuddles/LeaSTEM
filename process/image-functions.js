@@ -36,7 +36,9 @@ function getPixelsPromise( angle, resizedImageFileName, imgSize = RESIZED_IMAGE_
         // Returns An ndarray of pixels in raster order having shape equal to [width, height, channels].
         gp( RESIZED_DIR + resizedImageFileName, function(err, pixels) {
 
-            // console.error( pixels );
+            console.log("\n--------------------\n");
+            console.log( pixels );
+            console.log("\n--------------------\n");
 
             if (err || !pixels || !pixels.data) {
                 console.error("Error in getPixels after gp(). Err is:");
@@ -45,10 +47,14 @@ function getPixelsPromise( angle, resizedImageFileName, imgSize = RESIZED_IMAGE_
             }
 
             // Now we have our array of pixels[x][y][c]
-            let resArray   = new Array( NUM_LEDS );
+            let resArray    = new Array( NUM_LEDS );
+            let numChannels = 0;
+
             let angleInRad = Math.PI / 180.0 * angle;
             let cosAngle   = Math.cos( angleInRad );
             let sinAngle   = Math.sin( angleInRad );
+
+
             for (let i = 0; i < NUM_LEDS; i++) {
                 let pt = _calcLEDPosition( cosAngle, sinAngle, i );      // Return pt.x and pt.y to be multiplied by imgSize/2
                 let x  = Math.round( pt.x * imgSize / 2 );
@@ -61,7 +67,9 @@ function getPixelsPromise( angle, resizedImageFileName, imgSize = RESIZED_IMAGE_
                 }
                 let pix = pixels.data;
                 let pos = 4 * (x + y * imgSize);
-                resArray[i] = [ pix[pos], pix[pos+1], pix[pos+2], pix[pos+3] ];
+                resArray[i] = [ pix[pos], pix[pos+1], pix[pos+2], pix[pos+3] ];     // FIXME: Some values are null !!!!!!
+
+                // FIXME: Are they all RGBA ????  Example of the monkey !!!!! (Photo iPhone)
             }
             return resolve( resArray );
 
