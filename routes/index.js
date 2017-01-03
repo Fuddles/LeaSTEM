@@ -6,7 +6,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Lea 7th grade 2017 STEM Project', datime: (Date.now() % 100000000) });
+  res.render('index', { title: 'Lea 7th grade 2017 STEM Project', datime: "?_dt="+(Date.now() % 100000000) });
 });
 
 
