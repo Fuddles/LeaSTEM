@@ -70,15 +70,15 @@ router.get('/touch-photo', function(req, res, next) {
 // -------------------- Dots coordinates and colors ----------------------------
 
 
+const getLEDPositionsWithDelta  = require("../process/image-functions").getLEDPositionsWithDelta;
 const getPixelsPromise = require("../process/image-functions").getPixelsPromise;
-const getLEDPositions  = require("../process/image-functions").getLEDPositions;
 const getCurrentPhoto  = require("../process/do-loop").getCurrentPhoto;
 
 
 router.get('/dot-coords', function(req, res, next) {
 
     let angle = req.query.angle || 0;               // ?angle=  in degrees
-    return res.json( getLEDPositions( angle ) );
+    return res.json( getLEDPositionsWithDelta( angle ) );
 });
 
 
