@@ -27,9 +27,15 @@
 
         // Canvas 2d context
         var canvas, ctx2d = null, siz = 0, half = 0;
+        var isDrawing     = false;
 
         // When canvas touched / onclick
         function touchCanvas( evt ) {
+
+            if (isDrawing) {    // One drawing at a time!
+                return;
+            }
+            isDrawing = true;
 
             // Get the touch point coordinates
             var tx = evt.pageX - canvas.offsetLeft;
@@ -67,10 +73,76 @@
             // Reset current transformation matrix to the identity matrix
             ctx2d.setTransform(1, 0, 0, 1, 0, 0);
 
-            // --- Draw dots with colors
+            // --- Retrieve dots locations & colors
+            _fetchDotCoordinates( angle, function( dotLocations ) {
+                if (!dotLocations) {
+                    console.error( "Error in retrieving _fetchDotCoordinates" );
+                    isDrawing = false;
+                    return;
+                }
 
+                // Retrieve dots RGBA colors
+                _fetchDotColors( angle, function( dotColors ) {
+                    if (!dotColors) {
+                        console.error( "Error in retrieving _fetchDotColors" );
+                        isDrawing = false;
+                        return;
+                    }
+
+                    // --- Draw dots with colors
+
+                    // TODO !!!!!
+
+                    isDrawing = false;
+                    return;
+                });
+            });
             return;
         }
+
+
+        // --- Retrieve dots location (to be multiplied by half)
+        function _fetchDotCoordinates( angle, cb ) {
+            console.log("_fetchDotCoordinates with angle = " + angle);
+
+            $.ajax( "/dot-coords", { dataType: 'json' } )
+            .done( function(jsonRes, textStatus) {
+                if ( !jsonRes ) {
+                   console.error('ERROR in _fetchDotCoordinates textStatus= ' + textStatus);
+                   cb( null );
+                }
+
+                // TODO
+            })
+            .fail( function(err) {
+                console.error('Error in _fetchDotCoordinates: ');
+                console.log(err);
+                cb(null);
+            });
+        }
+
+
+        // --- Retrieve dots RGBA colors
+        function _fetchDotColors( angle, cb ) {
+            console.log("_fetchDotColors with angle = " + angle);
+
+            $.ajax( "/dot-colors", { dataType: 'json' } )
+            .done( function(jsonRes, textStatus) {
+                if ( !jsonRes ) {
+                   console.error('ERROR in _fetchDotColors textStatus= ' + textStatus);
+                   cb( null );
+                }
+
+                // TODO
+            })
+            .fail( function(err) {
+                console.error('Error in _fetchDotColors: ');
+                console.log(err);
+                cb(null);
+            });
+        }
+
+
 
           // FIXME
           /*

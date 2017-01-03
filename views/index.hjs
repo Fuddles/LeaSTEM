@@ -10,7 +10,7 @@
     <p>Lea welcomes you to her STEM project, the LED bike lights!</p>
 
 
-    <form action="/upload-photo" method="post" enctype="multipart/form-data">
+    <form action="/upload-photo" method="post" enctype="multipart/form-data" onsubmit="return formSubmit(this);">
 
         Upload your photo here:<br/><br/>
         <input type="file" name="myphoto" accept="image/png,image/gif,image/jpeg"
@@ -31,6 +31,20 @@
     <script type="text/javascript">
         if (window.location.href.indexOf('?upload=ok') > 0) {
             document.getElementById('uploadDone').style.display = "block";
+        }
+
+        var uploadClickTimestamp = 0;
+
+        function formSubmit(frm) {
+            if (!frm["myphoto"]) {
+                alert("Please take a photo or choose an image to upload");
+                return false;
+            }
+            if ( Date.now() - uploadClickTimestamp < 5000 ) {
+                return false;
+            }
+            uploadClickTimestamp = Date.now();
+            return true;
         }
     </script>
 
