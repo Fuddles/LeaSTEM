@@ -26,6 +26,7 @@
         $.ajax( "/touch-photo?name=" + encodeURIComponent(photoname) )
         .done( function(data, textStatus) {
             alert("New photo displayed is " + photoname);
+            window.location.reload( true );
             return;
         });
     }
