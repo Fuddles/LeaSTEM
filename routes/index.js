@@ -52,7 +52,7 @@ router.get('/touch-photo', function(req, res, next) {
         }
 
         // Set the image as the new current one !!
-        console.log("\nInfo in /touch-photo: TOUCH succeeded, setting current photo ["+ fname +"] now");
+        console.log("\nInfo in /touch-photo: TOUCH succeeded, setting current photo ["+ fname +"] now\n");
         setCurrentPhotoPromise( fname )
         .then( fname => {
             return res.sendStatus( 200 );
