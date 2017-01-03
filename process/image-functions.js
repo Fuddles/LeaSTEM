@@ -180,17 +180,11 @@ function cropResizePromise( filename, finalsize = RESIZED_IMAGE_SIZE) {
                     }
                     else if (w > h) {
                         img = img.crop( h, h, (w-h)/2, 0 );
-                        // FIXME: Test !!!!
-                        //img.write( UPLOAD_DIR + "temp-cropped-" + filename, (err)=>{} );
-                        //console.log("Info in cropResizePromise. Image cropped [temp-cropped-%s] written to disk\n", filename);
                     }
                     // if w == h nothing to do
 
                     // --- Resize, then correct its orientation and remove EXIF info
                     img = img.resize(finalsize, finalsize);
-                    // FIXME: Test !!!!
-                    //img.write( UPLOAD_DIR + "temp-resized-" + filename, (err)=>{} );
-                    //console.log("Info in cropResizePromise. Image cropped [temp-resized-%s] written to disk\n", filename);
 
                     // --- Save image
                     img.write(RESIZED_DIR + filename, function(err) {
@@ -199,7 +193,6 @@ function cropResizePromise( filename, finalsize = RESIZED_IMAGE_SIZE) {
                             console.error(err);
                             return reject(err);
                         }
-
                         // Here image is saved!
                         return resolve(img);
                     });
