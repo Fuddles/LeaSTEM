@@ -100,7 +100,7 @@
                         var pt    = dotLocations[i];        // {x:, y:}
                         var color = dotColors[i];           // [0..3] RGBA
 
-                        ctx2d.fillStyle( 'rgb('+ color[0] +','+ color[1] +','+ color[2] +')' );
+                        ctx2d.fillStyle = 'rgb('+ color[0] +','+ color[1] +','+ color[2] +')';
                         ctx2d.beginPath();
                         ctx2d.arc(pt.x, pt.y, 3, 0, pi2);                // arc(x, y, radius, startAngle, endAngle, anticlockwise);
                         ctx2d.fill();
