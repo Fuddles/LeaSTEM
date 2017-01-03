@@ -36,7 +36,7 @@
         var uploadClickTimestamp = 0;
 
         function formSubmit(frm) {
-            if (!frm["myphoto"]) {
+            if (!frm["myphoto"].value) {
                 alert("Please take a photo or choose an image to upload");
                 return false;
             }
