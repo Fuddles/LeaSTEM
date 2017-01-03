@@ -95,42 +95,64 @@ function cropResizePromise( filename, finalsize ) {
         }
 
         var img = gm( UPLOAD_DIR + filename );
-        img.size( function(err, value) {
+
+        // --- Correct Orientation first!
+        img.orientation( function(err, value) {
             if (err || !value) {
-                console.error("Error in cropResize after size(). Err is:");
+                console.error("Error in cropResize after orientation(). Err is:");
                 console.error(err);
                 return reject(err);
             }
 
-            // --- Crop
+            console.log("Orientation is:");
+            console.log(value);
+            // Orientation	int16u	IFD0
+            // 1 = Horizontal (normal)
+            // 2 = Mirror horizontal
+            // 3 = Rotate 180
+            // 4 = Mirror vertical
+            // 5 = Mirror horizontal and rotate 270 CW
+            // 6 = Rotate 90 CW
+            // 7 = Mirror horizontal and rotate 90 CW
+            // 8 = Rotate 270 CW
 
-            // value.width and value.height
-            let w = value.width;
-            let h = value.height;
-
-            if (h > w) {
-                img = img.crop( w, w, 0, (h-w)/2 );
-            }
-            else if (w > h) {
-                img = img.crop( h, h, (w-h)/2, 0 );
-            }
-            // if w == h nothing to do
-
-            // --- Resize
-
-            img = img.resize(finalsize, finalsize).noProfile();         // noProfile() removes EXIF info, to solve orientation pb
-
-            // Save image
-
-            img.write(RESIZED_DIR + filename, function(err) {
-                if (err) {
-                    console.error("Error in cropResize after write(). Err is:");
+            img.size( function(err, value) {
+                if (err || !value) {
+                    console.error("Error in cropResize after size(). Err is:");
                     console.error(err);
                     return reject(err);
                 }
 
-                // Here image is saved!
-                return resolve(img);
+                // --- Crop
+
+                // value.width and value.height
+                let w = value.width;
+                let h = value.height;
+
+                if (h > w) {
+                    img = img.crop( w, w, 0, (h-w)/2 );
+                }
+                else if (w > h) {
+                    img = img.crop( h, h, (w-h)/2, 0 );
+                }
+                // if w == h nothing to do
+
+                // --- Resize
+
+                img = img.resize(finalsize, finalsize).noProfile();         // noProfile() removes EXIF info, to solve orientation pb
+
+                // Save image
+
+                img.write(RESIZED_DIR + filename, function(err) {
+                    if (err) {
+                        console.error("Error in cropResize after write(). Err is:");
+                        console.error(err);
+                        return reject(err);
+                    }
+
+                    // Here image is saved!
+                    return resolve(img);
+                });
             });
         });
     });
