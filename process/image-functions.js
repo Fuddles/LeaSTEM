@@ -138,10 +138,66 @@ function cropResizePromise( filename, finalsize ) {
 
 
 
+// -------- Retrieve list of resized image files by modified-date DESC -----------
+
+function getResizedImageSortedListPromise() {
+    return new Promise( function (wholeResolve, wholeReject) {
+
+        fs.readdir( RESIZED_DIR, function(err, files) {
+            if (err || !files) {
+                console.error("ERROR in getResizedImageSortedList > readdir, error is:");
+                console.error(err);
+                wholeReject(err);
+            }
+
+            //console.log( "\nInfo in getResizedImageSortedList, readdir files: ");
+            //console.log( files );
+
+            Promise.all( files.map( fname => {
+                return new Promise( function(resolve, reject) {
+                    fs.stat( RESIZED_DIR + fname, (err, stats) => {
+                        if (err) {
+                            return reject(err);
+                        }
+                        //console.log( "\nInfo in getResizedImageSortedList, stat'ing file " + fname );
+                        //console.log( stats );
+
+                        return resolve({
+                            name: fname,
+                            time: stats.mtime.getTime()
+                        });
+                    });
+                })
+            }))
+            .then( fnametimes => {
+
+                //console.log( "\nInfo in getResizedImageSortedList, after stat'ing files: ");
+                //console.log( fnametimes );
+
+                let resTimeSortedFilenames =
+                    fnametimes.sort( function(a, b) { return b.time - a.time; } )     // Descending order
+                    .map( fnt => { return fnt.name; } );
+
+                return wholeResolve( resTimeSortedFilenames );
+            })
+            .catch( err => {
+                console.error("ERROR in getResizedImageSortedList > sorting. err =");
+                console.error( err );
+                wholeReject(err);
+            });
+        });
+    });
+}
+
+
+
+
+
 
 
 module.exports.cropResizePromise = cropResizePromise;
 module.exports.getPixelsPromise  = getPixelsPromise;
+module.exports.getResizedImageSortedListPromise  = getResizedImageSortedListPromise;
 module.exports.NUM_LEDS   = NUM_LEDS;
 module.exports.UPLOAD_DIR = UPLOAD_DIR;
 module.exports.RESIZED_DIR = RESIZED_DIR;
