@@ -187,7 +187,8 @@ function cropResizePromise( filename, finalsize = RESIZED_IMAGE_SIZE) {
             console.log("Info in cropResizePromise. Image cropped [temp-resized-%s] written to disk\n", filename);
 
             // --- Correct its orientation and remove EXIF info
-            img = img.autoOrient().noProfile();     // noProfile() removes EXIF info, to solve orientation pb
+            //img = img.autoOrient().noProfile();     // noProfile() removes EXIF info, to solve orientation pb
+            img = img.autoOrient();
 
             // Save image
             img.write(RESIZED_DIR + filename, function(err) {
