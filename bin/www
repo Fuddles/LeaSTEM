@@ -3,52 +3,7 @@
 /**
  * Module dependencies.
  */
-
-var app = require('../app');
 var debug = require('debug')('leastem:server');
-var http = require('http');
-
-/**
- * Get port from environment and store in Express.
- */
-
-var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
-
-/**
- * Create HTTP server.
- */
-
-var server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
-/**
- * Normalize a port into a number, string, or false.
- */
-
-function normalizePort(val) {
-  var port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
-
-  if (port >= 0) {
-    // port number
-    return port;
-  }
-
-  return false;
-}
-
 
 /**
  *  From now on, does not allow the Node.js server to crash from an uncaught exception
@@ -69,12 +24,137 @@ process.on('uncaughtException', function(err) {
 });
 
 
+// ███    ███ ██    ██ ██   ████████ ██    ████████ ██   ██ ██████  ███████  █████  ██████
+// ████  ████ ██    ██ ██      ██    ██       ██    ██   ██ ██   ██ ██      ██   ██ ██   ██
+// ██ ████ ██ ██    ██ ██      ██    ██ █████ ██    ███████ ██████  █████   ███████ ██   ██
+// ██  ██  ██ ██    ██ ██      ██    ██       ██    ██   ██ ██   ██ ██      ██   ██ ██   ██
+// ██      ██  ██████  ███████ ██    ██       ██    ██   ██ ██   ██ ███████ ██   ██ ██████
+
+const cluster = require('cluster');
+
+// ----- Main process is LED-lighting, child process is web server, and we spawn also the sensor reading
+if (cluster.isMaster) {
+
+    // 1. --- Launch the web server
+    cluster.fork();
+    // Master receives a signal when a worker is online
+    cluster.on('online', function(worker) {
+        debug('Worker ' + worker.process.pid + ' is online');
+        global.leaHttpWorker = worker;              // Also equals to cluster.workers[0]
+    });
+    // If the worker ever dies while the master is still alive, log error!
+    cluster.on('exit', (worker, code, signal) => {
+        console.error('\nERROR! Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal);
+    });
+
+
+    // 2. --- Launch the angle reader (BNO055 sensor)
+    const childProcSpawn = require('child_process').spawn;          // always use spawn rather than exec or execFile!
+    const bno055Command  = "";      // FIXME
+    const bno055Args     = ["",""]; // FIXME
+
+    let angleSensorSpawn = childProcSpawn( bno055Command, bno055Args );      // ,{} for options
+    angleSensorSpawn.on('error', (err) => {
+        console.error( "ERROR in angleSensorSpawn: process FAILED with error:" );
+        console.error( err );
+        throw new Error(err);
+    });
+    angleSensorSpawn.on('exit', (code,signal) => {
+        debug( "EXIT of angleSensorSpawn: process completed with code=%s and signal=%s", code, signal );
+    });
+    angleSensorSpawn.stdout.on( 'data', (data) => {
+        debug("angleSensorSpawn outputting data of size=%d", data.length);
+
+        // TODO: PARSE and STORE this data for angle and rotation speed
+        debug( data );
+    });
+
+
+    // 3. --- Connect the processes: current image + angle
+    //        Note: to send a message from the child to the master, do:
+    //                  process.send( { ... } );
+    //              to send a message from the master to the child, do:
+    //                  global.leaHttpWorker.send( { ... } );
+    //        Messages from child (http-server) to master (led-lighting)
+    cluster.on('message', msg => {
+
+        // TODO !!!
+
+    });
+
+
+    // 4. --- Start displaying LEDs
+     
+
+
+}
+else {
+
+    // Messages from master (led-lighting) to child (http-server)
+    process.on('message', msg => {
+
+        // TODO: messages from master (led-lighting) to child (http-server)
+
+    });
+
+    // ██     ██ ███████ ██████      ███████ ███████ ██████  ██    ██ ███████ ██████
+    // ██     ██ ██      ██   ██     ██      ██      ██   ██ ██    ██ ██      ██   ██
+    // ██  █  ██ █████   ██████      ███████ █████   ██████  ██    ██ █████   ██████
+    // ██ ███ ██ ██      ██   ██          ██ ██      ██   ██  ██  ██  ██      ██   ██
+    //  ███ ███  ███████ ██████      ███████ ███████ ██   ██   ████   ███████ ██   ██
+
+    var http = require('http');
+    var app  = require('../app');
+
+    /**
+    * Get port from environment and store in Express.
+    */
+    var port = normalizePort(process.env.PORT || '3000');
+    app.set('port', port);
+
+    /**
+    * Create HTTP server.
+    */
+    var server = http.createServer(app);
+
+    /**
+    * Listen on provided port, on all network interfaces.
+    */
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
+
+}
+
+
+
+
+
+// +++++++++++++++++++++++++++ HELPERS +++++++++++++++++++++++++++++++++++++++++
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
 
 
 /**
  * Event listener for HTTP server "error" event.
  */
-
 function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
@@ -99,10 +179,10 @@ function onError(error) {
   }
 }
 
+
 /**
  * Event listener for HTTP server "listening" event.
  */
-
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'

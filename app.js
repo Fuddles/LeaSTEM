@@ -97,7 +97,7 @@ var LEA_DEBUG = true;
 
 if (LEA_DEBUG) {
 
-    require("./lightup.js");
+    require("./test/lightup.js");
 
     //let filenames = ['wheel.jpg', 'wheel2.jpg', 'yoda.jpg', 'feedly.png'];
 

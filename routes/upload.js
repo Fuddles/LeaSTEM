@@ -57,7 +57,7 @@ function uploadPhotoPost(req, res, next) {
         cropResizePromise( fname, RESIZED_IMAGE_SIZE )
         .then( img => {
             console.log( "SUCCESS in upload.js > cropResizePromise for image " + fname );
-            global.currentImageFileName = fname;
+            global.currentImageFileName = fname;        // FIXME
 
             // TODO: trigger the LED display!!
 
