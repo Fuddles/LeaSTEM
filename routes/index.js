@@ -72,7 +72,7 @@ router.get('/touch-photo', function(req, res, next) {
 
 const getLEDPositionsWithDelta  = require("../process/image-functions").getLEDPositionsWithDelta;
 const getPixelsPromise = require("../process/image-functions").getPixelsPromise;
-const getCurrentPhoto  = require("../process/do-loop").getCurrentPhoto;
+const getCurrentPhoto  = require("../process/image-functions").getCurrentPhoto;
 
 
 router.get('/dot-coords', function(req, res, next) {
