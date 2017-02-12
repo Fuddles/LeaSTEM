@@ -25,9 +25,12 @@ rpio.spiSetClockDivider(64); 	// divider should be 4 or 8 max to have high-speed
 rpio.spiSetDataMode(0);
 
 
-// TODO: Define endLed to close SPI
-//     rpio.spiEnd();
-//    console.log("End rpio SPI");
+// TODO: Call it!
+/** Close SPI properly */
+function rpioEndSpi() {
+    console.log("End rpio SPI");
+    rpio.spiEnd();
+}
 
 
 
@@ -35,8 +38,10 @@ rpio.spiSetDataMode(0);
 
 const   TXBUF0   = Buffer.alloc(4, 0);
 
-//
-// colors is a two dimensional array colors[ledIndex][channel]  3 channels RGB, no A!
+/**
+ * Light up leds according to array parameter
+ * @param {Array} colors is a two dimensional array colors[ledIndex][channel]  3 channels RGB, no A!
+ */
 function ledLightUp( colors ) {
 
     if ( colors.length < NUM_LEDS ) {
@@ -69,4 +74,5 @@ function ledLightUp( colors ) {
 
 
 
+module.exports.rpioEndSpi = rpioEndSpi;
 module.exports.ledLightUp = ledLightUp;
