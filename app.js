@@ -92,48 +92,53 @@ setCurrentPhotoPromise( process.env.CURRENT_PHOTO_FILENAME )
 });
 
 
-
 // ----------- TESTS LEA -----------
-// require("./lightup.js");
+var LEA_DEBUG = true;
 
-//let filenames = ['wheel.jpg', 'wheel2.jpg', 'yoda.jpg', 'feedly.png'];
+if (LEA_DEBUG) {
 
-/* FIXME
-let filenames = ['feedly.png'];
-for (let fname of filenames) {
+    require("./lightup.js");
+
+    //let filenames = ['wheel.jpg', 'wheel2.jpg', 'yoda.jpg', 'feedly.png'];
+
+    /* FIXME
+    let filenames = ['feedly.png'];
+    for (let fname of filenames) {
     cropResizePromise( fname, 300 )
     .then( img => {
         console.log( "SUCCESS in app.js > cropResizePromise for image " + fname );
 
         for ( let ang = 0; ang < 10*360; ang+=10 ) {
 
-            let angle = ang % 360;
-            setTimeout( function() {
+        let angle = ang % 360;
+        setTimeout( function() {
 
-                console.log( "Starting getPixelsPromise in app.js > for angle = " + angle );
-                getPixelsPromise( angle, fname, 300 )  // angle, resizedImageFileName, imgSize
-                .then( colors => {
-                    console.log( "SUCCESS in app.js > getPixelsPromise for image " + fname + " with angle=" + angle );
-                    console.log( colors );
+        console.log( "Starting getPixelsPromise in app.js > for angle = " + angle );
+        getPixelsPromise( angle, fname, 300 )  // angle, resizedImageFileName, imgSize
+        .then( colors => {
+        console.log( "SUCCESS in app.js > getPixelsPromise for image " + fname + " with angle=" + angle );
+        console.log( colors );
 
-                    ledLightUp( colors );     //colors
+        ledLightUp( colors );     //colors
 
-                })
-                .catch( err => {
-                    console.error("ERROR in app.js > getPixelsPromise. err =");
-                    console.error( err );
-                });
-
-            }, ang * 500 );     // steps 10 deg * 500 ms = every 5 secs
-
-        }
     })
     .catch( err => {
-        console.error("ERROR in app.js > cropResizePromise. err =");
-        console.error( err );
+    console.error("ERROR in app.js > getPixelsPromise. err =");
+    console.error( err );
     });
+
+    }, ang * 500 );     // steps 10 deg * 500 ms = every 5 secs
+
+    }
+    })
+    .catch( err => {
+    console.error("ERROR in app.js > cropResizePromise. err =");
+    console.error( err );
+    });
+    }
+    */
+
 }
-*/
 
 // ---------------------------------
 
