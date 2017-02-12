@@ -31,6 +31,7 @@ process.on('uncaughtException', function(err) {
 // ██      ██  ██████  ███████ ██    ██       ██    ██   ██ ██   ██ ███████ ██   ██ ██████
 
 const cluster = require('cluster');
+const setCurrentPhotoPromise = require("../process/image-functions").setCurrentPhotoPromise;
 
 // ----- Main process is LED-lighting, child process is web server, and we spawn also the sensor reading
 if (cluster.isMaster) {
@@ -78,6 +79,17 @@ if (cluster.isMaster) {
     //        Messages from child (http-server) to master (led-lighting)
     cluster.on('message', msg => {
 
+        if ( !msg || !msg.action ) {
+            console.error("ERROR in cluster on message: EMPTY msg");
+            return;
+        }
+
+        // process.send( { action: "currentPhoto", filename: resizedPhotoFilename } );
+        if ( msg.action == "currentPhoto" ) {
+            setCurrentPhotoPromise( msg.filename );
+            return;
+        }
+
         // TODO !!!
 
     });
@@ -92,6 +104,20 @@ else {
 
     // Messages from master (led-lighting) to child (http-server)
     process.on('message', msg => {
+
+        if ( !msg || !msg.action ) {
+            console.error("ERROR in webserver process on message: EMPTY msg");
+            return;
+        }
+
+        // process.send( { action: "currentPhoto", filename: resizedPhotoFilename } );
+        if ( msg.action == "currentPhoto" ) {
+            global.currentImageFileName = msg.filename;
+            return;
+        }
+
+
+
 
         // TODO: messages from master (led-lighting) to child (http-server)
 

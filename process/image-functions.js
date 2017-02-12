@@ -6,6 +6,7 @@
 const fs = require('fs');
 const gm = require('gm');
 const gp = require("get-pixels");
+const cluster = require('cluster');
 
 const UPLOAD_DIR  = process.env.UPLOAD_DIR  || "/var/www/uploaded-images/";
 const RESIZED_DIR = process.env.RESIZED_DIR || "/var/www/resized-images/";
@@ -258,9 +259,74 @@ function getResizedImageSortedListPromise() {
 
 
 
+// ----------------- Set currently displayed photos ----------------------------
+
+/**
+ * The current photo is stored in global.currentImageFileName for both
+ *      the cluster master and webserver process
+ */
+function setCurrentPhotoPromise( resizedPhotoFilename ) {
+    return new Promise( function (resolve, reject) {
+
+        if (cluster.isMaster) {
+
+            // Get the list of all resized images
+            getResizedImageSortedListPromise()
+            .then( resTimeSortedFilenames => {
+
+                if ( !resTimeSortedFilenames || resTimeSortedFilenames.length < 1 ) {
+                    console.log("INFO in setCurrentPhotoPromise: EMPTY list of resized images, resizedPhotoFilename="+resizedPhotoFilename);
+                    _setCurrentPhotoInMaster( "" );
+                    return resolve( "" );
+                }
+
+                // Set to most recent if empty name, or not found
+                if ( !resizedPhotoFilename || resTimeSortedFilenames.indexOf(resizedPhotoFilename) < 0 ) {
+                    resizedPhotoFilename = resTimeSortedFilenames[0];
+                    console.log("INFO in setCurrentPhotoPromise: using MOST RECENT resized image ="+resizedPhotoFilename);
+                    // Done below: _setCurrentPhotoInMaster( resizedPhotoFilename );
+                }
+                // Otherwise good
+                _setCurrentPhotoInMaster( resizedPhotoFilename );
+                return resolve( resizedPhotoFilename );
+            })
+            .catch( err => {
+                console.error("ERROR in setCurrentPhotoPromise: err =");
+                console.error( err );
+                return reject(err);
+            });
+        }
+        else {
+            // send the request to cluster master
+            process.send( { action: "currentPhoto", filename: resizedPhotoFilename } );
+            return resolve( resizedPhotoFilename );
+        }
+
+    });
+}
+
+
+// Internal function once we know we're good
+function _setCurrentPhotoInMaster( resizedPhotoFilename ) {
+    global.currentImageFileName = resizedPhotoFilename;
+
+    // send the request to cluster child process (web server)
+    process.send( { action: "currentPhoto", filename: resizedPhotoFilename } );
+
+    // TODO: trigger image retrieval, change, etc... ????
+}
+
+
+function getCurrentPhoto() {
+    return global.currentImageFileName;
+}
 
 
 
+
+
+module.exports.setCurrentPhotoPromise  = setCurrentPhotoPromise;
+module.exports.getCurrentPhoto  = getCurrentPhoto;
 module.exports.cropResizePromise = cropResizePromise;
 module.exports.getPixelsPromise  = getPixelsPromise;
 module.exports.getResizedImageSortedListPromise  = getResizedImageSortedListPromise;
