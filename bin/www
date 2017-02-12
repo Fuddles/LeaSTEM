@@ -31,10 +31,12 @@ process.on('uncaughtException', function(err) {
 // ██      ██  ██████  ███████ ██    ██       ██    ██   ██ ██   ██ ███████ ██   ██ ██████
 
 const cluster = require('cluster');
-const setCurrentPhotoPromise = require("../process/image-functions").setCurrentPhotoPromise;
 
 // ----- Main process is LED-lighting, child process is web server, and we spawn also the sensor reading
 if (cluster.isMaster) {
+
+    const setCurrentPhotoPromise = require("../process/image-functions").setCurrentPhotoPromise;
+    const initLoop = require("../process/do-loop").initLoop;
 
     // 1. --- Launch the web server
     cluster.fork();
@@ -96,8 +98,7 @@ if (cluster.isMaster) {
 
 
     // 4. --- Start displaying LEDs
-
-    // TODO: display the LEDs
+    initLoop();
 
 }
 else {
