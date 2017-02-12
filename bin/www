@@ -38,20 +38,7 @@ if (cluster.isMaster) {
     const setCurrentPhotoPromise = require("../process/image-functions").setCurrentPhotoPromise;
     const initLoop = require("../process/do-loop").initLoop;
 
-    // 1. --- Launch the web server
-    cluster.fork();
-    // Master receives a signal when a worker is online
-    cluster.on('online', function(worker) {
-        debug('Worker ' + worker.process.pid + ' is online');
-        global.leaHttpWorker = worker;              // Also equals to cluster.workers[0]
-    });
-    // If the worker ever dies while the master is still alive, log error!
-    cluster.on('exit', (worker, code, signal) => {
-        console.error('\nERROR! Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal);
-    });
-
-
-    // 2. --- Launch the angle reader (BNO055 sensor)
+    // 1. --- Launch the angle reader (BNO055 sensor)
     const childProcSpawn = require('child_process').spawn;          // always use spawn rather than exec or execFile!
     const bno055Command  = "";      // FIXME
     const bno055Args     = ["",""]; // FIXME
@@ -73,7 +60,7 @@ if (cluster.isMaster) {
     });
 
 
-    // 3. --- Connect the processes: current image + angle
+    // 2. --- Connect the processes: current image + angle
     //        Note: to send a message from the child to the master, do:
     //                  process.send( { ... } );
     //              to send a message from the master to the child, do:
@@ -91,14 +78,25 @@ if (cluster.isMaster) {
             setCurrentPhotoPromise( msg.filename );
             return;
         }
+    });
 
-        // TODO !!!
 
+    // 3. --- Launch the web server
+    cluster.fork();
+    // If the worker ever dies while the master is still alive, log error!
+    cluster.on('exit', (worker, code, signal) => {
+        console.error('\nERROR! Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal);
     });
 
 
     // 4. --- Start displaying LEDs
-    initLoop();
+    //        We only start when Master receives a signal when the webser worker is online
+    cluster.on('online', function(worker) {
+        debug('Worker ' + worker.process.pid + ' is online');
+        global.leaHttpWorker = worker;              // Also equals to cluster.workers[0]
+
+        initLoop();
+    });
 
 }
 else {
@@ -113,16 +111,12 @@ else {
 
         // process.send( { action: "currentPhoto", filename: resizedPhotoFilename } );
         if ( msg.action == "currentPhoto" ) {
+            debug("global.currentImageFileName on webserver thread set to %s", msg.filename);
             global.currentImageFileName = msg.filename;
             return;
         }
-
-
-
-
-        // TODO: messages from master (led-lighting) to child (http-server)
-
     });
+
 
     // ██     ██ ███████ ██████      ███████ ███████ ██████  ██    ██ ███████ ██████
     // ██     ██ ██      ██   ██     ██      ██      ██   ██ ██    ██ ██      ██   ██

@@ -311,7 +311,11 @@ function _setCurrentPhotoInMaster( resizedPhotoFilename ) {
     global.currentImageFileName = resizedPhotoFilename;
 
     // send the request to cluster child process (web server)
-    process.send( { action: "currentPhoto", filename: resizedPhotoFilename } );
+    if (global.leaHttpWorker) {
+        global.leaHttpWorker.send( { action: "currentPhoto", filename: resizedPhotoFilename } );
+    } else {
+        console.error( "ERROR in _setCurrentPhotoInMaster: global.leaHttpWorker NOT defined" );
+    }
 
     // TODO: trigger image retrieval, change, etc... ????
 }
