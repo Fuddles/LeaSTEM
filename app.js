@@ -93,7 +93,8 @@ setCurrentPhotoPromise( process.env.CURRENT_PHOTO_FILENAME )
 
 
 // ----------- TESTS LEA -----------
-var LEA_DEBUG = true;
+//var LEA_DEBUG = true;
+var LEA_DEBUG = false;
 
 if (LEA_DEBUG) {
 

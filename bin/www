@@ -84,8 +84,8 @@ if (cluster.isMaster) {
 
 
     // 4. --- Start displaying LEDs
-     
 
+    // TODO: display the LEDs
 
 }
 else {
