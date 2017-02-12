@@ -32,7 +32,7 @@ router.get('/list-photos', function(req, res, next) {
 
 const touch = require("touch");
 
-const setCurrentPhotoPromise = require('../process/do-loop').setCurrentPhotoPromise;
+const setCurrentPhotoPromise = require('../process/image-functions').setCurrentPhotoPromise;
 const RESIZED_DIR            = require("../process/image-functions").RESIZED_DIR;
 
 router.get('/touch-photo', function(req, res, next) {
