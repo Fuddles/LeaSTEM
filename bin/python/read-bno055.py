@@ -4,7 +4,7 @@
 # Lea, Feb 2017
 
 #import logging
-#import sys
+import sys
 import time
 
 from Adafruit_BNO055 import BNO055
@@ -63,6 +63,7 @@ while True:
     # Print  Heading Roll Pitch gyroX gyroY gyroZ
     print('H={0:0.1F} R={1:0.1F} P={2:0.1F} gX={3:0.2F} gY={4:0.2F} gZ={5:0.2F}'.format(
           heading, roll, pitch, gyroX, gyroY, gyroZ))
+    sys.stdout.flush()
 
 
     # --- Other values you can optionally read:
