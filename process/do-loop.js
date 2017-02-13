@@ -74,8 +74,8 @@ function doLedDisplayLoop() {
     }
 
     // TODO: check currentAngle in high rotation speed condition!
-    _doLoop( angle, getCurrentPhoto() );
-    //_doLoop( currentAngle, getCurrentPhoto() );
+    //_doLoop( angle, getCurrentPhoto() );
+    _doLoop( currentAngle, getCurrentPhoto() );
 
     // Loop over within _doLoop when lighting-up is complete
 }
