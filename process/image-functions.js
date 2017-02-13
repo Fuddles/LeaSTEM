@@ -293,42 +293,41 @@ function getResizedImageSortedListPromise() {
  *      the cluster master and webserver process
  */
 function setCurrentPhotoPromise( resizedPhotoFilename ) {
+
+    if ( !cluster.isMaster ) {
+        // send the request to cluster master
+        process.send( { action: "currentPhoto", filename: resizedPhotoFilename } );
+        return Promise.resolve( resizedPhotoFilename );
+    }
+
+    // Here we are in the cluster Master only
     return new Promise( function (resolve, reject) {
 
-        if (cluster.isMaster) {
+        // Get the list of all resized images
+        getResizedImageSortedListPromise()
+        .then( resTimeSortedFilenames => {
 
-            // Get the list of all resized images
-            getResizedImageSortedListPromise()
-            .then( resTimeSortedFilenames => {
+            if ( !resTimeSortedFilenames || resTimeSortedFilenames.length < 1 ) {
+                console.log("INFO in setCurrentPhotoPromise: EMPTY list of resized images, resizedPhotoFilename="+resizedPhotoFilename);
+                _setCurrentPhotoInMaster( "" );
+                return resolve( "" );
+            }
 
-                if ( !resTimeSortedFilenames || resTimeSortedFilenames.length < 1 ) {
-                    console.log("INFO in setCurrentPhotoPromise: EMPTY list of resized images, resizedPhotoFilename="+resizedPhotoFilename);
-                    _setCurrentPhotoInMaster( "" );
-                    return resolve( "" );
-                }
-
-                // Set to most recent if empty name, or not found
-                if ( !resizedPhotoFilename || resTimeSortedFilenames.indexOf(resizedPhotoFilename) < 0 ) {
-                    resizedPhotoFilename = resTimeSortedFilenames[0];
-                    console.log("INFO in setCurrentPhotoPromise: using MOST RECENT resized image ="+resizedPhotoFilename);
-                    // Done below: _setCurrentPhotoInMaster( resizedPhotoFilename );
-                }
-                // Otherwise good
-                _setCurrentPhotoInMaster( resizedPhotoFilename );
-                return resolve( resizedPhotoFilename );
-            })
-            .catch( err => {
-                console.error("ERROR in setCurrentPhotoPromise: err =");
-                console.error( err );
-                return reject(err);
-            });
-        }
-        else {
-            // send the request to cluster master
-            process.send( { action: "currentPhoto", filename: resizedPhotoFilename } );
+            // Set to most recent if empty name, or not found
+            if ( !resizedPhotoFilename || resTimeSortedFilenames.indexOf(resizedPhotoFilename) < 0 ) {
+                resizedPhotoFilename = resTimeSortedFilenames[0];
+                console.log("INFO in setCurrentPhotoPromise: using MOST RECENT resized image ="+resizedPhotoFilename);
+                // Done below: _setCurrentPhotoInMaster( resizedPhotoFilename );
+            }
+            // Otherwise good
+            _setCurrentPhotoInMaster( resizedPhotoFilename );
             return resolve( resizedPhotoFilename );
-        }
-
+        })
+        .catch( err => {
+            console.error("ERROR in setCurrentPhotoPromise: err =");
+            console.error( err );
+            return reject(err);
+        });
     });
 }
 
@@ -343,8 +342,6 @@ function _setCurrentPhotoInMaster( resizedPhotoFilename ) {
     } else {
         console.error( "ERROR in _setCurrentPhotoInMaster: global.leaHttpWorker NOT defined" );
     }
-
-    // TODO: trigger image retrieval, change, etc... ????
 }
 
 
