@@ -20,6 +20,13 @@ const DELTA       = process.env.DELTA       || 0.05;            // FIXME
 const RESIZED_IMAGE_SIZE = process.env.RESIZED_IMAGE_SIZE   || 300;
 
 
+// Caching for more efficiency
+var _previousResizedImagePixels = {
+        filename:       "",
+        pix:            null,
+        numChannels:    0
+    };
+
 // Takes resized image and angle, and returns an array of RGB pixels 3 channels only!
 // Angle in degrees [0..360[
 function getPixelsPromise( angle, resizedImageFileName, imgSize = RESIZED_IMAGE_SIZE ) {
@@ -33,7 +40,13 @@ function getPixelsPromise( angle, resizedImageFileName, imgSize = RESIZED_IMAGE_
             throw new Error ("Bad imgSize in getPixels");
         }
 
-        // Reads all the pixels from url into an ndarray:
+        // --- Already in cache?
+        if ( _previousResizedImagePixels && _previousResizedImagePixels.filename === resizedImageFileName ) {
+            let resArray = _getColorArrayFromPix( angle, _previousResizedImagePixels.pix, imgSize, _previousResizedImagePixels.numChannels );
+            return resolve( resArray );
+        }
+
+        // --- Reads all the pixels from url into an ndarray:
         // Returns An ndarray of pixels in raster order having shape equal to [width, height, channels].
         gp( RESIZED_DIR + resizedImageFileName, function(err, pixels) {
 
@@ -52,36 +65,50 @@ function getPixelsPromise( angle, resizedImageFileName, imgSize = RESIZED_IMAGE_
                 console.error( pixels );
                 console.error("\n--------------------\n");
             }
+            // Now we have our array of pix[x][y][c]
             let pix = pixels.data;
 
-            // Now we have our array of pixels[x][y][c]
-            let resArray    = new Array( NUM_LEDS );
-            let angleInRad = Math.PI / 180.0 * angle;
-            let cosAngle   = Math.cos( angleInRad );
-            let sinAngle   = Math.sin( angleInRad );
+            // Cache result for another angle next time
+            _previousResizedImagePixels = {
+                    filename:       resizedImageFileName,
+                    pix:            pix,
+                    numChannels:    numChannels
+                };
 
-            for (let i = 0; i < NUM_LEDS; i++) {
-                let pt = _calcLEDPosition( cosAngle, sinAngle, i );      // Return pt.x and pt.y to be multiplied by imgSize/2
-                let x  = Math.round( pt.x * imgSize / 2 );
-                if ( x >= imgSize ) {
-                    x = imgSize - 1;
-                }
-                let y  = Math.round( pt.y * imgSize / 2 );
-                if ( y >= imgSize ) {
-                    y = imgSize - 1;
-                }
-                let pos = numChannels * (x + y * imgSize);
-                if (pos + 2 >= pix.length ) {
-                    console.error( "ERROR in getPixels > gp() getting the color: OUT OF BOUNDS!! [pos=%d]", pos );
-                    resArray[i] = [0, 0, 0];
-                    continue;
-                }
-                resArray[i] = [ pix[pos], pix[pos+1], pix[pos+2] ];
-            }
+            let resArray  = _getColorArrayFromPix( angle, pix, imgSize, numChannels );
             return resolve( resArray );
-
         });
     });
+}
+
+
+// Internal
+function _getColorArrayFromPix( angle, pix, imgSize, numChannels ) {
+
+    let resArray   = new Array( NUM_LEDS );
+    let angleInRad = Math.PI / 180.0 * angle;
+    let cosAngle   = Math.cos( angleInRad );
+    let sinAngle   = Math.sin( angleInRad );
+
+    for (let i = 0; i < NUM_LEDS; i++) {
+        let pt = _calcLEDPosition( cosAngle, sinAngle, i );      // Return pt.x and pt.y to be multiplied by imgSize/2
+        let x  = Math.round( pt.x * imgSize / 2 );
+        if ( x >= imgSize ) {
+            x = imgSize - 1;
+        }
+        let y  = Math.round( pt.y * imgSize / 2 );
+        if ( y >= imgSize ) {
+            y = imgSize - 1;
+        }
+        let pos = numChannels * (x + y * imgSize);
+        if (pos + 2 >= pix.length ) {
+            console.error( "ERROR in getPixels > gp() getting the color: OUT OF BOUNDS!! [pos=%d]", pos );
+            resArray[i] = [0, 0, 0];
+            continue;
+        }
+        resArray[i] = [ pix[pos], pix[pos+1], pix[pos+2] ];
+    }
+    return resArray;
 }
 
 
