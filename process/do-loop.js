@@ -67,9 +67,11 @@ function doLedDisplayLoop() {
 
     // Use angular velocity and elapsed time to improve the currentAngle.
     //  We should always be under 1 sec!
-    let currentAngle    = (angle + 360 + hrTimeDiff[1] * angularVelocity * 1.0e-9) % 360;
-    if ( Math.abs(currentAngle - angle) >= 1.0 ) {
-        console.log( "DIFF angle with velocity:  angle="+ angle +", currentAngle="+ currentAngle
+    let currentAngle    = angle;
+    let angleDiff       = hrTimeDiff[1] * 1.0e-9 * angularVelocity;
+    if ( Math.abs(angleDiff) >= 0.01 ) {
+        currentAngle    = (angle + angleDiff + 360 ) % 360;
+        console.log( "DIFF angle with velocity:  angle="+ angle +", angleDiff="+ angleDiff
             + ", \t angularVelocity="+ angularVelocity +" deg/s, hrTimeDiff="+ hrTimeDiff +"\n" );
     }
 
