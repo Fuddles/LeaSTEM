@@ -70,8 +70,9 @@ if (cluster.isMaster) {
     //        Messages from child (http-server) to master (led-lighting)
     cluster.on('message', msg => {
 
-        if ( !msg || !msg.action ) {
+        if ( ! msg || ! msg.action ) {
             console.error("ERROR in cluster on message: EMPTY msg");
+            console.error( msg );
             return;
         }
 
