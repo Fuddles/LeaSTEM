@@ -73,8 +73,9 @@ function doLedDisplayLoop() {
             + ", \t angularVelocity="+ angularVelocity +" deg/s, hrTimeDiff="+ hrTimeDiff +"\n" );
     }
 
-    // _doLoop( currentAngle, getCurrentPhoto() );      // TODO
-    _doLoop( angle, getCurrentPhoto() );
+    // TODO: check currentAngle in high rotation speed condition!
+    // _doLoop( angle, getCurrentPhoto() );
+    _doLoop( currentAngle, getCurrentPhoto() );
 
     // Loop over within _doLoop when lighting-up is complete
 }
