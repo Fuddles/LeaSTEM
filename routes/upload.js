@@ -28,7 +28,8 @@ var uploadWithMulter = multer({
     fileFilter: function(req, file, cb) {
             console.log( "In fileFilter, with file.originalname = "+ file.originalname +", and file.mimetype = " + file.mimetype );
             // Check that it is an image:
-            if ( file.mimetype == 'image/png' || file.mimetype == 'image/gif' || file.mimetype == 'image/jpeg' ) {
+            //if ( file.mimetype == 'image/png' || file.mimetype == 'image/gif' || file.mimetype == 'image/jpeg' ) {
+            if ( file.mimetype == 'image/png' || file.mimetype == 'image/jpeg' ) {
                 // To accept the file pass `true`, like so:
                 cb(null, true);
                 return;
