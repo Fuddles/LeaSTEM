@@ -54,7 +54,7 @@ if (cluster.isMaster) {
     });
     angleSensorSpawn.stdout.on( 'data', (data) => {
         // angleSensorSpawn: H=330.5 R=-22.5 P=173.8 gX=-0.00 gY=-0.00 gZ=-0.00  (CR-LF)
-        let values = data.match( bnoRegex );
+        let values = data.toString().match( bnoRegex );
 
         console.log("angleSensorSpawn: \t " + data);
         console.log( values );
