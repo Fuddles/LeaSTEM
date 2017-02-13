@@ -73,6 +73,16 @@ function ledLightUp( colors ) {
 }
 
 
+/** Array of white color */
+function _getWhiteLedArray() {
+    let whiteArray = new Array( NUM_LEDS );
+    for (let i = 0; i < NUM_LEDS; i++) {
+        whiteArray[i] = [ 255, 255, 255 ];
+    }
+    return whiteArray;
+}
 
-module.exports.rpioEndSpi = rpioEndSpi;
-module.exports.ledLightUp = ledLightUp;
+
+module.exports.WHITE_ARRAY = _getWhiteLedArray();
+module.exports.rpioEndSpi  = rpioEndSpi;
+module.exports.ledLightUp  = ledLightUp;

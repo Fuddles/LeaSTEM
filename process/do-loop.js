@@ -3,6 +3,7 @@
 const setCurrentPhotoPromise = require('./image-functions').setCurrentPhotoPromise;
 const getCurrentPhoto        = require('./image-functions').getCurrentPhoto;
 const getPixelsPromise       = require('./image-functions').getPixelsPromise;
+const WHITE_ARRAY            = require('./led').WHITE_ARRAY;
 const ledLightUp             = require('./led').ledLightUp;
 
 
@@ -40,11 +41,7 @@ function initLoop() {
         //          console.log(hrTime[0] * 1000000 + hrTime[1] / 1000);
 
         // --- Display white strip;
-        let whiteArray = new Array( NUM_LEDS );
-        for (let i = 0; i < NUM_LEDS; i++) {
-            whiteArray[i] = [ 255, 255, 255 ];
-        }
-        ledLightUp( whiteArray );
+        ledLightUp( WHITE_ARRAY );
 
         // FIXME
         global.testAngle = 0;
@@ -54,7 +51,7 @@ function initLoop() {
         return;
     })
     .catch( err => {
-        console.error("ERROR in app.js: err =");
+        console.error("ERROR in initLoop: err =");
         console.error( err );
     });
 }
