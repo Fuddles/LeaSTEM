@@ -67,15 +67,15 @@ function doLedDisplayLoop() {
 
     // Use angular velocity and elapsed time to improve the currentAngle.
     //  We should always be under 1 sec!
-    let currentAngle    = (angle + hrTimeDiff[1] * angularVelocity * 1e-9) % 360;
+    let currentAngle    = (angle + 360 + hrTimeDiff[1] * angularVelocity * 1.0e-9) % 360;
     if ( Math.abs(currentAngle - angle) >= 1.0 ) {
         console.log( "DIFF angle with velocity:  angle="+ angle +", currentAngle="+ currentAngle
             + ", \t angularVelocity="+ angularVelocity +" deg/s, hrTimeDiff="+ hrTimeDiff +"\n" );
     }
 
     // TODO: check currentAngle in high rotation speed condition!
-    // _doLoop( angle, getCurrentPhoto() );
-    _doLoop( currentAngle, getCurrentPhoto() );
+    _doLoop( angle, getCurrentPhoto() );
+    //_doLoop( currentAngle, getCurrentPhoto() );
 
     // Loop over within _doLoop when lighting-up is complete
 }
