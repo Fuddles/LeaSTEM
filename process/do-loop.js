@@ -1,4 +1,16 @@
+// Loop and control led lighting according to angle and current photo
+//
 // Lea, Jan 2017
+
+// NOTE: global.bnoValues is an array containing (never null in here):
+//         [0]     High-Res Timestamp from process.hrtime() [seconds, nanoseconds]
+//         [1]     Heading
+//         [2]     Roll
+//         [3]     Pitch
+//         [4]     gyroX
+//         [5]     gyroY
+//         [6]     gyroZ
+
 
 const setCurrentPhotoPromise = require('./image-functions').setCurrentPhotoPromise;
 const getCurrentPhoto        = require('./image-functions').getCurrentPhoto;
@@ -30,21 +42,8 @@ function initLoop() {
     setCurrentPhotoPromise( process.env.CURRENT_PHOTO_FILENAME )
     .then( fname => {
 
-
-        // TODO: launch thread to read gyroscope
-        //      global current rotational speed with timestamp
-        //      In Node.js, "high resolution time" is made available via process.hrtime.
-        //      It returns a array with first element the time in seconds, and second element the remaining nanoseconds.
-        //          https://nodejs.org/dist/latest-v6.x/docs/api/process.html#process_process_hrtime_time
-        //      Eg: To get current time in microseconds, do the following:
-        //          var hrTime = process.hrtime()
-        //          console.log(hrTime[0] * 1000000 + hrTime[1] / 1000);
-
         // --- Display white strip;
         ledLightUp( WHITE_ARRAY );
-
-        // FIXME
-        global.testAngle = 0;
 
         // --- Launch interval func to refresh LED display
         doLedDisplayLoop();
@@ -62,10 +61,20 @@ function initLoop() {
  */
 function doLedDisplayLoop() {
 
-    _doLoop( global.testAngle, getCurrentPhoto() );
+    let angle           = global.bnoValues[1];
+    let angularVelocity = global.bnoValues[6];
+    let hrTimeDiff      = process.hrtime( global.bnoValues[0] );        // Diff with time of measurement
 
-    // FIXME
-    global.testAngle = (global.testAngle + 1) % 360;
+    // Use angular velocity and elapsed time to improve the currentAngle.
+    //  We should always be under 1 sec!
+    let currentAngle    = (angle + hrTimeDiff[1] * angularVelocity * 1e-9) % 360;
+    if ( Math.abs(currentAngle - angle) >= 1.0 ) {
+        console.log( "DIFF angle with velocity:  angle="+ angle +", currentAngle="+ currentAngle
+            + ", \t angularVelocity="+ angularVelocity +" deg/s, hrTimeDiff="+ hrTimeDiff +"\n" );
+    }
+
+    // _doLoop( currentAngle, getCurrentPhoto() );      // TODO
+    _doLoop( angle, getCurrentPhoto() );
 
     // Loop over within _doLoop when lighting-up is complete
 }

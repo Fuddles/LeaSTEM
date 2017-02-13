@@ -31,7 +31,10 @@ const cluster = require('cluster');
 if (cluster.isMaster) {
 
     const setCurrentPhotoPromise = require("../process/image-functions").setCurrentPhotoPromise;
-    const initLoop = require("../process/do-loop").initLoop;
+    const initLoop               = require("../process/do-loop").initLoop;
+
+    // 0. --- Global inits
+    global.bnoValues = [ process.hrtime(), 0,0,0, 0,0,0 ];
 
     // 1. --- Launch the angle reader (BNO055 sensor)
     const childProcSpawn = require('child_process').spawn;          // always use spawn rather than exec or execFile!
@@ -52,20 +55,24 @@ if (cluster.isMaster) {
     angleSensorSpawn.on('exit', (code,signal) => {
         console.log( "EXIT of angleSensorSpawn: process completed with code="+ code +" and signal=" + signal );
     });
-    angleSensorSpawn.stdout.on( 'data', (data) => {
-        // angleSensorSpawn: H=330.5 R=-22.5 P=173.8 gX=-0.00 gY=-0.00 gZ=-0.00  (CR-LF)
-        let values = data.toString().match( bnoRegex );
-
-        console.log("angleSensorSpawn: \t " + data);
-        console.log( values );
-
-        // TODO: PARSE and STORE this data for angle and rotation speed
-
-
-    });
     angleSensorSpawn.stderr.on( 'data', (data) => {
         console.error("ERROR from angleSensorSpawn.stderr:");
         console.error( data );
+    });
+    // --- Extract angle and speed info from BNO055 output
+    angleSensorSpawn.stdout.on( 'data', (data) => {
+        // To get current time in nanoseconds  https://nodejs.org/dist/latest-v6.x/docs/api/process.html#process_process_hrtime_time
+        let hrTime = process.hrtime();
+
+        // angleSensorSpawn: H=330.5 R=-22.5 P=173.8 gX=-0.00 gY=-0.00 gZ=-0.00  (CR-LF)
+        let values = data.toString().match( bnoRegex );     // values[1] .. values[6] with values[0] being the string itself
+        // console.log("angleSensorSpawn: \t " + data);
+        // console.log( values );
+
+        // Replace values[0] and store globally
+        values[0]        = hrTime;
+        global.bnoValues = values;
+        return;
     });
 
 
