@@ -40,8 +40,8 @@ if (cluster.isMaster) {
 
     // 1. --- Launch the angle reader (BNO055 sensor)
     const childProcSpawn = require('child_process').spawn;          // always use spawn rather than exec or execFile!
-    const bno055Command  = "";      // FIXME
-    const bno055Args     = ["",""]; // FIXME
+    const bno055Command  = "python";
+    const bno055Args     = [ "./python/read-bno055.py" ];
 
 /* FIXME
     let angleSensorSpawn = childProcSpawn( bno055Command, bno055Args );      // ,{} for options
