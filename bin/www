@@ -40,7 +40,7 @@ if (cluster.isMaster) {
 
     // H=330.5 R=-22.5 P=173.8 gX=-0.00 gY=-0.00 gZ=-0.00  (CR-LF)
     //  Number of decimals must be exact!
-    const bnoRegex = /^H=(\-?\d*\.\d) R=(\-?\d*\.\d) P=(\-?\d*\.\d) gX=(\-?\d*\.\d\d) gY=(\-?\d*\.\d\d) gZ=(\-?\d*\.\d\d)$/ ;
+    const bnoRegex = /H=(\-?\d+\.\d) R=(\-?\d+\.\d) P=(\-?\d+\.\d) gX=(\-?\d+\.\d\d) gY=(\-?\d+\.\d\d) gZ=(\-?\d+\.\d\d)/ ;
 
     console.error("Launching BNO055 reading with:  " + bno055Command +" "+ bno055Args);
     let angleSensorSpawn = childProcSpawn( bno055Command, bno055Args );      // ,{} for options
