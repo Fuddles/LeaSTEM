@@ -43,7 +43,7 @@ if (cluster.isMaster) {
     const bno055Command  = "/bin/pwd"; // "/usr/bin/python";
     const bno055Args     = [];    // [ "./bin/python/read-bno055.py" ];
 
-    debug("Launching BNO055 reading with:  %s %s", bno055Command, bno055Args);
+    console.error("Launching BNO055 reading with:  " + bno055Command +" "+ bno055Args);
     let angleSensorSpawn = childProcSpawn( bno055Command, bno055Args );      // ,{} for options
     angleSensorSpawn.on('error', (err) => {
         console.error( "ERROR in angleSensorSpawn: process FAILED with error:" );
@@ -58,6 +58,10 @@ if (cluster.isMaster) {
 
         // TODO: PARSE and STORE this data for angle and rotation speed
         //debug( data );
+    });
+    angleSensorSpawn.stderr.on( 'data', (data) => {
+        console.error("ERROR from angleSensorSpawn.stderr:");
+        console.error( data );
     });
 
 
