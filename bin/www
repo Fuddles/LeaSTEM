@@ -40,9 +40,10 @@ if (cluster.isMaster) {
 
     // 1. --- Launch the angle reader (BNO055 sensor)
     const childProcSpawn = require('child_process').spawn;          // always use spawn rather than exec or execFile!
-    const bno055Command  = "/usr/bin/python";
-    const bno055Args     = [ "./bin/python/read-bno055.py" ];
+    const bno055Command  = "/bin/pwd"; // "/usr/bin/python";
+    const bno055Args     = [];    // [ "./bin/python/read-bno055.py" ];
 
+    debug("Launching BNO055 reading with:  %s %s", bno055Command, bno055Args);
     let angleSensorSpawn = childProcSpawn( bno055Command, bno055Args );      // ,{} for options
     angleSensorSpawn.on('error', (err) => {
         console.error( "ERROR in angleSensorSpawn: process FAILED with error:" );
