@@ -68,7 +68,7 @@ if (cluster.isMaster) {
     //              to send a message from the master to the child, do:
     //                  global.leaHttpWorker.send( { ... } );
     //        Messages from child (http-server) to master (led-lighting)
-    cluster.on('message', msg => {
+    cluster.on('message', (worker, msg) => {
 
         if ( ! msg || ! msg.action ) {
             console.error("ERROR in cluster on message: EMPTY msg");
