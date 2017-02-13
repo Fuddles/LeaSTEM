@@ -40,10 +40,9 @@ if (cluster.isMaster) {
 
     // 1. --- Launch the angle reader (BNO055 sensor)
     const childProcSpawn = require('child_process').spawn;          // always use spawn rather than exec or execFile!
-    const bno055Command  = "python";
-    const bno055Args     = [ "./python/read-bno055.py" ];
+    const bno055Command  = "/usr/bin/python";
+    const bno055Args     = [ "./bin/python/read-bno055.py" ];
 
-/* FIXME
     let angleSensorSpawn = childProcSpawn( bno055Command, bno055Args );      // ,{} for options
     angleSensorSpawn.on('error', (err) => {
         console.error( "ERROR in angleSensorSpawn: process FAILED with error:" );
@@ -54,12 +53,11 @@ if (cluster.isMaster) {
         debug( "EXIT of angleSensorSpawn: process completed with code=%s and signal=%s", code, signal );
     });
     angleSensorSpawn.stdout.on( 'data', (data) => {
-        debug("angleSensorSpawn outputting data of size=%d", data.length);
+        debug("angleSensorSpawn: \t %s", data);
 
         // TODO: PARSE and STORE this data for angle and rotation speed
-        debug( data );
+        //debug( data );
     });
-*/
 
 
     // 2. --- Connect the processes: current image + angle

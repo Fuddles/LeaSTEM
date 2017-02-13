@@ -61,7 +61,7 @@ while True:
     ##sys, gyro, accel, mag = bno.get_calibration_status()
 
     # Print  Heading Roll Pitch gyroX gyroY gyroZ
-    print('Heading={0:0.1F} Roll={1:0.1F} Pitch={2:0.1F} gX={3:0.2F} gY={4:0.2F} gZ={5:0.2F}'.format(
+    print('H={0:0.1F} R={1:0.1F} P={2:0.1F} gX={3:0.2F} gY={4:0.2F} gZ={5:0.2F}'.format(
           heading, roll, pitch, gyroX, gyroY, gyroZ))
 
 
