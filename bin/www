@@ -1,11 +1,6 @@
 #!/usr/bin/env node
 
 /**
- * Module dependencies.
- */
-var debug = require('debug')('leastem:server');
-
-/**
  *  From now on, does not allow the Node.js server to crash from an uncaught exception
  *
  *  uncaughtException should be used to perform synchronous cleanup before shutting down the process.
@@ -51,13 +46,13 @@ if (cluster.isMaster) {
         throw new Error(err);
     });
     angleSensorSpawn.on('exit', (code,signal) => {
-        debug( "EXIT of angleSensorSpawn: process completed with code=%s and signal=%s", code, signal );
+        console.log( "EXIT of angleSensorSpawn: process completed with code="+ code +" and signal=" + signal );
     });
     angleSensorSpawn.stdout.on( 'data', (data) => {
-        debug("angleSensorSpawn: \t %s", data);
+        console.log("angleSensorSpawn: \t " + data);
 
         // TODO: PARSE and STORE this data for angle and rotation speed
-        //debug( data );
+        //console.log( data );
     });
     angleSensorSpawn.stderr.on( 'data', (data) => {
         console.error("ERROR from angleSensorSpawn.stderr:");
@@ -98,7 +93,7 @@ if (cluster.isMaster) {
     // 4. --- Start displaying LEDs
     //        We only start when Master receives a signal when the webser worker is online
     cluster.on('online', function(worker) {
-        debug('Worker ' + worker.process.pid + ' is online');
+        console.log('Worker ' + worker.process.pid + ' is online');
         global.leaHttpWorker = worker;              // Also equals to cluster.workers[0]
 
         initLoop();
@@ -117,7 +112,7 @@ else {
 
         // process.send( { action: "currentPhoto", filename: resizedPhotoFilename } );
         if ( msg.action == "currentPhoto" ) {
-            debug("global.currentImageFileName on webserver thread set to %s", msg.filename);
+            console.log("global.currentImageFileName on webserver thread set to " + msg.filename);
             global.currentImageFileName = msg.filename;
             return;
         }
@@ -215,5 +210,5 @@ function onListening() {
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  console.log('Listening on ' + bind);
 }

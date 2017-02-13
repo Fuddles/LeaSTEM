@@ -4,7 +4,6 @@ try {
 
     console.log("Begin lightup");
 
-    //var debug = require('debug')('lightup');
     var rpio = require('rpio');
 
     // We begin!
@@ -168,7 +167,6 @@ try {
 
     console.log("Begin lightup");
 
-    //var debug = require('debug')('lightup');
     var rpio = require('rpio');
 
     // We begin!
