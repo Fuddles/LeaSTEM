@@ -19,7 +19,7 @@ const NUM_LEDS               = require("./image-functions").NUM_LEDS;
 const WHITE_ARRAY            = require('./led').WHITE_ARRAY;
 const ledLightUp             = require('./led').ledLightUp;
 
-const ANGLE_FIXED_CORRECTION = 90;
+const ANGLE_FIXED_CORRECTION = 90;          // FIXME
 
 // ----------- TESTS LEA -----------
 //var LEA_DEBUG = true;
@@ -63,7 +63,7 @@ function initLoop() {
  */
 function doLedDisplayLoop() {
 
-    let angle           = global.bnoValues[1] + ANGLE_FIXED_CORRECTION;     // FIXME    // May be over 360, but corrected below
+    let angle           = (global.bnoValues[1] + ANGLE_FIXED_CORRECTION) % 360;
     let angularVelocity = global.bnoValues[6];
     let hrTimeDiff      = process.hrtime( global.bnoValues[0] );            // Diff with time of measurement
 
@@ -72,7 +72,7 @@ function doLedDisplayLoop() {
     let currentAngle    = angle;
     let angleDiff       = hrTimeDiff[1] * 1.0e-9 * angularVelocity;
     if ( Math.abs(angleDiff) >= 0.01 ) {
-        currentAngle    = (angle + angleDiff + 720 ) % 360;
+        currentAngle    = (angle + angleDiff + 360 ) % 360;
         console.log( "DIFF angle with velocity:  angle="+ angle +", angleDiff="+ angleDiff
             + ", \t angularVelocity="+ angularVelocity +" deg/s, hrTimeDiff="+ hrTimeDiff );
     }
