@@ -20,8 +20,8 @@ rpio.init({
       mapping: 'physical',     // Use the P1-P40 numbering scheme
 });
 rpio.spiBegin();
-//rpio.spiSetClockDivider(4); 	// divider should be 4 or 8 max to have high-speed display
-rpio.spiSetClockDivider(64); 	// divider should be 4 or 8 max to have high-speed display
+//rpio.spiSetClockDivider(4); 	// divider should be 4 or 8 max to have high-speed display, but flickers --> 64 is good
+rpio.spiSetClockDivider(64);
 rpio.spiSetDataMode(0);
 
 
