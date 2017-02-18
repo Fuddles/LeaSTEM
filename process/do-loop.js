@@ -15,6 +15,7 @@
 const setCurrentPhotoPromise = require('./image-functions').setCurrentPhotoPromise;
 const getCurrentPhoto        = require('./image-functions').getCurrentPhoto;
 const getPixelsPromise       = require('./image-functions').getPixelsPromise;
+const NUM_LEDS               = require("./image-functions").NUM_LEDS;
 const WHITE_ARRAY            = require('./led').WHITE_ARRAY;
 const ledLightUp             = require('./led').ledLightUp;
 
@@ -89,11 +90,14 @@ function _doLoop( angle, photoFilename ) {
     getPixelsPromise( angle, photoFilename )
     .then( ledColorArray => {
 
-        // Display the colors on the LEDs
-        ledLightUp( ledColorArray );
+        if ( ledColorArray && ledColorArray.length == NUM_LEDS ) {
+
+            // Display the colors on the LEDs
+            ledLightUp( ledColorArray );
+        }
 
         // Loop
-        setTimeout( doLedDisplayLoop, 10 );      // 10 ms later // FIXME 0
+        setTimeout( doLedDisplayLoop, 1 );      // 1 ms later // FIXME 0
 
     })
     .catch( err => {
