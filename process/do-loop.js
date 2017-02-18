@@ -19,6 +19,7 @@ const NUM_LEDS               = require("./image-functions").NUM_LEDS;
 const WHITE_ARRAY            = require('./led').WHITE_ARRAY;
 const ledLightUp             = require('./led').ledLightUp;
 
+const ANGLE_FIXED_CORRECTION = 90;
 
 // ----------- TESTS LEA -----------
 //var LEA_DEBUG = true;
@@ -62,18 +63,18 @@ function initLoop() {
  */
 function doLedDisplayLoop() {
 
-    let angle           = global.bnoValues[1];
+    let angle           = global.bnoValues[1] + ANGLE_FIXED_CORRECTION;     // FIXME    // May be over 360, but corrected below
     let angularVelocity = global.bnoValues[6];
-    let hrTimeDiff      = process.hrtime( global.bnoValues[0] );        // Diff with time of measurement
+    let hrTimeDiff      = process.hrtime( global.bnoValues[0] );            // Diff with time of measurement
 
     // Use angular velocity and elapsed time to improve the currentAngle.
     //  We should always be under 1 sec!
     let currentAngle    = angle;
     let angleDiff       = hrTimeDiff[1] * 1.0e-9 * angularVelocity;
     if ( Math.abs(angleDiff) >= 0.01 ) {
-        currentAngle    = (angle + angleDiff + 360 ) % 360;
+        currentAngle    = (angle + angleDiff + 720 ) % 360;
         console.log( "DIFF angle with velocity:  angle="+ angle +", angleDiff="+ angleDiff
-            + ", \t angularVelocity="+ angularVelocity +" deg/s, hrTimeDiff="+ hrTimeDiff +"\n" );
+            + ", \t angularVelocity="+ angularVelocity +" deg/s, hrTimeDiff="+ hrTimeDiff );
     }
 
     // TODO: check currentAngle in high rotation speed condition!
