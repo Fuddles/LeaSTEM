@@ -21,7 +21,7 @@ rpio.init({
 });
 rpio.spiBegin();
 //rpio.spiSetClockDivider(4); 	// divider should be 4 or 8 max to have high-speed display
-rpio.spiSetClockDivider(64); 	// divider should be 4 or 8 max to have high-speed display
+rpio.spiSetClockDivider(8); 	// divider should be 4 or 8 max to have high-speed display
 rpio.spiSetDataMode(0);
 
 
