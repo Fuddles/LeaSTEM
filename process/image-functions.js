@@ -14,7 +14,8 @@ const RESIZED_DIR = process.env.RESIZED_DIR || "/var/www/resized-images/";
 // Number of LEDs on the strip
 const NUM_LEDS    = process.env.NUM_LEDS    || 72;
 // Distance between the LED strip and the center of the wheel -> ratio dist / radius
-const DELTA       = process.env.DELTA       || 0.05;            // FIXME
+const DELTA       = process.env.DELTA       || 4.5 / 25;
+console.log( "DELTA = " + DELTA );
 
 // Size of the resized image
 const RESIZED_IMAGE_SIZE = process.env.RESIZED_IMAGE_SIZE   || 300;
