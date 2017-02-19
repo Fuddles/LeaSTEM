@@ -19,7 +19,7 @@ const NUM_LEDS               = require("./image-functions").NUM_LEDS;
 const WHITE_ARRAY            = require('./led').WHITE_ARRAY;
 const ledLightUp             = require('./led').ledLightUp;
 
-const ANGLE_FIXED_CORRECTION = 90;          // FIXME
+const ANGLE_FIXED_CORRECTION = 0;          // FIXME
 
 // ----------- TESTS LEA -----------
 //var LEA_DEBUG = true;
