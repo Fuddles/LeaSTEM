@@ -56,13 +56,16 @@ while True:
     # Gyroscope: tuple of X, Y, Z (angular velocity) values in degrees per second
     gyroX, gyroY, gyroZ = bno.read_gyroscope()
 
+    # Magnetometer data (in micro-Teslas):
+    magX, magY, magZ = bno.read_magnetometer()
+
     # Read the calibration status, 0=uncalibrated and 3=fully calibrated.
     ## (Lea) From our tests, only gyro is fully calibrated!
     ##sys, gyro, accel, mag = bno.get_calibration_status()
 
     # Print  Heading Roll Pitch gyroX gyroY gyroZ
-    print('H={0:0.1F} R={1:0.1F} P={2:0.1F} gX={3:0.2F} gY={4:0.2F} gZ={5:0.2F}'.format(
-          heading, roll, pitch, gyroX, gyroY, gyroZ))
+    print('H={0:0.1F} R={1:0.1F} P={2:0.1F} gX={3:0.2F} gY={4:0.2F} gZ={5:0.2F} mX={6:0.2F} mY={7:0.2F} mZ={8:0.2F} '.format(
+          heading, roll, pitch, gyroX, gyroY, gyroZ, magX, magY, magZ ))
     sys.stdout.flush()
 
 
@@ -72,8 +75,6 @@ while True:
     #x,y,z,w = bno.read_quaterion()
     # Sensor temperature in degrees Celsius:
     #temp_c = bno.read_temp()
-    # Magnetometer data (in micro-Teslas):
-    #x,y,z = bno.read_magnetometer()
     # Accelerometer data (in meters per second squared):
     #x,y,z = bno.read_accelerometer()
 
@@ -85,5 +86,5 @@ while True:
     #x,y,z = bno.read_gravity()
 
     # Sleep for some millisecond until the next reading (in seconds)
-    # Reading frequency of the BNO055 is 100Hz max, so 1ms are for reading and the rest is sleeping 
+    # Reading frequency of the BNO055 is 100Hz max, so 1ms are for reading and the rest is sleeping
     time.sleep(0.009)

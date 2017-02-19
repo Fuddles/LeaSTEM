@@ -10,6 +10,9 @@
 //         [4]     gyroX
 //         [5]     gyroY
 //         [6]     gyroZ
+//         [7]     magX
+//         [8]     magY
+//         [9]     magZ
 
 
 const setCurrentPhotoPromise = require('./image-functions').setCurrentPhotoPromise;
@@ -19,7 +22,7 @@ const NUM_LEDS               = require("./image-functions").NUM_LEDS;
 const WHITE_ARRAY            = require('./led').WHITE_ARRAY;
 const ledLightUp             = require('./led').ledLightUp;
 
-const ANGLE_FIXED_CORRECTION = 90;          // FIXME
+const ANGLE_FIXED_CORRECTION = 90;
 
 // ----------- TESTS LEA -----------
 //var LEA_DEBUG = true;
@@ -98,7 +101,7 @@ function _doLoop( angle, photoFilename ) {
         }
 
         // Loop
-        setTimeout( doLedDisplayLoop, 0 );      // 1 ms later // FIXME 0 ?
+        setTimeout( doLedDisplayLoop, 0 );      // Variant: 1 ms later
 
     })
     .catch( err => {
