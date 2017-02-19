@@ -72,6 +72,7 @@ if (cluster.isMaster) {
         // Replace values[0] and store globally
         values[0]        = hrTime;
         global.bnoValues = values;
+        console.log( values );
         return;
     });
 

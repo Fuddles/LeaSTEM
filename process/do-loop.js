@@ -98,7 +98,7 @@ function _doLoop( angle, photoFilename ) {
         }
 
         // Loop
-        setTimeout( doLedDisplayLoop, 1 );      // 1 ms later // FIXME 0
+        setTimeout( doLedDisplayLoop, 0 );      // 1 ms later // FIXME 0 ?
 
     })
     .catch( err => {
