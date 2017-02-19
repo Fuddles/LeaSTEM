@@ -19,7 +19,7 @@ const NUM_LEDS               = require("./image-functions").NUM_LEDS;
 const WHITE_ARRAY            = require('./led').WHITE_ARRAY;
 const ledLightUp             = require('./led').ledLightUp;
 
-const ANGLE_FIXED_CORRECTION = 270;          // FIXME
+const ANGLE_FIXED_CORRECTION = 90;          // FIXME
 
 // ----------- TESTS LEA -----------
 //var LEA_DEBUG = true;
@@ -63,7 +63,7 @@ function initLoop() {
  */
 function doLedDisplayLoop() {
 
-    let angle           = (global.bnoValues[1] + ANGLE_FIXED_CORRECTION) % 360;
+    let angle           = (ANGLE_FIXED_CORRECTION - global.bnoValues[1] + 360) % 360;
     let angularVelocity = global.bnoValues[6];
     let hrTimeDiff      = process.hrtime( global.bnoValues[0] );            // Diff with time of measurement
 
