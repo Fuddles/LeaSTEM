@@ -155,7 +155,7 @@ function _computeAngleCorrectionFromBottomMagnet() {
     // --- Now find the Time (in seconds) where magZ is maximum, ie when derivative is 0
     //      2 * regrMagZ[2] * t' + regrMagZ[1] = 0
     let timMagZMax = -0.5 * regrMagZ[1] / regrMagZ[2];
-    if ( timMagZMax < 0 || timMagZMax > data[3][0] ) {        // assert timMagZMax <= data[1][0]
+    if ( isNaN(timMagZMax) || timMagZMax < 0 || timMagZMax > data[3][0] ) {        // assert timMagZMax <= data[1][0]
         console.log("\nWARNING in do-loop > _computeAngleCorrectionFromBottomMagnet: IGNORE as timMagZMax="+timMagZMax+" should be 0 <= T <= data[3][0]="+data[3][0]);
         return;
     }
