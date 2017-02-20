@@ -75,7 +75,7 @@ function doLedDisplayLoop() {
 
     let nowHrTime       = process.hrtime();
     let hrTimeDiff      = process.hrtime( global.bnoValues[0] );                // Diff with time of measurement
-    let angularVelocity = Number.parseFloat( global.bnoValues[6] ) * 180 / Math.PI;
+    let angularVelocity = Number.parseFloat( global.bnoValues[6] ) * 180 / Math.PI; // Tested good!
     let sensorAngle     = Number.parseFloat( global.bnoValues[1] );
     let angle           = (ANGLE_FIXED_CORRECTION - (sensorAngle + angleCorrectionFromBottomMagnet) + 720) % 360;
 
@@ -120,21 +120,16 @@ function doLedDisplayLoop() {
         previousDataPoints = [ [ nowHrTime, sensorAngle, magZ ] ];
     }
 
-    // FIXME: debug !!!
-    let elapsedTime = process.hrtime(nowHrTime);
-    console.log("DEBUG:  angularVelocity="+angularVelocity+" \t elapsed-time="
-        + Math.floor(elapsedTime[0] * 1000 + elapsedTime[1]* 1e-6) +" ms" );
-
     // currentAngle is supposed to correct angle in high rotation speed condition!
     //_doLoop( angle, getCurrentPhoto() );
-    _doLoop( currentAngle, getCurrentPhoto() );
+    _doLoop( currentAngle, getCurrentPhoto(), nowHrTime );
 
     // Loop over within _doLoop when lighting-up is complete
 }
 
 
 /** Internal */
-function _doLoop( angle, photoFilename ) {
+function _doLoop( angle, photoFilename, nowHrTime ) {
 
     getPixelsPromise( angle, photoFilename )
     .then( ledColorArray => {
@@ -145,8 +140,12 @@ function _doLoop( angle, photoFilename ) {
             ledLightUp( ledColorArray );
         }
 
+        // FIXME: debug !!!
+        let elapsedTime = process.hrtime(nowHrTime);
+        console.log("DEBUG: elapsed-time= "+ Math.floor( elapsedTime[1] / 1000) +" microseconds =========================" );
+
         // Loop
-        setTimeout( doLedDisplayLoop, 0 );      // Variant: 1 ms later
+        setTimeout( doLedDisplayLoop, 0 );   // Loop asap, but without blocking the RPi event loop
 
     })
     .catch( err => {
