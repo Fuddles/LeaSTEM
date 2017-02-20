@@ -146,7 +146,7 @@ function _doLoop( angle, photoFilename, nowHrTime ) {
 
             // FIXME: debug !!!
             console.log( "DEBUG: averageDisplayTimeInNanos= "+ Math.floor( averageDisplayTimeInNanos / 1000)
-                + " \t DIFF with elapsed-time is "+ Math.floor( (averageDisplayTimeInNanos - elapsedTime[1]) / 1000) +" microseconds =========================" );
+                + " \t DIFF with elapsed-time is "+ Math.floor( Math.abs(averageDisplayTimeInNanos - elapsedTime[1]) / 1000) +" microseconds =========================" );
         }
 
         // Loop
