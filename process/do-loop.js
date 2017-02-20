@@ -90,7 +90,7 @@ function doLedDisplayLoop() {
     // Keep last 4 data points and then correct the angle by detecting the bottom (peak of magZ)
     let newLen = previousDataPoints.unshift( [ nowHrTime, currentAngle, global.bnoValues[9] ] );    // Add as element [0] of the array
     if ( newLen > 3 ) {
-        if ( previousDataPoints[1][2] - previousDataPoints[0][2] > 0.1 || previousDataPoints[2][2] - previousDataPoints[0][2] > 1 ) {
+        if ( previousDataPoints[1][2] - previousDataPoints[0][2] > 1 || previousDataPoints[2][2] - previousDataPoints[0][2] > 1 ) {
             // We have passed magZ maximum! Compute angleCorrectionFromBottomMagnet
             _computeAngleCorrectionFromBottomMagnet();
         }
@@ -149,6 +149,8 @@ function _computeAngleCorrectionFromBottomMagnet() {
                  [ _diffHrTime(previousDataPoints[0][0]),   previousDataPoints[0][2] ] ];
     let regrMagZ = regression('polynomial', data, 2);
     // magZ = f(t) = regrMagZ[2] * t^2 + regrMagZ[1] * t + regrMagZ[0]
+    console.log( data );
+    console.log( regrMagZ );
 
     // --- Now find the Time (in seconds) where magZ is maximum, ie when derivative is 0
     //      2 * regrMagZ[2] * t' + regrMagZ[1] = 0
