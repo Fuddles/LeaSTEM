@@ -25,7 +25,7 @@ const WHITE_ARRAY            = require('./led').WHITE_ARRAY;
 const ledLightUp             = require('./led').ledLightUp;
 
 const ANGLE_FIXED_CORRECTION = 90;
-const SENSOR_READ_DELAY_IN_NANOS = 10000000;                 // Delay to add to hrTimeDiff to account for sensor read delay
+const SENSOR_READ_DELAY_IN_NANOS = 20000000;                 // Delay to add to hrTimeDiff to account for sensor read delay
 
 // --- Magnet must be attached at the bottom of the reference frame. There we should have angle = 180 deg
 //      We use magZ (global.bnoValues[9]) maximum to infer where the absolute bottom is and correct drift
@@ -90,7 +90,7 @@ function doLedDisplayLoop() {
         if ( Math.abs(angleDiff) >= 10 ) {
             console.log( "DIFF angle \t hrTimeDiff= "+ Math.floor(hrTimeDiff[0] * 1000 + hrTimeDiff[1]* 1e-6)
             + "ms, with velocity: \t angle= "+ angle +" \t angleDiff= "+ angleDiff
-            + "\n\t\t angularVelocity= "+ angularVelocity +" deg/s, hrTimeDiff= "+ hrTimeDiff );
+            + "\n\t\t angularVelocity= "+ angularVelocity +" deg/s" );
         }
     }
 
