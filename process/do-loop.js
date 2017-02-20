@@ -86,7 +86,7 @@ function doLedDisplayLoop() {
     if ( Math.abs(angleDiff) >= 0.1 ) {
         currentAngle    = (angle + angleDiff + 360 ) % 360;
         if ( Math.abs(angleDiff) >= 10 ) {
-            console.log( "DIFF angle \t hrTimeDiff= "+ Math.floor(hrTimeDiff[0] * 1000 + hrTimeDiff[0]* 1e-6)
+            console.log( "DIFF angle \t hrTimeDiff= "+ Math.floor(hrTimeDiff[0] * 1000 + hrTimeDiff[1]* 1e-6)
             + "ms, with velocity: \t angle= "+ angle +" \t angleDiff= "+ angleDiff
             + "\n\t\t angularVelocity= "+ angularVelocity +" deg/s, hrTimeDiff= "+ hrTimeDiff );
         }
@@ -104,7 +104,7 @@ function doLedDisplayLoop() {
             let newLen = previousDataPoints.unshift( [ nowHrTime, sensorAngle, magZ ] );    // Add as element [0] of the array
             if ( newLen > 2 ) {
                 // At small angular speed, we want close to the max, but at higher speed the value is lower
-                let maxCompMagZ = ( angularVelocity < 90 ? 0.9 : 0.5 ) * magZMaxValue;
+                let maxCompMagZ = ( angularVelocity < 90 ? 0.9 : 0.5 ) * magZMaxValue;      // FIXME: only at low speed ???
                 if ( magZ > maxCompMagZ && Math.abs( angularVelocity ) > 1.0
                     && previousDataPoints[1][2] > previousDataPoints[0][2] && previousDataPoints[1][2] > previousDataPoints[2][2] ) {
                     // We have passed magZ maximum! Compute angleCorrectionFromBottomMagnet
@@ -120,6 +120,10 @@ function doLedDisplayLoop() {
         previousDataPoints = [ [ nowHrTime, sensorAngle, magZ ] ];
     }
 
+    // FIXME: debug !!!
+    let elapsedTime = process.hrtime(nowHrTime);
+    console.log("DEBUG:  angularVelocity="+angularVelocity+" \t elapsed-time="
+        + Math.floor(elapsedTime[0] * 1000 + elapsedTime[1]* 1e-6) +" ms" );
 
     // currentAngle is supposed to correct angle in high rotation speed condition!
     //_doLoop( angle, getCurrentPhoto() );
@@ -156,8 +160,8 @@ function _doLoop( angle, photoFilename ) {
 /** Internal: diff from previousDataPoints[2][0] */
 function _diffHrTime( hrTim) {
 
-    let ns = hrTim[1] - previousDataPoints[2][0][1];
     let s  = hrTim[0] - previousDataPoints[2][0][0];
+    let ns = hrTim[1] - previousDataPoints[2][0][1];
     return s + ns * 1.0e-9;
 }
 
