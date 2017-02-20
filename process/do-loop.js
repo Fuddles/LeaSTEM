@@ -30,7 +30,7 @@ const ANGLE_FIXED_CORRECTION = 90;
 //      We use magZ (global.bnoValues[9]) maximum to infer where the absolute bottom is and correct drift
 var   angleCorrectionFromBottomMagnet = 0;
 var   magZMaxValue                    = -1000;
-var   previousDataPoints              = null;         // array of [hrtime, currentAngle, magZ]. We keep the last 4 values.
+var   previousDataPoints              = null;         // array of [hrtime, sensorAngle, magZ]. We keep the last 4 values.
 
 // ----------- TESTS LEA -----------
 //var LEA_DEBUG = true;
@@ -76,7 +76,8 @@ function doLedDisplayLoop() {
     let nowHrTime       = process.hrtime();
     let hrTimeDiff      = process.hrtime( global.bnoValues[0] );                // Diff with time of measurement
     let angularVelocity = Number.parseFloat( global.bnoValues[6] );
-    let angle           = (ANGLE_FIXED_CORRECTION - Number.parseFloat(global.bnoValues[1]) + angleCorrectionFromBottomMagnet + 720) % 360;
+    let sensorAngle     = Number.parseFloat( global.bnoValues[1] );
+    let angle           = (ANGLE_FIXED_CORRECTION - (sensorAngle + angleCorrectionFromBottomMagnet) + 720) % 360;
 
     // Use angular velocity and elapsed time to improve the currentAngle.
     //  We should always be under 1 sec!
@@ -97,7 +98,7 @@ function doLedDisplayLoop() {
             if ( magZMaxValue < magZ ) {
                 magZMaxValue = magZ;
             }
-            let newLen = previousDataPoints.unshift( [ nowHrTime, currentAngle, magZ ] );    // Add as element [0] of the array
+            let newLen = previousDataPoints.unshift( [ nowHrTime, sensorAngle, magZ ] );    // Add as element [0] of the array
             if ( newLen > 2 && magZ > 0.9 * magZMaxValue ) {
                 if ( previousDataPoints[1][2] > previousDataPoints[0][2] && previousDataPoints[1][2] > previousDataPoints[2][2] ) {
                     // We have passed magZ maximum! Compute angleCorrectionFromBottomMagnet
@@ -110,7 +111,7 @@ function doLedDisplayLoop() {
         }
         // no else here, nothing to do
     } else {
-        previousDataPoints = [ [ nowHrTime, currentAngle, magZ ] ];
+        previousDataPoints = [ [ nowHrTime, sensorAngle, magZ ] ];
     }
 
 
@@ -155,7 +156,7 @@ function _diffHrTime( hrTim) {
 }
 
 
-/** Internal: compute values at bottom through quadratic regression on magZ and currentAngle */
+/** Internal: compute values at bottom through quadratic regression on magZ and sensorAngle */
 function _computeAngleCorrectionFromBottomMagnet() {
 
     let data = [ [ 0,                                       previousDataPoints[2][2] ],
@@ -175,18 +176,18 @@ function _computeAngleCorrectionFromBottomMagnet() {
         return;
     }
 
-    // --- From there we can interpolate the currentAngle value at that time
+    // --- From there we can interpolate the sensorAngle value at that time
     let angData = [ [ 0,            previousDataPoints[2][1] ],
                     [ timMagZMax,   null ],      // null will be filled using the trend, by regression-js
                     [ data[1][0],   previousDataPoints[1][1] ],
                     [ data[2][0],   previousDataPoints[0][1] ] ];
-    let regrCurrentAngle = regression('polynomial', angData, 2);
+    let regrSensorAngle = regression('polynomial', angData, 2);
 
-    // currentAngleAtMax should be 0, so we auto-correct
-    let currentAngleAtMax = regrCurrentAngle.points[1][1];
-    angleCorrectionFromBottomMagnet = (360 - currentAngleAtMax) % 360;    // 0 + 360
+    // sensorAngleAtMax should be 90, so we auto-correct
+    let sensorAngleAtMax = regrSensorAngle.points[1][1];
+    angleCorrectionFromBottomMagnet = (470 - sensorAngleAtMax) % 360;    // 90 + 360
     console.log("\nINFO in do-loop > _computeAngleCorrectionFromBottomMagnet: at time="+timMagZMax
-                + ", currentAngleAtMax estimated at "+currentAngleAtMax
+                + ", sensorAngleAtMax estimated at "+sensorAngleAtMax
                 + ", NEW VALUE angleCorrectionFromBottomMagnet="+angleCorrectionFromBottomMagnet+"\n" );
 
     // Empties the data point history as we have found the bottom
