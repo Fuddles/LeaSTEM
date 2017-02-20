@@ -88,7 +88,7 @@ function doLedDisplayLoop() {
             + ", \t angularVelocity="+ angularVelocity +" deg/s, hrTimeDiff="+ hrTimeDiff );
     }
 
-    // Keep last 4 data points and then correct the angle by detecting the bottom (peak of magZ)
+    // Keep last 3 data points and then correct the angle by detecting the bottom (peak of magZ)
     let magZ = Number.parseFloat( global.bnoValues[9] );
     if ( previousDataPoints ) {
         // First we check we do have a new value (magnetometer measures are not as fast as this loop)
@@ -98,13 +98,13 @@ function doLedDisplayLoop() {
                 magZMaxValue = magZ;
             }
             let newLen = previousDataPoints.unshift( [ nowHrTime, currentAngle, magZ ] );    // Add as element [0] of the array
-            if ( newLen > 3 && magZ > 0.9 * magZMaxValue ) {
+            if ( newLen > 2 && magZ > 0.9 * magZMaxValue ) {
                 if ( previousDataPoints[1][2] > previousDataPoints[0][2] && previousDataPoints[1][2] > previousDataPoints[2][2] ) {
                     // We have passed magZ maximum! Compute angleCorrectionFromBottomMagnet
                     _computeAngleCorrectionFromBottomMagnet();
                 }
                 else {
-                    previousDataPoints.slice(0, 3);
+                    previousDataPoints.slice(0, 2);
                 }
             }
         }
@@ -146,11 +146,11 @@ function _doLoop( angle, photoFilename ) {
 
 
 
-/** Internal: diff from previousDataPoints[3][0] */
+/** Internal: diff from previousDataPoints[2][0] */
 function _diffHrTime( hrTim) {
 
-    let ns = hrTim[1] - previousDataPoints[3][0][1];
-    let s  = hrTim[0] - previousDataPoints[3][0][0];
+    let ns = hrTim[1] - previousDataPoints[2][0][1];
+    let s  = hrTim[0] - previousDataPoints[2][0][0];
     return s + ns * 1.0e-9;
 }
 
@@ -158,8 +158,7 @@ function _diffHrTime( hrTim) {
 /** Internal: compute values at bottom through quadratic regression on magZ and currentAngle */
 function _computeAngleCorrectionFromBottomMagnet() {
 
-    let data = [ [ 0,                                       previousDataPoints[3][2] ],
-                 [ _diffHrTime(previousDataPoints[2][0]),   previousDataPoints[2][2] ],
+    let data = [ [ 0,                                       previousDataPoints[2][2] ],
                  [ _diffHrTime(previousDataPoints[1][0]),   previousDataPoints[1][2] ],
                  [ _diffHrTime(previousDataPoints[0][0]),   previousDataPoints[0][2] ] ];
     let regrMagZ = regression('polynomial', data, 2);
@@ -170,23 +169,22 @@ function _computeAngleCorrectionFromBottomMagnet() {
     // --- Now find the Time (in seconds) where magZ is maximum, ie when derivative is 0
     //      2 * regrMagZ[2] * t' + regrMagZ[1] = 0
     let timMagZMax = -0.5 * regrMagZ.equation[1] / regrMagZ.equation[2];
-    if ( isNaN(timMagZMax) || timMagZMax < 0 || timMagZMax > data[3][0] ) {        // assert timMagZMax <= data[1][0]
+    if ( isNaN(timMagZMax) || timMagZMax < 0 || timMagZMax > data[2][0] ) {        // assert timMagZMax <= data[1][0]
         console.log("\nWARNING in do-loop > _computeAngleCorrectionFromBottomMagnet: IGNORE as timMagZMax="+timMagZMax
-            + " should be 0 <= T <= data[3][0]="+data[3][0]+"\n");
+            + " should be 0 <= T <= data[2][0]="+data[2][0]+"\n");
         return;
     }
 
     // --- From there we can interpolate the currentAngle value at that time
-    let angData = [ [ 0,            previousDataPoints[3][1] ],
+    let angData = [ [ 0,            previousDataPoints[2][1] ],
                     [ timMagZMax,   null ],      // null will be filled using the trend, by regression-js
-                    [ data[1][0],   previousDataPoints[2][1] ],
-                    [ data[2][0],   previousDataPoints[1][1] ],
-                    [ data[3][0],   previousDataPoints[0][1] ] ];
+                    [ data[1][0],   previousDataPoints[1][1] ],
+                    [ data[2][0],   previousDataPoints[0][1] ] ];
     let regrCurrentAngle = regression('polynomial', angData, 2);
 
-    // currentAngleAtMax should be 180, so we auto-correct
+    // currentAngleAtMax should be 0, so we auto-correct
     let currentAngleAtMax = regrCurrentAngle.points[1][1];
-    angleCorrectionFromBottomMagnet = (540 - currentAngleAtMax) % 360;    // 180 + 360
+    angleCorrectionFromBottomMagnet = (360 - currentAngleAtMax) % 360;    // 0 + 360
     console.log("\nINFO in do-loop > _computeAngleCorrectionFromBottomMagnet: at time="+timMagZMax
                 + ", currentAngleAtMax estimated at "+currentAngleAtMax
                 + ", NEW VALUE angleCorrectionFromBottomMagnet="+angleCorrectionFromBottomMagnet+"\n" );
