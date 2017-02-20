@@ -28,8 +28,8 @@ const ANGLE_FIXED_CORRECTION = 90;
 // --- Magnet must be attached at the bottom of the reference frame. There we should have angle = 180 deg
 //      We use magZ (global.bnoValues[9]) maximum to infer where the absolute bottom is and correct drift
 var   angleCorrectionFromBottomMagnet = 0;
+var   magZMaxValue                    = -1000;
 var   previousDataPoints              = null;         // array of [hrtime, currentAngle, magZ]. We keep the last 4 values.
-
 
 // ----------- TESTS LEA -----------
 //var LEA_DEBUG = true;
@@ -90,10 +90,14 @@ function doLedDisplayLoop() {
     // Keep last 4 data points and then correct the angle by detecting the bottom (peak of magZ)
     if ( previousDataPoints ) {
         // First we check we do have a new value (magnetometer measures are not as fast as this loop)
-        if ( global.bnoValues[9] != previousDataPoints[0][2] ) {
+        let magZ = global.bnoValues[9];
+        if ( magZ != previousDataPoints[0][2] ) {
 
-            let newLen = previousDataPoints.unshift( [ nowHrTime, currentAngle, global.bnoValues[9] ] );    // Add as element [0] of the array
-            if ( newLen > 3 ) {
+            if ( magZMaxValue < magZ ) {
+                magZMaxValue = magZ;
+            }
+            let newLen = previousDataPoints.unshift( [ nowHrTime, currentAngle, magZ ] );    // Add as element [0] of the array
+            if ( newLen > 3 && magZ > 0.9 * magZMaxValue ) {
                 if ( previousDataPoints[1][2] > previousDataPoints[0][2] && previousDataPoints[1][2] < previousDataPoints[2][2] ) {
                     // We have passed magZ maximum! Compute angleCorrectionFromBottomMagnet
                     _computeAngleCorrectionFromBottomMagnet();
@@ -183,7 +187,7 @@ function _computeAngleCorrectionFromBottomMagnet() {
     angleCorrectionFromBottomMagnet = (540 - currentAngleAtMax) % 360;    // 180 + 360
     console.log("\nINFO in do-loop > _computeAngleCorrectionFromBottomMagnet: at time="+timMagZMax
                 + ", currentAngleAtMax estimated at "+currentAngleAtMax
-                + ", NEW VALUE angleCorrectionFromBottomMagnet="+angleCorrectionFromBottomMagnet );
+                + ", NEW VALUE angleCorrectionFromBottomMagnet="+angleCorrectionFromBottomMagnet+"\n" );
 
     // Empties the data point history as we have found the bottom
     previousDataPoints = null;
