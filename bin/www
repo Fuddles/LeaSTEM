@@ -54,8 +54,12 @@ if (cluster.isMaster) {
     });
     angleSensorSpawn.on('exit', (code,signal) => {
         console.log( "EXIT of angleSensorSpawn: process completed with code="+ code +" and signal=" + signal );
-
-        // FIXME: restart node !!!
+        // Pb with the sensor: Restart node!
+        if (code) {
+            console.error( "RESTART NODE" );
+            let child = childProcSpawn( "/etc/init.d/lea-stem", ['restart'], { detached: true, stdio: 'ignore' } );
+            child.unref();
+        }
     });
     angleSensorSpawn.stderr.on( 'data', (data) => {
         console.error("ERROR from angleSensorSpawn.stderr:");
