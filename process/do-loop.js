@@ -147,9 +147,9 @@ function _diffHrTime( hrTim) {
 function _computeAngleCorrectionFromBottomMagnet() {
 
     let data = [ [ 0,                                       previousDataPoints[3][2] ],
-                 [ _diffHrTime(previousDataPoints[2][0]],   previousDataPoints[2][2] ],
-                 [ _diffHrTime(previousDataPoints[1][0]],   previousDataPoints[1][2] ],
-                 [ _diffHrTime(previousDataPoints[0][0]],   previousDataPoints[0][2] ] ];
+                 [ _diffHrTime(previousDataPoints[2][0]),   previousDataPoints[2][2] ],
+                 [ _diffHrTime(previousDataPoints[1][0]),   previousDataPoints[1][2] ],
+                 [ _diffHrTime(previousDataPoints[0][0]),   previousDataPoints[0][2] ] ];
     let regrMagZ = regression('polynomial', data, 2);
     // magZ = f(t) = regrMagZ[2] * t^2 + regrMagZ[1] * t + regrMagZ[0]
 
