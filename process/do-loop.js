@@ -107,7 +107,7 @@ function doLedDisplayLoop() {
                 if ( magZ > maxCompMagZ
                     && previousDataPoints[1][2] > previousDataPoints[0][2] && previousDataPoints[1][2] > previousDataPoints[2][2] ) {
                     // We have passed magZ maximum! Compute angleCorrectionFromBottomMagnet
-                    _computeAngleCorrectionFromBottomMagnet();
+                    _computeAngleCorrectionFromBottomMagnet( angularVelocity );
                 }
                 else {
                     previousDataPoints.slice(0, 2);
@@ -162,7 +162,7 @@ function _diffHrTime( hrTim) {
 
 
 /** Internal: compute values at bottom through quadratic regression on magZ and sensorAngle */
-function _computeAngleCorrectionFromBottomMagnet() {
+function _computeAngleCorrectionFromBottomMagnet( angularVelocity ) {
 
     let data = [ [ 0,                                       previousDataPoints[2][2] ],
                  [ _diffHrTime(previousDataPoints[1][0]),   previousDataPoints[1][2] ],
@@ -193,7 +193,8 @@ function _computeAngleCorrectionFromBottomMagnet() {
     angleCorrectionFromBottomMagnet = (470 - sensorAngleAtMax) % 360;    // 90 + 360
     console.log("\nINFO in do-loop > _computeAngleCorrectionFromBottomMagnet: at time="+timMagZMax
                 + ", sensorAngleAtMax estimated at "+sensorAngleAtMax
-                + ", NEW VALUE angleCorrectionFromBottomMagnet="+angleCorrectionFromBottomMagnet+"\n" );
+                + "\n\t NEW VALUE angleCorrectionFromBottomMagnet="+angleCorrectionFromBottomMagnet
+                + "\n\t (max) MagZ="+previousDataPoints[1][2]+", angularVelocity="+angularVelocity+"\n" );
 
     // Empties the data point history as we have found the bottom
     previousDataPoints = null;
