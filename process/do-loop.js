@@ -98,7 +98,7 @@ function doLedDisplayLoop() {
             }
             let newLen = previousDataPoints.unshift( [ nowHrTime, currentAngle, magZ ] );    // Add as element [0] of the array
             if ( newLen > 3 && magZ > 0.9 * magZMaxValue ) {
-                if ( previousDataPoints[1][2] > previousDataPoints[0][2] && previousDataPoints[1][2] < previousDataPoints[2][2] ) {
+                if ( previousDataPoints[1][2] > previousDataPoints[0][2] && previousDataPoints[1][2] > previousDataPoints[2][2] ) {
                     // We have passed magZ maximum! Compute angleCorrectionFromBottomMagnet
                     _computeAngleCorrectionFromBottomMagnet();
                 }
