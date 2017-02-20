@@ -25,9 +25,11 @@ const WHITE_ARRAY            = require('./led').WHITE_ARRAY;
 const ledLightUp             = require('./led').ledLightUp;
 
 const ANGLE_FIXED_CORRECTION = 90;
+const SENSOR_READ_DELAY_IN_NANOS = 0;                 // Delay to add to hrTimeDiff to account for sensor read delay
 
 // --- Magnet must be attached at the bottom of the reference frame. There we should have angle = 180 deg
 //      We use magZ (global.bnoValues[9]) maximum to infer where the absolute bottom is and correct drift
+var   averageDisplayTimeInNanos       = 1500000;      // Around 1500 microseconds on average
 var   angleCorrectionFromBottomMagnet = 0;
 var   magZMaxValue                    = -1000;
 var   previousDataPoints              = null;         // array of [hrtime, sensorAngle, magZ]. We keep the last 4 values.
@@ -82,7 +84,7 @@ function doLedDisplayLoop() {
     // Use angular velocity and elapsed time to improve the currentAngle.
     //  We should always be under 1 sec!
     let currentAngle    = angle;
-    let angleDiff       = hrTimeDiff[1] * 1.0e-9 * angularVelocity;
+    let angleDiff       = (hrTimeDiff[1] + averageDisplayTimeInNanos + SENSOR_READ_DELAY_IN_NANOS) * 1.0e-9 * angularVelocity;
     if ( Math.abs(angleDiff) >= 0.1 ) {
         currentAngle    = (angle + angleDiff + 360 ) % 360;
         if ( Math.abs(angleDiff) >= 10 ) {
@@ -138,11 +140,14 @@ function _doLoop( angle, photoFilename, nowHrTime ) {
 
             // Display the colors on the LEDs
             ledLightUp( ledColorArray );
-        }
 
-        // FIXME: debug !!!
-        let elapsedTime = process.hrtime(nowHrTime);
-        console.log("DEBUG: elapsed-time= "+ Math.floor( elapsedTime[1] / 1000) +" microseconds =========================" );
+            let elapsedTime = process.hrtime(nowHrTime);
+            averageDisplayTimeInNanos = Math.floor( (4 * averageDisplayTimeInNanos + elapsedTime[1]) / 5 );     // weighted average to smooth
+
+            // FIXME: debug !!!
+            console.log( "DEBUG: averageDisplayTimeInNanos= "+ Math.floor( averageDisplayTimeInNanos / 1000)
+                + " \t DIFF with elapsed-time is "+ Math.floor( (averageDisplayTimeInNanos - elapsedTime[1]) / 1000) +" microseconds =========================" );
+        }
 
         // Loop
         setTimeout( doLedDisplayLoop, 0 );   // Loop asap, but without blocking the RPi event loop
