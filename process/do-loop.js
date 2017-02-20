@@ -86,8 +86,8 @@ function doLedDisplayLoop() {
     if ( Math.abs(angleDiff) >= 0.1 ) {
         currentAngle    = (angle + angleDiff + 360 ) % 360;
         if ( Math.abs(angleDiff) >= 10 ) {
-            console.log( "DIFF angle with velocity:  angle="+ angle +", angleDiff="+ angleDiff
-            + ", \t angularVelocity="+ angularVelocity +" deg/s, hrTimeDiff="+ hrTimeDiff );
+            console.log( "DIFF angle with velocity:  angle= "+ angle +", angleDiff= "+ angleDiff
+            + "\n\t\t angularVelocity= "+ angularVelocity +" deg/s, hrTimeDiff= "+ hrTimeDiff );
         }
     }
 
@@ -176,8 +176,8 @@ function _computeAngleCorrectionFromBottomMagnet( angularVelocity ) {
     //      2 * regrMagZ[2] * t' + regrMagZ[1] = 0
     let timMagZMax = -0.5 * regrMagZ.equation[1] / regrMagZ.equation[2];
     if ( isNaN(timMagZMax) || timMagZMax < 0 || timMagZMax > data[2][0] ) {        // assert timMagZMax <= data[1][0]
-        console.log("\nWARNING in do-loop > _computeAngleCorrectionFromBottomMagnet: IGNORE as timMagZMax="+timMagZMax
-            + " should be 0 <= T <= data[2][0]="+data[2][0]+"\n");
+        console.log("\nWARNING in do-loop > _computeAngleCorrectionFromBottomMagnet: IGNORE as timMagZMax= "+timMagZMax
+            + " should be 0 <= T <= data[2][0]= "+data[2][0]+"\n");
         return;
     }
 
@@ -191,10 +191,10 @@ function _computeAngleCorrectionFromBottomMagnet( angularVelocity ) {
     // sensorAngleAtMax should be 90, so we auto-correct
     let sensorAngleAtMax = regrSensorAngle.points[1][1];
     angleCorrectionFromBottomMagnet = (470 - sensorAngleAtMax) % 360;    // 90 + 360
-    console.log("\nINFO in do-loop > _computeAngleCorrectionFromBottomMagnet: at time="+timMagZMax
+    console.log("\nINFO in do-loop > _computeAngleCorrectionFromBottomMagnet: at time= "+timMagZMax
                 + ", sensorAngleAtMax estimated at "+sensorAngleAtMax
-                + "\n\t NEW VALUE angleCorrectionFromBottomMagnet="+angleCorrectionFromBottomMagnet
-                + "\n\t (max) MagZ="+previousDataPoints[1][2]+", angularVelocity="+angularVelocity+"\n" );
+                + "\n\t NEW VALUE angleCorrectionFromBottomMagnet= "+angleCorrectionFromBottomMagnet
+                + "\n\t (max) MagZ= "+previousDataPoints[1][2]+", angularVelocity= "+angularVelocity+"\n" );
 
     // Empties the data point history as we have found the bottom
     previousDataPoints = null;
