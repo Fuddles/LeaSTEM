@@ -104,10 +104,10 @@ function doLedDisplayLoop() {
             if ( newLen > 2 ) {
                 // At small angular speed, we want close to the max, but at higher speed the value is lower
                 let maxCompMagZ = ( angularVelocity < 90 ? 0.9 : 0.5 ) * magZMaxValue;
-                if ( magZ > maxCompMagZ
+                if ( magZ > maxCompMagZ && Math.abs( angularVelocity ) > 1.0
                     && previousDataPoints[1][2] > previousDataPoints[0][2] && previousDataPoints[1][2] > previousDataPoints[2][2] ) {
                     // We have passed magZ maximum! Compute angleCorrectionFromBottomMagnet
-                    _computeAngleCorrectionFromBottomMagnet( angularVelocity );
+                    _computeAngleCorrectionFromBottomMagnet( angularVelocity, magZMaxValue );
                 }
                 else {
                     previousDataPoints.slice(0, 2);
@@ -161,8 +161,8 @@ function _diffHrTime( hrTim) {
 }
 
 
-/** Internal: compute values at bottom through quadratic regression on magZ and sensorAngle */
-function _computeAngleCorrectionFromBottomMagnet( angularVelocity ) {
+/** Internal: compute values at bottom through quadratic regression on magZ and sensorAngle. Params for logs only */
+function _computeAngleCorrectionFromBottomMagnet( angularVelocity, magZMaxValue ) {
 
     let data = [ [ 0,                                       previousDataPoints[2][2] ],
                  [ _diffHrTime(previousDataPoints[1][0]),   previousDataPoints[1][2] ],
@@ -194,7 +194,7 @@ function _computeAngleCorrectionFromBottomMagnet( angularVelocity ) {
     console.log("\nINFO in do-loop > _computeAngleCorrectionFromBottomMagnet: at time= "+timMagZMax
                 + ", sensorAngleAtMax estimated at "+sensorAngleAtMax
                 + "\n\t NEW VALUE angleCorrectionFromBottomMagnet= "+angleCorrectionFromBottomMagnet
-                + "\n\t (max) MagZ= "+previousDataPoints[1][2]+", angularVelocity= "+angularVelocity+"\n" );
+                + "\n\t MagZ= "+previousDataPoints[1][2]+", magZMaxValue= "+magZMaxValue+", angularVelocity= "+angularVelocity+"\n" );
 
     // Empties the data point history as we have found the bottom
     previousDataPoints = null;
