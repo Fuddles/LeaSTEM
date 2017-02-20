@@ -90,10 +90,9 @@ function doLedDisplayLoop() {
     // Keep last 4 data points and then correct the angle by detecting the bottom (peak of magZ)
     let newLen = previousDataPoints.unshift( [ nowHrTime, currentAngle, global.bnoValues[9] ] );    // Add as element [0] of the array
     if ( newLen > 3 ) {
-        if ( previousDataPoints[0][2] < previousDataPoints[1][2] ) {
+        if ( previousDataPoints[1][2] - previousDataPoints[0][2] > 0.1 || previousDataPoints[2][2] - previousDataPoints[0][2] > 1 ) {
             // We have passed magZ maximum! Compute angleCorrectionFromBottomMagnet
             _computeAngleCorrectionFromBottomMagnet();
-            previousDataPoints = new Array();
             console.log( "INFO in do-loop: new value computed for angleCorrectionFromBottomMagnet = "+ angleCorrectionFromBottomMagnet
                          + ", when currentAngle = " + currentAngle );
         }
@@ -156,8 +155,8 @@ function _computeAngleCorrectionFromBottomMagnet() {
     // --- Now find the Time (in seconds) where magZ is maximum, ie when derivative is 0
     //      2 * regrMagZ[2] * t' + regrMagZ[1] = 0
     let timMagZMax = -0.5 * regrMagZ[1] / regrMagZ[2];
-    if ( timMagZMax > data[1][0] ) {        // assert timMagZMax <= data[1][0]
-        console.error("\n\nERROR in do-loop > _computeAngleCorrectionFromBottomMagnet: timMagZMax="+timMagZMax+" should be <= data[1][0]="+data[1][0]);
+    if ( timMagZMax < 0 || timMagZMax > data[3][0] ) {        // assert timMagZMax <= data[1][0]
+        console.log("\nWARNING in do-loop > _computeAngleCorrectionFromBottomMagnet: IGNORE as timMagZMax="+timMagZMax+" should be 0 <= T <= data[3][0]="+data[3][0]);
         return;
     }
 
@@ -173,6 +172,9 @@ function _computeAngleCorrectionFromBottomMagnet() {
     let currentAngleAtMax = angData[1][1];
     console.log("INFO in do-loop > _computeAngleCorrectionFromBottomMagnet: at time="+timMagZMax+", currentAngleAtMax estimated at "+currentAngleAtMax);
     angleCorrectionFromBottomMagnet = (540 - currentAngleAtMax) % 360;    // 180 + 360
+
+    // Empties the data point history as we have found the bottom
+    previousDataPoints = new Array();
     return;
 }
 
