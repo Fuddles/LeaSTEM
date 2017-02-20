@@ -13,6 +13,7 @@
 //         [7]     magX
 //         [8]     magY
 //         [9]     magZ
+// WARNING: [1]..[9] are STRINGs!
 
 const regression             = require('regression');
 
@@ -74,8 +75,8 @@ function doLedDisplayLoop() {
 
     let nowHrTime       = process.hrtime();
     let hrTimeDiff      = process.hrtime( global.bnoValues[0] );                // Diff with time of measurement
-    let angularVelocity = global.bnoValues[6];
-    let angle           = (ANGLE_FIXED_CORRECTION - global.bnoValues[1] + angleCorrectionFromBottomMagnet + 720) % 360;
+    let angularVelocity = Number.parseFloat( global.bnoValues[6] );
+    let angle           = (ANGLE_FIXED_CORRECTION - Number.parseFloat(global.bnoValues[1]) + angleCorrectionFromBottomMagnet + 720) % 360;
 
     // Use angular velocity and elapsed time to improve the currentAngle.
     //  We should always be under 1 sec!
@@ -88,9 +89,9 @@ function doLedDisplayLoop() {
     }
 
     // Keep last 4 data points and then correct the angle by detecting the bottom (peak of magZ)
+    let magZ = Number.parseFloat( global.bnoValues[9] );
     if ( previousDataPoints ) {
         // First we check we do have a new value (magnetometer measures are not as fast as this loop)
-        let magZ = global.bnoValues[9];
         if ( magZ != previousDataPoints[0][2] ) {
 
             if ( magZMaxValue < magZ ) {
@@ -109,7 +110,7 @@ function doLedDisplayLoop() {
         }
         // no else here, nothing to do
     } else {
-        previousDataPoints = [ [ nowHrTime, currentAngle, global.bnoValues[9] ] ];
+        previousDataPoints = [ [ nowHrTime, currentAngle, magZ ] ];
     }
 
 
@@ -170,7 +171,8 @@ function _computeAngleCorrectionFromBottomMagnet() {
     //      2 * regrMagZ[2] * t' + regrMagZ[1] = 0
     let timMagZMax = -0.5 * regrMagZ.equation[1] / regrMagZ.equation[2];
     if ( isNaN(timMagZMax) || timMagZMax < 0 || timMagZMax > data[3][0] ) {        // assert timMagZMax <= data[1][0]
-        console.log("\nWARNING in do-loop > _computeAngleCorrectionFromBottomMagnet: IGNORE as timMagZMax="+timMagZMax+" should be 0 <= T <= data[3][0]="+data[3][0]);
+        console.log("\nWARNING in do-loop > _computeAngleCorrectionFromBottomMagnet: IGNORE as timMagZMax="+timMagZMax
+            + " should be 0 <= T <= data[3][0]="+data[3][0]+"\n");
         return;
     }
 

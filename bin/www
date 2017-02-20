@@ -71,7 +71,7 @@ if (cluster.isMaster) {
 
         // Replace values[0] and store globally
         values[0]        = hrTime;                          // we replace value[0] with hrtime. values[1] .. values[9] as before
-        global.bnoValues = values;
+        global.bnoValues = values;                          // Strings !!
         //console.log( values );
         return;
     });
