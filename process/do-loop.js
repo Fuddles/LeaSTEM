@@ -93,8 +93,6 @@ function doLedDisplayLoop() {
         if ( previousDataPoints[1][2] - previousDataPoints[0][2] > 0.1 || previousDataPoints[2][2] - previousDataPoints[0][2] > 1 ) {
             // We have passed magZ maximum! Compute angleCorrectionFromBottomMagnet
             _computeAngleCorrectionFromBottomMagnet();
-            console.log( "INFO in do-loop: new value computed for angleCorrectionFromBottomMagnet = "+ angleCorrectionFromBottomMagnet
-                         + ", when currentAngle = " + currentAngle );
         }
         else {
             previousDataPoints.slice(0, 3);
@@ -170,8 +168,10 @@ function _computeAngleCorrectionFromBottomMagnet() {
 
     // currentAngleAtMax should be 180, so we auto-correct
     let currentAngleAtMax = angData[1][1];
-    console.log("INFO in do-loop > _computeAngleCorrectionFromBottomMagnet: at time="+timMagZMax+", currentAngleAtMax estimated at "+currentAngleAtMax);
     angleCorrectionFromBottomMagnet = (540 - currentAngleAtMax) % 360;    // 180 + 360
+    console.log("\nINFO in do-loop > _computeAngleCorrectionFromBottomMagnet: at time="+timMagZMax
+                + ", currentAngleAtMax estimated at "+currentAngleAtMax
+                + ", NEW VALUE angleCorrectionFromBottomMagnet="+angleCorrectionFromBottomMagnet );
 
     // Empties the data point history as we have found the bottom
     previousDataPoints = new Array();
