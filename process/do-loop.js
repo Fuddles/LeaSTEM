@@ -101,8 +101,11 @@ function doLedDisplayLoop() {
                 magZMaxValue = magZ;
             }
             let newLen = previousDataPoints.unshift( [ nowHrTime, sensorAngle, magZ ] );    // Add as element [0] of the array
-            if ( newLen > 2 && magZ > 0.9 * magZMaxValue ) {
-                if ( previousDataPoints[1][2] > previousDataPoints[0][2] && previousDataPoints[1][2] > previousDataPoints[2][2] ) {
+            if ( newLen > 2 ) {
+                // At small angular speed, we want close to the max, but at higher speed the value is lower
+                let maxCompMagZ = ( angularVelocity < 90 ? 0.9 : 0.5 ) * magZMaxValue;
+                if ( magZ > maxCompMagZ
+                    && previousDataPoints[1][2] > previousDataPoints[0][2] && previousDataPoints[1][2] > previousDataPoints[2][2] ) {
                     // We have passed magZ maximum! Compute angleCorrectionFromBottomMagnet
                     _computeAngleCorrectionFromBottomMagnet();
                 }
