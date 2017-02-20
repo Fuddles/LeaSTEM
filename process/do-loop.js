@@ -28,7 +28,7 @@ const ANGLE_FIXED_CORRECTION = 90;
 // --- Magnet must be attached at the bottom of the reference frame. There we should have angle = 180 deg
 //      We use magZ (global.bnoValues[9]) maximum to infer where the absolute bottom is and correct drift
 var   angleCorrectionFromBottomMagnet = 0;
-var   previousDataPoints = new Array();         // array of [hrtime, currentAngle, magZ]. We keep the last 4 values.
+var   previousDataPoints              = null;         // array of [hrtime, currentAngle, magZ]. We keep the last 4 values.
 
 
 // ----------- TESTS LEA -----------
@@ -88,16 +88,26 @@ function doLedDisplayLoop() {
     }
 
     // Keep last 4 data points and then correct the angle by detecting the bottom (peak of magZ)
-    let newLen = previousDataPoints.unshift( [ nowHrTime, currentAngle, global.bnoValues[9] ] );    // Add as element [0] of the array
-    if ( newLen > 3 ) {
-        if ( previousDataPoints[1][2] - previousDataPoints[0][2] > 1 || previousDataPoints[2][2] - previousDataPoints[0][2] > 1 ) {
-            // We have passed magZ maximum! Compute angleCorrectionFromBottomMagnet
-            _computeAngleCorrectionFromBottomMagnet();
+    if ( previousDataPoints ) {
+        // First we check we do have a new value (magnetometer measures are not as fast as this loop)
+        if ( global.bnoValues[9] != previousDataPoints[0][2] ) {
+
+            let newLen = previousDataPoints.unshift( [ nowHrTime, currentAngle, global.bnoValues[9] ] );    // Add as element [0] of the array
+            if ( newLen > 3 ) {
+                if ( previousDataPoints[1][2] > previousDataPoints[0][2] && previousDataPoints[1][2] < previousDataPoints[2][2] ) {
+                    // We have passed magZ maximum! Compute angleCorrectionFromBottomMagnet
+                    _computeAngleCorrectionFromBottomMagnet();
+                }
+                else {
+                    previousDataPoints.slice(0, 3);
+                }
+            }
         }
-        else {
-            previousDataPoints.slice(0, 3);
-        }
+        // no else here, nothing to do
+    } else {
+        previousDataPoints = [ [ nowHrTime, currentAngle, global.bnoValues[9] ] ];
     }
+
 
     // currentAngle is supposed to correct angle in high rotation speed condition!
     //_doLoop( angle, getCurrentPhoto() );
@@ -154,7 +164,7 @@ function _computeAngleCorrectionFromBottomMagnet() {
 
     // --- Now find the Time (in seconds) where magZ is maximum, ie when derivative is 0
     //      2 * regrMagZ[2] * t' + regrMagZ[1] = 0
-    let timMagZMax = -0.5 * regrMagZ[1] / regrMagZ[2];
+    let timMagZMax = -0.5 * regrMagZ.equation[1] / regrMagZ.equation[2];
     if ( isNaN(timMagZMax) || timMagZMax < 0 || timMagZMax > data[3][0] ) {        // assert timMagZMax <= data[1][0]
         console.log("\nWARNING in do-loop > _computeAngleCorrectionFromBottomMagnet: IGNORE as timMagZMax="+timMagZMax+" should be 0 <= T <= data[3][0]="+data[3][0]);
         return;
@@ -169,14 +179,14 @@ function _computeAngleCorrectionFromBottomMagnet() {
     let regrCurrentAngle = regression('polynomial', angData, 2);
 
     // currentAngleAtMax should be 180, so we auto-correct
-    let currentAngleAtMax = angData[1][1];
+    let currentAngleAtMax = regrCurrentAngle.points[1][1];
     angleCorrectionFromBottomMagnet = (540 - currentAngleAtMax) % 360;    // 180 + 360
     console.log("\nINFO in do-loop > _computeAngleCorrectionFromBottomMagnet: at time="+timMagZMax
                 + ", currentAngleAtMax estimated at "+currentAngleAtMax
                 + ", NEW VALUE angleCorrectionFromBottomMagnet="+angleCorrectionFromBottomMagnet );
 
     // Empties the data point history as we have found the bottom
-    previousDataPoints = new Array();
+    previousDataPoints = null;
     return;
 }
 
