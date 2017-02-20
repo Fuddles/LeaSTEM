@@ -85,8 +85,10 @@ function doLedDisplayLoop() {
     let angleDiff       = hrTimeDiff[1] * 1.0e-9 * angularVelocity;
     if ( Math.abs(angleDiff) >= 0.1 ) {
         currentAngle    = (angle + angleDiff + 360 ) % 360;
-        console.log( "DIFF angle with velocity:  angle="+ angle +", angleDiff="+ angleDiff
+        if ( Math.abs(angleDiff) >= 10 ) {            
+            console.log( "DIFF angle with velocity:  angle="+ angle +", angleDiff="+ angleDiff
             + ", \t angularVelocity="+ angularVelocity +" deg/s, hrTimeDiff="+ hrTimeDiff );
+        }
     }
 
     // Keep last 3 data points and then correct the angle by detecting the bottom (peak of magZ)
