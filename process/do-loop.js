@@ -75,7 +75,7 @@ function doLedDisplayLoop() {
 
     let nowHrTime       = process.hrtime();
     let hrTimeDiff      = process.hrtime( global.bnoValues[0] );                // Diff with time of measurement
-    let angularVelocity = Number.parseFloat( global.bnoValues[6] );
+    let angularVelocity = Number.parseFloat( global.bnoValues[6] ) * 180 / Math.PI;
     let sensorAngle     = Number.parseFloat( global.bnoValues[1] );
     let angle           = (ANGLE_FIXED_CORRECTION - (sensorAngle + angleCorrectionFromBottomMagnet) + 720) % 360;
 
