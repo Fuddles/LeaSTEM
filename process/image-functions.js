@@ -122,7 +122,7 @@ function _calcLEDPosition( cosAngle, sinAngle, idx ) {
     };
 }
 
-// Exportable version of computing position function. angle in degrees.
+// Exportable version of computing position function. angle in degrees, from top and clockwise.
 // Returns an array of {x:, y:}
 function getLEDPositionsWithDelta( angle ) {
 

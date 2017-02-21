@@ -30,9 +30,11 @@ const SENSOR_READ_DELAY_IN_NANOS = 20000000;                 // Delay to add to 
 // --- Magnet must be attached at the bottom of the reference frame. There we should have angle = 180 deg
 //      We use magZ (global.bnoValues[9]) maximum to infer where the absolute bottom is and correct drift
 var   averageDisplayTimeInNanos       = 1500000;      // Around 1500 microseconds on average
+var   averageAngularDriftInXXX        = 0;  // FIXME
 var   angleCorrectionFromBottomMagnet = 0;
+//
 var   magZMaxValue                    = -1000;
-var   previousDataPoints              = null;         // array of [hrtime, sensorAngle, magZ]. We keep the last 4 values.
+var   previousDataPoints              = null;         // array of [hrtime, sensorAngle, magZ, angVeloc]. We keep the last 4 values.
 
 // ----------- TESTS LEA -----------
 //var LEA_DEBUG = true;
@@ -81,10 +83,13 @@ function doLedDisplayLoop() {
     let sensorAngle     = Number.parseFloat( global.bnoValues[1] );
     let angle           = (ANGLE_FIXED_CORRECTION - (sensorAngle + angleCorrectionFromBottomMagnet) + 720) % 360;
 
-    // Use angular velocity and elapsed time to improve the currentAngle.
-    //  We should always be under 1 sec!
+    // --- Use angular velocity and elapsed time to improve the currentAngle.
+    //      We should always be under 1 sec!
     let currentAngle    = angle;
     let angleDiff       = (hrTimeDiff[1] + averageDisplayTimeInNanos + SENSOR_READ_DELAY_IN_NANOS) * 1.0e-9 * angularVelocity;
+
+    // FIXME: averageAngularDriftInXXX
+
     if ( Math.abs(angleDiff) >= 0.1 ) {
         currentAngle    = (angle + angleDiff + 360 ) % 360;
         if ( Math.abs(angleDiff) >= 10 ) {
@@ -94,35 +99,12 @@ function doLedDisplayLoop() {
         }
     }
 
-    // Keep last 3 data points and then correct the angle by detecting the bottom (peak of magZ)
+    // --- Keep last 5 data points and then correct the angle by detecting the bottom (peak of magZ)
     let magZ = Number.parseFloat( global.bnoValues[9] );
-    if ( previousDataPoints ) {
-        // First we check we do have a new value (magnetometer measures are not as fast as this loop)
-        if ( magZ != previousDataPoints[0][2] ) {
+    _keepPreviousDataPointsAndFindMaxMagZToComputeAngleCorrectionFromBottomMagnet(
+            nowHrTime, sensorAngle, magZ, angularVelocity );
 
-            if ( magZMaxValue < magZ ) {
-                magZMaxValue = magZ;
-            }
-            let newLen = previousDataPoints.unshift( [ nowHrTime, sensorAngle, magZ ] );    // Add as element [0] of the array
-            if ( newLen > 2 ) {
-                // At small angular speed, we want close to the max, but at higher speed the value is lower
-                let maxCompMagZ = ( angularVelocity < 90 ? 0.9 : 0.5 ) * magZMaxValue;      // FIXME: only at low speed ???
-                if ( magZ > maxCompMagZ && Math.abs( angularVelocity ) > 1.0
-                    && previousDataPoints[1][2] > previousDataPoints[0][2] && previousDataPoints[1][2] > previousDataPoints[2][2] ) {
-                    // We have passed magZ maximum! Compute angleCorrectionFromBottomMagnet
-                    _computeAngleCorrectionFromBottomMagnet( angularVelocity, magZMaxValue );
-                }
-                else {
-                    previousDataPoints.slice(0, 2);
-                }
-            }
-        }
-        // no else here, nothing to do
-    } else {
-        previousDataPoints = [ [ nowHrTime, sensorAngle, magZ ] ];
-    }
-
-    // currentAngle is supposed to correct angle in high rotation speed condition!
+    // --- currentAngle is supposed to correct angle in high rotation speed condition!
     //_doLoop( angle, getCurrentPhoto() );
     _doLoop( currentAngle, getCurrentPhoto(), nowHrTime );
 
@@ -159,12 +141,73 @@ function _doLoop( angle, photoFilename, nowHrTime ) {
 }
 
 
+/** Internal: maintain previousDataPoints, look for a maximum in magZ,
+ *    and when found, computeAngleCorrection (magnet supposed to be at bottom => sensor angle 90 deg)
+ */
+function _keepPreviousDataPointsAndFindMaxMagZToComputeAngleCorrectionFromBottomMagnet(
+        nowHrTime, sensorAngle, magZ, angularVelocity ) {
 
-/** Internal: diff from previousDataPoints[2][0] */
+    if ( !previousDataPoints ) {
+        previousDataPoints = [ [ nowHrTime, sensorAngle, magZ, angularVelocity ] ];
+        return;
+    }
+
+    // First we check we do have a new value (magnetometer measures are not as fast as this loop)
+    if ( magZ === previousDataPoints[0][2] ) {
+        return;
+    }
+
+    // Save max value of magZ
+    if ( magZMaxValue < magZ ) {
+        magZMaxValue = magZ;
+    }
+    console.log("INFO in do-loop > _keepPrevDataPointsAndXXX: nowHrTime= "+nowHrTime+" \t magZMaxValue= "+magZMaxValue
+        + ", \t magZ= "+magZ);
+
+    let newLen = previousDataPoints.unshift( [ nowHrTime, sensorAngle, magZ, angularVelocity ] );    // Add as element [0] of the array
+    if ( newLen <= 4 ) {
+        return;
+    }
+
+    // Conditions for finding a maximum:
+    //   -- some movement ( angularVelocity not null), steadily in the same direction
+    //          (angularVelocity > 0 or < 0 on all values)
+    //   -- close enough from the max magZ value (eliminate false positives)
+    //   -- [2][] is a local max
+
+    // At small angular speed, we want close to the max, but at higher speed the value is lower
+    let maxCompMagZ = ( angularVelocity < 90 ? 0.8 : 0.5 ) * magZMaxValue;
+    if ( magZ > maxCompMagZ && Math.abs( angularVelocity ) > 1.0 ) {
+        // Test constant sign of angularVelocity
+        if (  (   previousDataPoints[0][3] > 0 && previousDataPoints[1][3] > 0 && previousDataPoints[2][3] > 0
+               && previousDataPoints[3][3] > 0 && previousDataPoints[4][3] > 0 )
+           || (   previousDataPoints[0][3] < 0 && previousDataPoints[1][3] < 0 && previousDataPoints[2][3] < 0
+               && previousDataPoints[3][3] < 0 && previousDataPoints[4][3] < 0 )
+        ) {
+            // Local maximum on magZ?
+            if (   previousDataPoints[2][2] > previousDataPoints[1][2]
+                && previousDataPoints[1][2] > previousDataPoints[0][2]
+                && previousDataPoints[2][2] > previousDataPoints[3][2]
+                && previousDataPoints[3][2] > previousDataPoints[4][2]
+            ) {
+                // --- We have passed magZ maximum! Compute angleCorrectionFromBottomMagnet
+                _computeAngleCorrectionFromBottomMagnet( angularVelocity, magZMaxValue );
+                return;
+            }
+        }
+    }
+
+    // Otherwise prune to store only last five (4 + current added)
+    previousDataPoints.slice(0, 4);
+    return;
+}
+
+
+/** Internal: diff from previousDataPoints[4][0] */
 function _diffHrTime( hrTim) {
 
-    let s  = hrTim[0] - previousDataPoints[2][0][0];
-    let ns = hrTim[1] - previousDataPoints[2][0][1];
+    let s  = hrTim[0] - previousDataPoints[3][0][0];
+    let ns = hrTim[1] - previousDataPoints[3][0][1];
     return s + ns * 1.0e-9;
 }
 
@@ -172,9 +215,9 @@ function _diffHrTime( hrTim) {
 /** Internal: compute values at bottom through quadratic regression on magZ and sensorAngle. Params for logs only */
 function _computeAngleCorrectionFromBottomMagnet( angularVelocity, magZMaxValue ) {
 
-    let data = [ [ 0,                                       previousDataPoints[2][2] ],
-                 [ _diffHrTime(previousDataPoints[1][0]),   previousDataPoints[1][2] ],
-                 [ _diffHrTime(previousDataPoints[0][0]),   previousDataPoints[0][2] ] ];
+    let data = [ [ 0,                                       previousDataPoints[3][2] ],
+                 [ _diffHrTime(previousDataPoints[2][0]),   previousDataPoints[2][2] ],
+                 [ _diffHrTime(previousDataPoints[1][0]),   previousDataPoints[1][2] ] ];
     let regrMagZ = regression('polynomial', data, 2);
     // magZ = f(t) = regrMagZ[2] * t^2 + regrMagZ[1] * t + regrMagZ[0]
     //console.log( data );
@@ -190,19 +233,27 @@ function _computeAngleCorrectionFromBottomMagnet( angularVelocity, magZMaxValue 
     }
 
     // --- From there we can interpolate the sensorAngle value at that time
-    let angData = [ [ 0,            previousDataPoints[2][1] ],
+    let angData = [ [ 0,            previousDataPoints[3][1] ],
                     [ timMagZMax,   null ],      // null will be filled using the trend, by regression-js
-                    [ data[1][0],   previousDataPoints[1][1] ],
-                    [ data[2][0],   previousDataPoints[0][1] ] ];
+                    [ data[1][0],   previousDataPoints[2][1] ],
+                    [ data[2][0],   previousDataPoints[1][1] ] ];
     let regrSensorAngle = regression('polynomial', angData, 2);
 
     // sensorAngleAtMax should be 90, so we auto-correct
     let sensorAngleAtMax = regrSensorAngle.points[1][1];
-    angleCorrectionFromBottomMagnet = (470 - sensorAngleAtMax) % 360;    // 90 + 360
+    let newValAngleCorrectionFromBottomMagnet = (470 - sensorAngleAtMax) % 360;    // 90 + 360
+
+    // TODO : speed correction
+    // FIXME: averageAngularDriftInXXX
+    // let angularDrift from last time corrected? Need constant speed? 
+
     console.log("\nINFO in do-loop > _computeAngleCorrectionFromBottomMagnet: at time= "+timMagZMax
                 + ", sensorAngleAtMax estimated at "+sensorAngleAtMax
                 + "\n\t NEW VALUE angleCorrectionFromBottomMagnet= "+angleCorrectionFromBottomMagnet
-                + "\n\t MagZ= "+previousDataPoints[1][2]+", magZMaxValue= "+magZMaxValue+", angularVelocity= "+angularVelocity+"\n" );
+                + "\n\t MagZ~= "+previousDataPoints[2][2]+", magZMaxValue= "+magZMaxValue+", angularVelocity~= "+angularVelocity+"\n" );
+
+    // Adjust angle correction to best estimate
+    angleCorrectionFromBottomMagnet = newValAngleCorrectionFromBottomMagnet;
 
     // Empties the data point history as we have found the bottom
     previousDataPoints = null;
