@@ -103,4 +103,17 @@ router.get('/dot-colors', function(req, res, next) {
 
 
 
+// ----------- Restart Node!! ----------------
+
+router.get('/full-restart-nodejs-beware', function(req, res, next) {
+
+    console.error( "RESTART NODE called from API full-restart-nodejs-beware!!" );
+    let child = childProcSpawn( "/etc/init.d/lea-stem", ['restart'], { detached: true, stdio: 'ignore' } );
+    child.unref();
+    return res.sendStatus( 200 );
+});
+
+
+
+
 module.exports = router;

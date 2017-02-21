@@ -27,6 +27,10 @@
         <a href="/previous-photos.html{{ datime }}" style="margin-left: 50px;">View Previous Photos</a>
     </div>
 
+    <div style="margin: 100px 0px 0px 30px;">
+        <a href="/full-restart.html{{ datime }}">/!\ Restart</a>
+    </div>
+
     <!-- script to show success message  -->
     <script type="text/javascript">
         if (window.location.href.indexOf('?upload=ok') > 0) {

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Lea STEM Project, Jan 2017 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WARNING: Full restart!</title>
+    <link rel='stylesheet' href='/css/style.css' />
+    <script src="js/jquery-3.1.1.min.js"></script>
+</head>
+<body>
+    <div style="margin: 0px 0px 20px 0px;">
+      <a href="/">&lt; Back to homepage</a>
+    </div>
+
+    <h1>WARNING: Full restart!</h1>
+
+    Are you sure you want to restart the led strip?
+    <br/><br/>
+    For best results, place the led strip HORIZONTAL before clicking on the 'Restart' button.
+    <br/><br/>
+
+    <button onclick="doFullRestart()" style="background-color:'orange';">Restart</button>
+
+    <script type="text/javascript">
+
+    function doFullRestart() {
+        console.log("Exec doFullRestart!!");
+        $.ajax( "/full-restart-nodejs-beware" )
+        .done( function(data, textStatus) {
+            alert("Server is restarting");
+            window.location.pathname = "/";
+            return;
+        });
+    }
+
+    </script>
+
+</body>
+</html>

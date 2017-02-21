@@ -246,6 +246,10 @@ function _computeAngleCorrectionFromBottomMagnet( angularVelocity, magZMaxValue 
     // TODO : speed correction
     // FIXME: averageAngularDriftInXXX
     // let angularDrift from last time corrected? Need constant speed?
+    let asTimeShifter = (newValAngleCorrectionFromBottomMagnet - angleCorrectionFromBottomMagnet) / angularVelocity / 1000;
+    let multCoeff     = newValAngleCorrectionFromBottomMagnet / angularVelocity;    // NOTE: start strip horizontal to have that data relevant
+    console.log("CORRECTIONS: angleCorrectionDiff= "+ (newValAngleCorrectionFromBottomMagnet - angleCorrectionFromBottomMagnet)
+        + "\t as time-shift= "+ asTimeShifter +" ms, \t as multiple-coeff= "+ multCoeff );
 
     console.log("\nINFO in do-loop > _computeAngleCorrectionFromBottomMagnet: at time= "+timMagZMax
                 + ", sensorAngleAtMax estimated at "+sensorAngleAtMax
