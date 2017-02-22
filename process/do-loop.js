@@ -25,7 +25,7 @@ const WHITE_ARRAY            = require('./led').WHITE_ARRAY;
 const ledLightUp             = require('./led').ledLightUp;
 
 const ANGLE_FIXED_CORRECTION = 90;
-const SENSOR_READ_DELAY_IN_NANOS = 20000000;     // FIXME            // Delay to add to hrTimeDiff to account for sensor read delay
+const SENSOR_READ_DELAY_IN_NANOS = 5000000;    // FIXME: 20ms ??      // Delay to add to hrTimeDiff to account for sensor read delay
 
 // --- Magnet must be attached at the bottom of the reference frame. There we should have angle = 180 deg
 //      We use magZ (global.bnoValues[9]) maximum to infer where the absolute bottom is and correct drift
@@ -35,6 +35,7 @@ var   angleCorrectionFromBottomMagnet = 0;
 //
 var   magZMaxValue                    = -1000;
 var   previousDataPoints              = null;         // array of [hrtime, sensorAngle, magZ, angVeloc]. We keep the last 4 values.
+var   lastHrTimeAngleCorrected        = null;
 
 // ----------- TESTS LEA -----------
 //var LEA_DEBUG = true;
@@ -176,8 +177,8 @@ function _keepPreviousDataPointsAndFindMaxMagZToComputeAngleCorrectionFromBottom
     //   -- [2][] is a local max
 
     // At small angular speed, we want close to the max, but at higher speed the value is lower
-    let maxCompMagZ = ( angularVelocity < 90 ? 0.8 : 0.5 ) * magZMaxValue;
-    if ( magZ > maxCompMagZ && Math.abs( angularVelocity ) > 1.0 ) {
+    let maxCompMagZ = ( angularVelocity < 90 ? 0.6 : 0.3 ) * magZMaxValue;
+    if ( previousDataPoints[2][2] > maxCompMagZ && Math.abs( angularVelocity ) > 1.0 ) {
         // Test constant sign of angularVelocity
         if (  (   previousDataPoints[0][3] > 0 && previousDataPoints[1][3] > 0 && previousDataPoints[2][3] > 0
                && previousDataPoints[3][3] > 0 && previousDataPoints[4][3] > 0 )
@@ -247,7 +248,12 @@ function _computeAngleCorrectionFromBottomMagnet( angularVelocity, magZMaxValue 
     // FIXME: averageAngularDriftInXXX
     // let angularDrift from last time corrected? Need constant speed?
     let asTimeShifter = (newValAngleCorrectionFromBottomMagnet - angleCorrectionFromBottomMagnet) / angularVelocity / 1000;
-    let multCoeff     = newValAngleCorrectionFromBottomMagnet / angularVelocity;    // NOTE: start strip horizontal to have that data relevant
+    let multCoeff     = 0;
+    if (lastHrTimeAngleCorrected) {
+        let multCoeffHrTimeDiff = process.hrtime( lastHrTimeAngleCorrected );
+        multCoeff     = (newValAngleCorrectionFromBottomMagnet - angleCorrectionFromBottomMagnet) / angularVelocity
+                        / (multCoeffHrTimeDiff[0] + multCoeffHrTimeDiff[1] * 1e-9);
+    }
     console.log("CORRECTIONS: angleCorrectionDiff= "+ (newValAngleCorrectionFromBottomMagnet - angleCorrectionFromBottomMagnet)
         + "\t as time-shift= "+ asTimeShifter +" ms, \t as multiple-coeff= "+ multCoeff );
 
@@ -258,6 +264,7 @@ function _computeAngleCorrectionFromBottomMagnet( angularVelocity, magZMaxValue 
 
     // Adjust angle correction to best estimate
     angleCorrectionFromBottomMagnet = newValAngleCorrectionFromBottomMagnet;
+    lastHrTimeAngleCorrected        = process.hrtime();
 
     // Empties the data point history as we have found the bottom
     previousDataPoints = null;
