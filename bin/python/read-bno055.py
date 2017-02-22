@@ -86,5 +86,5 @@ while True:
     #x,y,z = bno.read_gravity()
 
     # Sleep for some millisecond until the next reading (in seconds)
-    # Reading frequency of the BNO055 is 100Hz max, so 1ms are for reading and the rest is sleeping
-    time.sleep(0.009)
+    # Reading frequency of the BNO055 is 100Hz max, so 3ms are for reading and the rest is sleeping
+    time.sleep(0.007)
