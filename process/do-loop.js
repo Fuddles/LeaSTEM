@@ -177,7 +177,7 @@ function _keepPreviousDataPointsAndFindMaxMagZToComputeAngleCorrectionFromBottom
     //   -- [2][] is a local max
 
     // At small angular speed, we want close to the max, but at higher speed the value is lower
-    let maxCompMagZ = ( angularVelocity < 90 ? 0.6 : 0.3 ) * magZMaxValue;
+    let maxCompMagZ = ( angularVelocity < 90 ? 0.5 : 0.1 ) * magZMaxValue;
     if ( previousDataPoints[2][2] > maxCompMagZ && Math.abs( angularVelocity ) > 1.0 ) {
         // Test constant sign of angularVelocity
         if (  (   previousDataPoints[0][3] > 0 && previousDataPoints[1][3] > 0 && previousDataPoints[2][3] > 0
@@ -254,7 +254,7 @@ function _computeAngleCorrectionFromBottomMagnet( angularVelocity, magZMaxValue 
         multCoeff     = (newValAngleCorrectionFromBottomMagnet - angleCorrectionFromBottomMagnet) / angularVelocity
                         / (multCoeffHrTimeDiff[0] + multCoeffHrTimeDiff[1] * 1e-9);
     }
-    console.log("CORRECTIONS: angleCorrectionDiff= "+ (newValAngleCorrectionFromBottomMagnet - angleCorrectionFromBottomMagnet)
+    console.log("\nCORRECTIONS: angleCorrectionDiff= "+ (newValAngleCorrectionFromBottomMagnet - angleCorrectionFromBottomMagnet)
         + "\t as time-shift= "+ asTimeShifter +" ms, \t as multiple-coeff= "+ multCoeff );
 
     console.log("\nINFO in do-loop > _computeAngleCorrectionFromBottomMagnet: at time= "+timMagZMax
