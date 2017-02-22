@@ -105,11 +105,18 @@ router.get('/dot-colors', function(req, res, next) {
 
 // ----------- Restart Node!! ----------------
 
+const childProcSpawn = require('child_process').spawn;          // always use spawn rather than exec or execFile!
+
 router.get('/full-restart-nodejs-beware', function(req, res, next) {
 
     console.error( "RESTART NODE called from API full-restart-nodejs-beware!!" );
-    let child = childProcSpawn( "/etc/init.d/lea-stem", ['restart'], { detached: true, stdio: 'ignore' } );
-    child.unref();
+    try {
+        let child = childProcSpawn( "/etc/init.d/lea-stem", ['restart'], { detached: true, stdio: 'ignore' } );
+        child.unref();
+    }
+    catch (exc) {
+        console.error(exc);
+    }
     return res.sendStatus( 200 );
 });
 
