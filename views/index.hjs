@@ -27,7 +27,7 @@
         <a href="/previous-photos.html{{ datime }}" style="margin-left: 50px;">View Previous Photos</a>
     </div>
 
-    <div style="margin: 100px 0px 0px 30px;">
+    <div style="margin: 300px 0px 0px 30px;">
         <a href="/full-restart.html{{ datime }}">/!\ Restart</a>
     </div>
 
