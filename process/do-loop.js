@@ -162,8 +162,8 @@ function _keepPreviousDataPointsAndFindMaxMagZToComputeAngleCorrectionFromBottom
     if ( magZMaxValue < magZ ) {
         magZMaxValue = magZ;
     }
-    console.log("INFO in do-loop > _keepPrevDataPointsAndXXX: nowHrTime= "+nowHrTime+" \t magZMaxValue= "+magZMaxValue
-        + ", \t magZ= "+magZ);
+    // console.log("INFO in do-loop > _keepPrevDataPointsAndXXX: nowHrTime= "+nowHrTime+" \t magZMaxValue= "+magZMaxValue
+    //     + ", \t magZ= "+magZ);
 
     let newLen = previousDataPoints.unshift( [ nowHrTime, sensorAngle, magZ, angularVelocity ] );    // Add as element [0] of the array
     if ( newLen <= 4 ) {
