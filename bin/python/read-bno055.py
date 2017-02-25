@@ -59,13 +59,16 @@ while True:
     # Magnetometer data (in micro-Teslas):
     magX, magY, magZ = bno.read_magnetometer()
 
+    # Quaternion
+    qa, qb, qc, qd = bno.read_magnetometer()
+
     # Read the calibration status, 0=uncalibrated and 3=fully calibrated.
     ## (Lea) From our tests, only gyro is fully calibrated!
     ##sys, gyro, accel, mag = bno.get_calibration_status()
 
     # Print  Heading Roll Pitch gyroX gyroY gyroZ
-    print('H={0:0.1F} R={1:0.1F} P={2:0.1F} gX={3:0.2F} gY={4:0.2F} gZ={5:0.2F} mX={6:0.2F} mY={7:0.2F} mZ={8:0.2F} '.format(
-          heading, roll, pitch, gyroX, gyroY, gyroZ, magX, magY, magZ ))
+    print('H={0:0.1F} R={1:0.1F} P={2:0.1F} gX={3:0.2F} gY={4:0.2F} gZ={5:0.2F} mX={6:0.2F} mY={7:0.2F} mZ={8:0.2F} qa={9:0.5F} qb={10:0.3F} qc={11:0.3F} qd={12:0.3F}'.format(
+          heading, roll, pitch, gyroX, gyroY, gyroZ, magX, magY, magZ, qa, qb, qc, qd ))
     sys.stdout.flush()
 
 
