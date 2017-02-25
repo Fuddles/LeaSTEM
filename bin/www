@@ -75,7 +75,8 @@ if (cluster.isMaster) {
         let values = data.toString().match( bnoRegex );     // values[1] .. values[9] with values[0] being the string itself
         // console.log("angleSensorSpawn: \t " + data);
         // console.log( values );
-        let cosFromQuaternion = Number.parseFloat(values[10]);
+        let cosFromQuaternion = Number.parseFloat(values[10]) / 0.70710678118;
+        cosFromQuaternion = Math.min( Math.max( cosFromQuaternion, -1.0 ), 1.0 );
         let angFromQuaternion = Math.acos( cosFromQuaternion ) * 360 / Math.PI;  // 2 * 180, as cos( ang/2 ) = qa
         console.log("Quaternion: \t qa= "+ values[10]+" \t qb= "+ values[11]+" \t qc= "+ values[12]+" \t qd= "+ values[13]);
         console.log("Angle from quaternion = " + angFromQuaternion );
