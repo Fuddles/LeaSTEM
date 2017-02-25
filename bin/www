@@ -69,6 +69,7 @@ if (cluster.isMaster) {
     angleSensorSpawn.stdout.on( 'data', (data) => {
         // To get current time in nanoseconds  https://nodejs.org/dist/latest-v6.x/docs/api/process.html#process_process_hrtime_time
         let hrTime = process.hrtime();
+        console.log( data );
 
         // angleSensorSpawn: H=330.5 R=-22.5 P=173.8 gX=-0.00 gY=-0.00 gZ=-0.00 mX=-0.00 mY=-0.00 mZ=-0.00 (CR-LF)
         let values = data.toString().match( bnoRegex );     // values[1] .. values[9] with values[0] being the string itself
