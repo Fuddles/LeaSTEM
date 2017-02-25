@@ -33,8 +33,9 @@ var   averageDisplayTimeInNanos       = 1500000;      // Around 1500 microsecond
 var   averageAngularDriftInXXX        = 0;  // FIXME
 var   angleCorrectionFromBottomMagnet = 0;
 //
-var   magZMaxValue                    = -1000;
-var   previousDataPoints              = null;         // array of [hrtime, sensorAngle, magZ, angVeloc]. We keep the last 4 values.
+var   magZMaxValue                    = -10000;
+var   magYMinValue                    = 10000;
+var   previousDataPoints              = null;         // array of [hrtime, sensorAngle, magZ, magY, angVeloc]. We keep the last 4 values.
 var   lastHrTimeAngleCorrected        = null;
 
 // ----------- TESTS LEA -----------
@@ -101,9 +102,11 @@ function doLedDisplayLoop() {
     }
 
     // --- Keep last 5 data points and then correct the angle by detecting the bottom (peak of magZ)
+    //      This is also a min of magY
     let magZ = Number.parseFloat( global.bnoValues[9] );
+    let magY = Number.parseFloat( global.bnoValues[8] );
     _keepPreviousDataPointsAndFindMaxMagZToComputeAngleCorrectionFromBottomMagnet(
-            nowHrTime, sensorAngle, magZ, angularVelocity );
+            nowHrTime, sensorAngle, magZ, magY, angularVelocity );
 
     // --- currentAngle is supposed to correct angle in high rotation speed condition!
     //_doLoop( angle, getCurrentPhoto() );
@@ -146,10 +149,10 @@ function _doLoop( angle, photoFilename, nowHrTime ) {
  *    and when found, computeAngleCorrection (magnet supposed to be at bottom => sensor angle 90 deg)
  */
 function _keepPreviousDataPointsAndFindMaxMagZToComputeAngleCorrectionFromBottomMagnet(
-        nowHrTime, sensorAngle, magZ, angularVelocity ) {
+        nowHrTime, sensorAngle, magZ, magY, angularVelocity ) {
 
     if ( !previousDataPoints ) {
-        previousDataPoints = [ [ nowHrTime, sensorAngle, magZ, angularVelocity ] ];
+        previousDataPoints = [ [ nowHrTime, sensorAngle, magZ, magY, angularVelocity ] ];
         return;
     }
 
@@ -158,14 +161,17 @@ function _keepPreviousDataPointsAndFindMaxMagZToComputeAngleCorrectionFromBottom
         return;
     }
 
-    // Save max value of magZ
+    // Save max value of magZ and min value of magY
     if ( magZMaxValue < magZ ) {
         magZMaxValue = magZ;
+    }
+    if ( magYMinValue > magY ) {
+        magYMinValue = magY;
     }
     // console.log("INFO in do-loop > _keepPrevDataPointsAndXXX: nowHrTime= "+nowHrTime+" \t magZMaxValue= "+magZMaxValue
     //     + ", \t magZ= "+magZ);
 
-    let newLen = previousDataPoints.unshift( [ nowHrTime, sensorAngle, magZ, angularVelocity ] );    // Add as element [0] of the array
+    let newLen = previousDataPoints.unshift( [ nowHrTime, sensorAngle, magZ, magY, angularVelocity ] );    // Add as element [0] of the array
     if ( newLen <= 4 ) {
         return;
     }
@@ -177,13 +183,15 @@ function _keepPreviousDataPointsAndFindMaxMagZToComputeAngleCorrectionFromBottom
     //   -- [2][] is a local max
 
     // At small angular speed, we want close to the max, but at higher speed the value is lower
-    let maxCompMagZ = ( angularVelocity < 90 ? 0.8 : 0.5 ) * magZMaxValue;
-    if ( previousDataPoints[2][2] > maxCompMagZ && Math.abs( angularVelocity ) > 1.0 ) {
+    let maxCompMagZ = ( angularVelocity < 90 ? 0.8 : 0.4 ) * magZMaxValue;
+    let minCompMagY = ( angularVelocity < 90 ? 0.8 : 0.4 ) * magYMinValue;
+    if ( previousDataPoints[2][2] > maxCompMagZ  && previousDataPoints[2][3] < minCompMagY
+        && Math.abs( angularVelocity ) > 1.0 ) {
         // Test constant sign of angularVelocity
-        if (  (   previousDataPoints[0][3] > 0 && previousDataPoints[1][3] > 0 && previousDataPoints[2][3] > 0
-               && previousDataPoints[3][3] > 0 && previousDataPoints[4][3] > 0 )
-           || (   previousDataPoints[0][3] < 0 && previousDataPoints[1][3] < 0 && previousDataPoints[2][3] < 0
-               && previousDataPoints[3][3] < 0 && previousDataPoints[4][3] < 0 )
+        if (  (   previousDataPoints[0][4] > 0 && previousDataPoints[1][4] > 0 && previousDataPoints[2][4] > 0
+               && previousDataPoints[3][4] > 0 && previousDataPoints[4][4] > 0 )
+           || (   previousDataPoints[0][4] < 0 && previousDataPoints[1][4] < 0 && previousDataPoints[2][4] < 0
+               && previousDataPoints[3][4] < 0 && previousDataPoints[4][4] < 0 )
         ) {
             // Local maximum on magZ?
             if (   previousDataPoints[2][2] > previousDataPoints[1][2]
@@ -204,7 +212,7 @@ function _keepPreviousDataPointsAndFindMaxMagZToComputeAngleCorrectionFromBottom
 }
 
 
-/** Internal: diff from previousDataPoints[4][0] */
+/** Internal: diff from previousDataPoints[3][0] */
 function _diffHrTime( hrTim) {
 
     let s  = hrTim[0] - previousDataPoints[3][0][0];
