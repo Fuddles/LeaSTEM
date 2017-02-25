@@ -60,7 +60,7 @@ while True:
     magX, magY, magZ = bno.read_magnetometer()
 
     # Quaternion
-    qa, qb, qc, qd = bno.read_magnetometer()
+    qa, qb, qc, qd = bno.read_quaternion()
 
     # Read the calibration status, 0=uncalibrated and 3=fully calibrated.
     ## (Lea) From our tests, only gyro is fully calibrated!
@@ -75,7 +75,7 @@ while True:
     # --- Other values you can optionally read:
 
     # Orientation as a quaternion:
-    #x,y,z,w = bno.read_quaterion()
+    #x,y,z,w = bno.read_quaternion()
     # Sensor temperature in degrees Celsius:
     #temp_c = bno.read_temp()
     # Accelerometer data (in meters per second squared):

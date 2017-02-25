@@ -64,7 +64,7 @@ if (cluster.isMaster) {
     });
     angleSensorSpawn.stderr.on( 'data', (data) => {
         console.error("ERROR from angleSensorSpawn.stderr:");
-        console.error( data );
+        console.error( data.toString() );
     });
     // --- Extract angle and speed info from BNO055 output
     angleSensorSpawn.stdout.on( 'data', (data) => {
