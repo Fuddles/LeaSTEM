@@ -25,17 +25,19 @@ const WHITE_ARRAY            = require('./led').WHITE_ARRAY;
 const ledLightUp             = require('./led').ledLightUp;
 
 const ANGLE_FIXED_CORRECTION = 90;
-const SENSOR_READ_DELAY_IN_NANOS = 10000000;    // FIXME: 20ms ??      // Delay to add to hrTimeDiff to account for sensor read delay
+const SENSOR_READ_DELAY_IN_NANOS = 1000000;           // Delay to add to hrTimeDiff to account for sensor read delay
 
 // --- Magnet must be attached at the bottom of the reference frame. There we should have angle = 180 deg
 //      We use magZ (global.bnoValues[9]) maximum to infer where the absolute bottom is and correct drift
 var   averageDisplayTimeInNanos       = 1500000;      // Around 1500 microseconds on average
-var   averageAngularDriftInXXX        = 0;  // FIXME
 var   angleCorrectionFromBottomMagnet = 0;
+var   angleCorrectionFromQuaternion   = 0;
 //
 var   magZMaxValue                    = -10000;
 var   magYMinValue                    = 10000;
-var   previousDataPoints              = null;         // array of [hrtime, sensorAngle, magZ, magY, angVeloc]. We keep the last 4 values.
+var   qaZeroSensorAngleValue          = -10000;
+var   previousDataPointsMag           = null;         // array of [hrtime, sensorAngle, magZ, magY, angVeloc]. We keep the last 4 values.
+var   previousDataPointsQa            = null;         // array of [hrtime, sensorAngle, qa]. We keep the last 4 values.
 var   lastHrTimeAngleCorrected        = null;
 
 // ----------- TESTS LEA -----------
@@ -83,14 +85,12 @@ function doLedDisplayLoop() {
     let hrTimeDiff      = process.hrtime( global.bnoValues[0] );                // Diff with time of measurement
     let angularVelocity = Number.parseFloat( global.bnoValues[6] ) * 180 / Math.PI; // Tested good!
     let sensorAngle     = Number.parseFloat( global.bnoValues[1] );
-    let angle           = (ANGLE_FIXED_CORRECTION - (sensorAngle + angleCorrectionFromBottomMagnet) + 720) % 360;
+    let angle           = (ANGLE_FIXED_CORRECTION - (sensorAngle + angleCorrectionFromBottomMagnet + angleCorrectionFromQuaternion) + 720) % 360;
 
     // --- Use angular velocity and elapsed time to improve the currentAngle.
     //      We should always be under 1 sec!
     let currentAngle    = angle;
     let angleDiff       = (hrTimeDiff[1] + averageDisplayTimeInNanos + SENSOR_READ_DELAY_IN_NANOS) * 1.0e-9 * angularVelocity;
-
-    // FIXME: averageAngularDriftInXXX
 
     if ( Math.abs(angleDiff) >= 0.1 ) {
         currentAngle    = (angle + angleDiff + 360 ) % 360;
@@ -101,12 +101,16 @@ function doLedDisplayLoop() {
         // }
     }
 
+    // --- Keep last 5 data points and then correct the angle by detecting the zero crossing of qa
+    let qa   = Number.parseFloat( global.bnoValues[10] );            // Quaternion scalar
+// FIXME    _keeppreviousDataPointsQaToComputeAngleCorrectionFromQuaternion( nowHrTime, sensorAngle, qa );
+
     // --- Keep last 5 data points and then correct the angle by detecting the bottom (peak of magZ)
     //      This is also a min of magY
     let magZ = Number.parseFloat( global.bnoValues[9] );
     let magY = Number.parseFloat( global.bnoValues[8] );
-    _keepPreviousDataPointsAndFindMaxMagZToComputeAngleCorrectionFromBottomMagnet(
-            nowHrTime, sensorAngle, magZ, magY, angularVelocity );
+    _keeppreviousDataPointsMagAndFindMaxMagZToComputeAngleCorrectionFromBottomMagnet(
+            nowHrTime, sensorAngle, magZ, magY, angularVelocity);
 
     // --- currentAngle is supposed to correct angle in high rotation speed condition!
     //_doLoop( angle, getCurrentPhoto() );
@@ -145,19 +149,82 @@ function _doLoop( angle, photoFilename, nowHrTime ) {
 }
 
 
-/** Internal: maintain previousDataPoints, look for a maximum in magZ,
+
+
+
+
+// ====================== ANGLE CORRECTIONS ======================
+
+
+
+
+
+
+/** Internal: maintain previousDataPointsMag, look for a maximum in magZ,
  *    and when found, computeAngleCorrection (magnet supposed to be at bottom => sensor angle 90 deg)
  */
-function _keepPreviousDataPointsAndFindMaxMagZToComputeAngleCorrectionFromBottomMagnet(
-        nowHrTime, sensorAngle, magZ, magY, angularVelocity ) {
+function _keeppreviousDataPointsQaToComputeAngleCorrectionFromQuaternion( nowHrTime, sensorAngle, qa, angularVelocity ) {
 
-    if ( !previousDataPoints ) {
-        previousDataPoints = [ [ nowHrTime, sensorAngle, magZ, magY, angularVelocity ] ];
+    if ( !previousDataPointsQa ) {
+        previousDataPointsQa = [ [ nowHrTime, sensorAngle, qa, angularVelocity ] ];
+        return;
+    }
+
+    let newLen = previousDataPointsQa.unshift( [ nowHrTime, sensorAngle, qa, angularVelocity ] );    // Add as element [0] of the array
+    if ( newLen <= 4 ) {
+        return;
+    }
+
+    // Conditions for finding a zero-crossing:
+    //   -- some movement ( angularVelocity not null), steadily in the same direction
+    //          (angularVelocity > 0 or < 0 on all values)
+    //   -- negative on one side and positive on the other
+    if ( Math.abs( angularVelocity ) > 1.0 ) {
+
+        // Test constant sign of angularVelocity
+        let isAngVelocSignConst = (   previousDataPointsQa[0][3] > 0 && previousDataPointsQa[1][3] > 0 && previousDataPointsQa[2][3] > 0
+                                   && previousDataPointsQa[3][3] > 0 && previousDataPointsQa[4][3] > 0 )
+                               || (   previousDataPointsQa[0][3] < 0 && previousDataPointsQa[1][3] < 0 && previousDataPointsQa[2][3] < 0
+                                   && previousDataPointsQa[3][3] < 0 && previousDataPointsQa[4][3] < 0 );
+        if ( isAngVelocSignConst ) {
+            // zero-crossing on qa?
+            // FIXME
+            if (   previousDataPointsQa[2][2] > previousDataPointsQa[1][2]
+                && previousDataPointsQa[1][2] > previousDataPointsQa[0][2]
+                && previousDataPointsQa[2][2] > previousDataPointsQa[3][2]
+                && previousDataPointsQa[3][2] > previousDataPointsQa[4][2]
+            ) {
+                // --- We have passed zero-crossing for qa! Compute angleCorrectionFromQuaternion
+                _computeAngleCorrectionFromQuaternion();    // FIXME
+                return;
+            }
+        }
+    }
+
+    // Otherwise prune to store only last five (4 + current added)
+    previousDataPointsQa.slice(0, 4);
+    return;
+}
+
+
+
+
+
+
+
+/** Internal: maintain previousDataPointsMag, look for a maximum in magZ,
+ *    and when found, computeAngleCorrection (magnet supposed to be at bottom => sensor angle 90 deg)
+ */
+function _keeppreviousDataPointsMagAndFindMaxMagZToComputeAngleCorrectionFromBottomMagnet(
+        nowHrTime, sensorAngle, magZ, magY, angularVelocity) {
+
+    if ( !previousDataPointsMag ) {
+        previousDataPointsMag = [ [ nowHrTime, sensorAngle, magZ, magY, angularVelocity] ];
         return;
     }
 
     // First we check we do have a new value (magnetometer measures are not as fast as this loop)
-    if ( magZ === previousDataPoints[0][2] ) {
+    if ( magZ === previousDataPointsMag[0][2] ) {
         return;
     }
 
@@ -171,7 +238,7 @@ function _keepPreviousDataPointsAndFindMaxMagZToComputeAngleCorrectionFromBottom
     // console.log("INFO in do-loop > _keepPrevDataPointsAndXXX: nowHrTime= "+nowHrTime+" \t magZMaxValue= "+magZMaxValue
     //     + ", \t magZ= "+magZ);
 
-    let newLen = previousDataPoints.unshift( [ nowHrTime, sensorAngle, magZ, magY, angularVelocity ] );    // Add as element [0] of the array
+    let newLen = previousDataPointsMag.unshift( [ nowHrTime, sensorAngle, magZ, magY, angularVelocity] );    // Add as element [0] of the array
     if ( newLen <= 4 ) {
         return;
     }
@@ -186,20 +253,21 @@ function _keepPreviousDataPointsAndFindMaxMagZToComputeAngleCorrectionFromBottom
     //let maxCompMagZ = ( angularVelocity < 90 ? 0.8 : 0.4 ) * magZMaxValue;
     //let minCompMagY = ( angularVelocity < 90 ? 0.6 : 0.3 ) * magYMinValue;
     let maxCompMagZ = 0.8 * magZMaxValue;
-    let minCompMagY = 0.6 * magYMinValue;
-    if ( previousDataPoints[2][2] > maxCompMagZ  && previousDataPoints[2][3] < minCompMagY
-        && Math.abs( angularVelocity ) > 1.0 && Math.abs( angularVelocity ) < 300 ) {
+    let minCompMagY = 0.5 * magYMinValue;
+    if ( previousDataPointsMag[2][2] > maxCompMagZ  && previousDataPointsMag[2][3] < minCompMagY
+        && Math.abs( angularVelocity ) > 1.0 && Math.abs( angularVelocity ) < 100 ) {
+
         // Test constant sign of angularVelocity
-        if (  (   previousDataPoints[0][4] > 0 && previousDataPoints[1][4] > 0 && previousDataPoints[2][4] > 0
-               && previousDataPoints[3][4] > 0 && previousDataPoints[4][4] > 0 )
-           || (   previousDataPoints[0][4] < 0 && previousDataPoints[1][4] < 0 && previousDataPoints[2][4] < 0
-               && previousDataPoints[3][4] < 0 && previousDataPoints[4][4] < 0 )
-        ) {
+        let isAngVelocSignConst = (   previousDataPointsMag[0][4] > 0 && previousDataPointsMag[1][4] > 0 && previousDataPointsMag[2][4] > 0
+                                   && previousDataPointsMag[3][4] > 0 && previousDataPointsMag[4][4] > 0 )
+                               || (   previousDataPointsMag[0][4] < 0 && previousDataPointsMag[1][4] < 0 && previousDataPointsMag[2][4] < 0
+                                   && previousDataPointsMag[3][4] < 0 && previousDataPointsMag[4][4] < 0 );
+        if ( isAngVelocSignConst ) {
             // Local maximum on magZ?
-            if (   previousDataPoints[2][2] > previousDataPoints[1][2]
-                && previousDataPoints[1][2] > previousDataPoints[0][2]
-                && previousDataPoints[2][2] > previousDataPoints[3][2]
-                && previousDataPoints[3][2] > previousDataPoints[4][2]
+            if (   previousDataPointsMag[2][2] > previousDataPointsMag[1][2]
+                && previousDataPointsMag[1][2] > previousDataPointsMag[0][2]
+                && previousDataPointsMag[2][2] > previousDataPointsMag[3][2]
+                && previousDataPointsMag[3][2] > previousDataPointsMag[4][2]
             ) {
                 // --- We have passed magZ maximum! Compute angleCorrectionFromBottomMagnet
                 _computeAngleCorrectionFromBottomMagnet( angularVelocity, magZMaxValue );
@@ -209,16 +277,16 @@ function _keepPreviousDataPointsAndFindMaxMagZToComputeAngleCorrectionFromBottom
     }
 
     // Otherwise prune to store only last five (4 + current added)
-    previousDataPoints.slice(0, 4);
+    previousDataPointsMag.slice(0, 4);
     return;
 }
 
 
-/** Internal: diff from previousDataPoints[3][0] */
+/** Internal: diff from previousDataPointsMag[3][0] */
 function _diffHrTime( hrTim) {
 
-    let s  = hrTim[0] - previousDataPoints[3][0][0];
-    let ns = hrTim[1] - previousDataPoints[3][0][1];
+    let s  = hrTim[0] - previousDataPointsMag[3][0][0];
+    let ns = hrTim[1] - previousDataPointsMag[3][0][1];
     return s + ns * 1.0e-9;
 }
 
@@ -226,9 +294,9 @@ function _diffHrTime( hrTim) {
 /** Internal: compute values at bottom through quadratic regression on magZ and sensorAngle. Params for logs only */
 function _computeAngleCorrectionFromBottomMagnet( angularVelocity, magZMaxValue ) {
 
-    let data = [ [ 0,                                       previousDataPoints[3][2] ],
-                 [ _diffHrTime(previousDataPoints[2][0]),   previousDataPoints[2][2] ],
-                 [ _diffHrTime(previousDataPoints[1][0]),   previousDataPoints[1][2] ] ];
+    let data = [ [ 0,                                       previousDataPointsMag[3][2] ],
+                 [ _diffHrTime(previousDataPointsMag[2][0]),   previousDataPointsMag[2][2] ],
+                 [ _diffHrTime(previousDataPointsMag[1][0]),   previousDataPointsMag[1][2] ] ];
     let regrMagZ = regression('polynomial', data, 2);
     // magZ = f(t) = regrMagZ[2] * t^2 + regrMagZ[1] * t + regrMagZ[0]
     //console.log( data );
@@ -244,10 +312,10 @@ function _computeAngleCorrectionFromBottomMagnet( angularVelocity, magZMaxValue 
     }
 
     // --- From there we can interpolate the sensorAngle value at that time
-    let angData = [ [ 0,            previousDataPoints[3][1] ],
+    let angData = [ [ 0,            previousDataPointsMag[3][1] ],
                     [ timMagZMax,   null ],      // null will be filled using the trend, by regression-js
-                    [ data[1][0],   previousDataPoints[2][1] ],
-                    [ data[2][0],   previousDataPoints[1][1] ] ];
+                    [ data[1][0],   previousDataPointsMag[2][1] ],
+                    [ data[2][0],   previousDataPointsMag[1][1] ] ];
     let regrSensorAngle = regression('polynomial', angData, 2);
 
     // sensorAngleAtMax should be 90, so we auto-correct
@@ -255,7 +323,6 @@ function _computeAngleCorrectionFromBottomMagnet( angularVelocity, magZMaxValue 
     let newValAngleCorrectionFromBottomMagnet = (470 - sensorAngleAtMax) % 360;    // 90 + 360
 
     // TODO : speed correction
-    // FIXME: averageAngularDriftInXXX
     // let angularDrift from last time corrected? Need constant speed?
     let asTimeShifter = (newValAngleCorrectionFromBottomMagnet - angleCorrectionFromBottomMagnet) / angularVelocity / 1000;
     let multCoeff     = 0;
@@ -270,14 +337,14 @@ function _computeAngleCorrectionFromBottomMagnet( angularVelocity, magZMaxValue 
     console.log("\nINFO in do-loop > _computeAngleCorrectionFromBottomMagnet: at time= "+timMagZMax
                 + ", sensorAngleAtMax estimated at "+sensorAngleAtMax
                 + "\n\t NEW VALUE angleCorrectionFromBottomMagnet= "+angleCorrectionFromBottomMagnet
-                + "\n\t MagZ~= "+previousDataPoints[2][2]+", magZMaxValue= "+magZMaxValue+", angularVelocity~= "+angularVelocity+"\n" );
+                + "\n\t MagZ~= "+previousDataPointsMag[2][2]+", magZMaxValue= "+magZMaxValue+", angularVelocity~= "+angularVelocity+"\n" );
 
     // Adjust angle correction to best estimate
     angleCorrectionFromBottomMagnet = newValAngleCorrectionFromBottomMagnet;
     lastHrTimeAngleCorrected        = process.hrtime();
 
     // Empties the data point history as we have found the bottom
-    previousDataPoints = null;
+    previousDataPointsMag = null;
     return;
 }
 
