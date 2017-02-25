@@ -184,7 +184,7 @@ function _keepPreviousDataPointsAndFindMaxMagZToComputeAngleCorrectionFromBottom
 
     // At small angular speed, we want close to the max, but at higher speed the value is lower
     let maxCompMagZ = ( angularVelocity < 90 ? 0.8 : 0.4 ) * magZMaxValue;
-    let minCompMagY = ( angularVelocity < 90 ? 0.8 : 0.4 ) * magYMinValue;
+    let minCompMagY = ( angularVelocity < 90 ? 0.6 : 0.3 ) * magYMinValue;
     if ( previousDataPoints[2][2] > maxCompMagZ  && previousDataPoints[2][3] < minCompMagY
         && Math.abs( angularVelocity ) > 1.0 ) {
         // Test constant sign of angularVelocity
