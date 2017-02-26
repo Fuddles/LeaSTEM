@@ -27,7 +27,7 @@ const WHITE_ARRAY            = require('./led').WHITE_ARRAY;
 const ledLightUp             = require('./led').ledLightUp;
 
 const ANGLE_FIXED_CORRECTION = 90;
-const SENSOR_READ_DELAY_IN_NANOS = 1000000;           // Delay to add to hrTimeDiff to account for sensor read delay
+const SENSOR_READ_DELAY_IN_NANOS = 50000000;           // Delay to add to hrTimeDiff to account for sensor read delay
 
 // --- Magnet must be attached at the bottom of the reference frame. There we should have angle = 180 deg
 //      We use magZ (global.bnoValues[9]) maximum to infer where the absolute bottom is and correct drift
