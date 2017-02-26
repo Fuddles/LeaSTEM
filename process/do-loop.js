@@ -315,8 +315,8 @@ function _keeppreviousDataPointsMagAndFindMaxMagZToComputeAngleCorrectionFromBot
     // At small angular speed, we want close to the max. At higher speed it is not accurate enough
     //let maxCompMagZ = ( angularVelocity < 90 ? 0.8 : 0.4 ) * magZMaxValue;
     //let minCompMagY = ( angularVelocity < 90 ? 0.6 : 0.3 ) * magYMinValue;
-    let maxCompMagZ = 0.8 * magZMaxValue;
-    let minCompMagY = 0.3 * magYMinValue;
+    let maxCompMagZ = 0.7 * magZMaxValue;
+    let minCompMagY = 0.2 * magYMinValue;
     if ( previousDataPointsMag[2][2] > maxCompMagZ  && previousDataPointsMag[2][3] < minCompMagY
         && Math.abs( angularVelocity ) > 0.1 && Math.abs( angularVelocity ) < 500 ) {
 
