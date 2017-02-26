@@ -96,11 +96,11 @@ function doLedDisplayLoop() {
 
     if ( Math.abs(angleDiff) >= 0.1 ) {
         currentAngle    = (angle + angleDiff + 360 ) % 360;
-        // if ( Math.abs(angleDiff) >= 10 ) {
-        //     console.log( "DIFF angle \t hrTimeDiff= "+ Math.floor(hrTimeDiff[0] * 1000 + hrTimeDiff[1]* 1e-6)
-        //     + "ms, with velocity: \t angle= "+ angle +" \t angleDiff= "+ angleDiff
-        //     + "\n\t\t angularVelocity= "+ angularVelocity +" deg/s" );
-        // }
+        if ( Math.abs(angleDiff) >= 10 ) {
+            console.log( "DIFF angle \t hrTimeDiff= "+ Math.floor(hrTimeDiff[0] * 1000 + hrTimeDiff[1]* 1e-6)
+            + "ms, with velocity: \t angle= "+ angle +" \t angleDiff= "+ angleDiff
+            + "\n\t\t angularVelocity= "+ angularVelocity +" deg/s" );
+        }
     }
 
     // --- Keep last 5 data points and then correct the angle by detecting the zero crossing of qa
@@ -137,8 +137,8 @@ function _doLoop( angle, photoFilename, nowHrTime ) {
             // Compute average display time to anticipate angle better
             let elapsedTime = process.hrtime(nowHrTime);
             averageDisplayTimeInNanos = Math.floor( (4 * averageDisplayTimeInNanos + elapsedTime[1]) / 5 );     // weighted average to smooth
-            //console.log( "DEBUG: averageDisplayTimeInNanos= "+ Math.floor( averageDisplayTimeInNanos / 1000)
-            //    + " \t DIFF with elapsed-time is "+ Math.floor( Math.abs(averageDisplayTimeInNanos - elapsedTime[1]) / 1000) +" microseconds =========================" );
+            console.log( "DEBUG: averageDisplayTimeInNanos= "+ Math.floor( averageDisplayTimeInNanos / 1000)
+               + " \t DIFF with elapsed-time is "+ Math.floor( Math.abs(averageDisplayTimeInNanos - elapsedTime[1]) / 1000) +" microseconds =========================" );
         }
 
         // Loop
