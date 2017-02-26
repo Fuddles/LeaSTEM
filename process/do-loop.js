@@ -248,7 +248,7 @@ function _computeAngleCorrectionFromQuaternion() {
     qaZeroSensorAnglePrevValue    = sensorAngleAtQaZero;
 
     console.log("\nQA-CORRECTION: angleCorrectionQa= "+ angleCorrectionFromQuaternion);
-    if ( correctionAbsDiff > 2.0 ) {
+    if ( correctionAbsDiff > 5.0 ) {
         console.log("@@@@@@*******++++++++ BIG DIFF! ++++++********@@@@@@@@");
         console.log(" \t From "+oldAngleCorrect+" to \t "+angleCorrectionFromQuaternion);
     }
