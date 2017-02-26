@@ -249,7 +249,7 @@ function _computeAngleCorrectionFromQuaternion() {
 
     //console.log("\nQA-CORRECTION: angleCorrectionQa= "+ angleCorrectionFromQuaternion);
     if ( correctionAbsDiff > 5.0 ) {
-        console.log("@@@@@@*******++++++++ BIG DIFF! ++++++********@@@@@@@@");
+        console.log("\n@@@@@@*******++++++++ QA-CORRECTION BIG DIFF! ++++++********@@@@@@@@");
         console.log(" \t From "+oldAngleCorrect+" to \t "+angleCorrectionFromQuaternion);
     }
 
