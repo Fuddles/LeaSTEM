@@ -247,7 +247,7 @@ function _computeAngleCorrectionFromQuaternion() {
     // Save previous value for next loop
     qaZeroSensorAnglePrevValue    = sensorAngleAtQaZero;
 
-    console.log("\nQA-CORRECTION: angleCorrectionQa= "+ angleCorrectionFromQuaternion);
+    //console.log("\nQA-CORRECTION: angleCorrectionQa= "+ angleCorrectionFromQuaternion);
     if ( correctionAbsDiff > 5.0 ) {
         console.log("@@@@@@*******++++++++ BIG DIFF! ++++++********@@@@@@@@");
         console.log(" \t From "+oldAngleCorrect+" to \t "+angleCorrectionFromQuaternion);
@@ -318,7 +318,7 @@ function _keeppreviousDataPointsMagAndFindMaxMagZToComputeAngleCorrectionFromBot
     let maxCompMagZ = 0.8 * magZMaxValue;
     let minCompMagY = 0.3 * magYMinValue;
     if ( previousDataPointsMag[2][2] > maxCompMagZ  && previousDataPointsMag[2][3] < minCompMagY
-        && Math.abs( angularVelocity ) > 1.0 && Math.abs( angularVelocity ) < 100 ) {
+        && Math.abs( angularVelocity ) > 0.1 && Math.abs( angularVelocity ) < 500 ) {
 
         // Test constant sign of angularVelocity
         let isAngVelocSignConst = (   previousDataPointsMag[0][4] > 0 && previousDataPointsMag[1][4] > 0 && previousDataPointsMag[2][4] > 0
