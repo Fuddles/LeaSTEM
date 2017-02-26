@@ -96,11 +96,11 @@ function doLedDisplayLoop() {
 
     if ( Math.abs(angleDiff) >= 0.1 ) {
         currentAngle    = (angle + angleDiff + 360 ) % 360;
-        if ( Math.abs(angleDiff) >= 10 ) {
-            console.log( "DIFF angle \t hrTimeDiff= "+ Math.floor(hrTimeDiff[0] * 1000 + hrTimeDiff[1]* 1e-6)
-            + "ms, with velocity: \t angle= "+ angle +" \t angleDiff= "+ angleDiff
-            + "\n\t\t angularVelocity= "+ angularVelocity +" deg/s" );
-        }
+        // if ( Math.abs(angleDiff) >= 10 ) {
+        //     console.log( "DIFF angle \t hrTimeDiff= "+ Math.floor(hrTimeDiff[0] * 1000 + hrTimeDiff[1]* 1e-6)
+        //     + "ms, with velocity: \t angle= "+ angle +" \t angleDiff= "+ angleDiff
+        //     + "\n\t\t angularVelocity= "+ angularVelocity +" deg/s" );
+        // }
     }
 
     // --- Keep last 5 data points and then correct the angle by detecting the zero crossing of qa
