@@ -22,7 +22,7 @@ rpio.init({
 rpio.spiBegin();
 //rpio.spiSetClockDivider(4); 	// divider should be 4 or 8 max to have high-speed display, but flickers --> 64 is good
 //rpio.spiSetClockDivider(64);
-rpio.spiSetClockDivider(32);
+rpio.spiSetClockDivider(512);
 rpio.spiSetDataMode(0);
 
 
