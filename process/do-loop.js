@@ -35,9 +35,9 @@ var   angleCorrectionFromQuaternion   = 0;
 //
 var   magZMaxValue                    = -10000;
 var   magYMinValue                    = 10000;
-var   qaZeroSensorAngleValue          = -10000;
+var   qaZeroSensorAnglePrevValue          = -999;         // Don't change init value!
 var   previousDataPointsMag           = null;         // array of [hrtime, sensorAngle, magZ, magY, angVeloc]. We keep the last 4 values.
-var   previousDataPointsQa            = null;         // array of [hrtime, sensorAngle, qa]. We keep the last 4 values.
+var   previousDataPointsQa            = null;         // array of [hrtime, sensorAngle, qa]. We keep the last 3 values.
 var   lastHrTimeAngleCorrected        = null;
 
 // ----------- TESTS LEA -----------
@@ -151,9 +151,13 @@ function _doLoop( angle, photoFilename, nowHrTime ) {
 
 
 
-
-
-// ====================== ANGLE CORRECTIONS ======================
+/*
+ █████  ███    ██  ██████  ██      ███████      ██████  ██████  ██████  ██████  ███████  ██████ ████████ ██  ██████  ███    ██ ███████
+██   ██ ████   ██ ██       ██      ██          ██      ██    ██ ██   ██ ██   ██ ██      ██         ██    ██ ██    ██ ████   ██ ██
+███████ ██ ██  ██ ██   ███ ██      █████       ██      ██    ██ ██████  ██████  █████   ██         ██    ██ ██    ██ ██ ██  ██ ███████
+██   ██ ██  ██ ██ ██    ██ ██      ██          ██      ██    ██ ██   ██ ██   ██ ██      ██         ██    ██ ██    ██ ██  ██ ██      ██
+██   ██ ██   ████  ██████  ███████ ███████      ██████  ██████  ██   ██ ██   ██ ███████  ██████    ██    ██  ██████  ██   ████ ███████
+*/
 
 
 
@@ -170,8 +174,12 @@ function _keeppreviousDataPointsQaToComputeAngleCorrectionFromQuaternion( nowHrT
         return;
     }
 
+    // First we check we do have a new value (magnetometer measures are not as fast as this loop)
+    if ( qa === previousDataPointsMag[0][2] ) {
+        return;
+    }
     let newLen = previousDataPointsQa.unshift( [ nowHrTime, sensorAngle, qa, angularVelocity ] );    // Add as element [0] of the array
-    if ( newLen <= 4 ) {
+    if ( newLen <= 3 ) {
         return;
     }
 
@@ -182,32 +190,84 @@ function _keeppreviousDataPointsQaToComputeAngleCorrectionFromQuaternion( nowHrT
     if ( Math.abs( angularVelocity ) > 1.0 ) {
 
         // Test constant sign of angularVelocity
-        let isAngVelocSignConst = (   previousDataPointsQa[0][3] > 0 && previousDataPointsQa[1][3] > 0 && previousDataPointsQa[2][3] > 0
-                                   && previousDataPointsQa[3][3] > 0 && previousDataPointsQa[4][3] > 0 )
-                               || (   previousDataPointsQa[0][3] < 0 && previousDataPointsQa[1][3] < 0 && previousDataPointsQa[2][3] < 0
-                                   && previousDataPointsQa[3][3] < 0 && previousDataPointsQa[4][3] < 0 );
+        let isAngVelocSignConst = (   previousDataPointsQa[0][3] > 0 && previousDataPointsQa[1][3] > 0
+                                   && previousDataPointsQa[2][3] > 0 && previousDataPointsQa[3][3] > 0 )
+                               || (   previousDataPointsQa[0][3] < 0 && previousDataPointsQa[1][3] < 0
+                                   && previousDataPointsQa[2][3] < 0 && previousDataPointsQa[3][3] < 0 );
         if ( isAngVelocSignConst ) {
             // zero-crossing on qa?
-            // FIXME
-            if (   previousDataPointsQa[2][2] > previousDataPointsQa[1][2]
-                && previousDataPointsQa[1][2] > previousDataPointsQa[0][2]
-                && previousDataPointsQa[2][2] > previousDataPointsQa[3][2]
-                && previousDataPointsQa[3][2] > previousDataPointsQa[4][2]
+            if ( ( previousDataPointsQa[1][2] < 0 && previousDataPointsQa[2][2] >= 0
+                && previousDataPointsQa[0][2] < previousDataPointsQa[1][2]
+                && previousDataPointsQa[2][2] < previousDataPointsQa[3][2] )
+              || ( previousDataPointsQa[1][2] > 0 && previousDataPointsQa[2][2] <= 0
+                && previousDataPointsQa[0][2] > previousDataPointsQa[1][2]
+                && previousDataPointsQa[2][2] > previousDataPointsQa[3][2] )
             ) {
                 // --- We have passed zero-crossing for qa! Compute angleCorrectionFromQuaternion
-                _computeAngleCorrectionFromQuaternion();    // FIXME
+                _computeAngleCorrectionFromQuaternion();
                 return;
             }
         }
     }
 
-    // Otherwise prune to store only last five (4 + current added)
-    previousDataPointsQa.slice(0, 4);
+    // Otherwise prune to store only last four (3 + current added)
+    previousDataPointsQa.slice(0, 3);
     return;
 }
 
 
 
+/** Internal: compute sensorAngle when qa crosses 0. Then compute diff with actual and compensate */
+function _computeAngleCorrectionFromQuaternion() {
+
+    // x: qa, y: sensorAngle
+    let data = [ [ previousDataPointsQa[0][2],   previousDataPointsQa[0][1] ],
+                 [ previousDataPointsQa[1][2],   previousDataPointsQa[1][1] ],
+                 [ previousDataPointsQa[2][2],   previousDataPointsQa[2][1] ],
+                 [ previousDataPointsQa[3][2],   previousDataPointsQa[3][1] ] ];
+    let regrQa = regression('linear', data);
+    // sensorAngle = f(qa) = regrQa[0] * qa + regrQa[1]
+    //console.log( regrQa );
+
+    // --- From there we can interpolate the sensorAngle value at qa zero
+    let sensorAngleAtQaZero = regrQa.equation[1];
+    // First time?
+    if (qaZeroSensorAnglePrevValue === -999) {
+        qaZeroSensorAnglePrevValue = sensorAngleAtQaZero;
+        return;
+    }
+
+    let oldAngleCorrect           = angleCorrectionFromQuaternion;
+    // Auto-correct!    // FIXME: should we average??
+    angleCorrectionFromQuaternion = qaZeroSensorAnglePrevValue - sensorAngleAtQaZero;
+    let correctionAbsDiff         = Math.abs( oldAngleCorrect - angleCorrectionFromQuaternion );
+    // Save previous value for next loop
+    qaZeroSensorAnglePrevValue    = sensorAngleAtQaZero;
+
+    console.log("\nQA-CORRECTION: angleCorrectionQa= "+ angleCorrectionFromQuaternion);
+    if ( correctionAbsDiff > 2.0 ) {
+        console.log("@@@@@@*******++++++++ BIG DIFF! ++++++********@@@@@@@@");
+        console.log(" \t From "+oldAngleCorrect+" to \t "+angleCorrectionFromQuaternion);
+    }
+
+    // Empties the data point history as we have found the zero-crossing
+    previousDataPointsQa = null;
+    return;
+}
+
+
+
+
+
+
+
+/*
+███    ███  █████   ██████
+████  ████ ██   ██ ██
+██ ████ ██ ███████ ██   ███
+██  ██  ██ ██   ██ ██    ██
+██      ██ ██   ██  ██████
+*/
 
 
 
