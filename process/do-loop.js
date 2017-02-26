@@ -13,7 +13,9 @@
 //         [7]     magX
 //         [8]     magY
 //         [9]     magZ
-// WARNING: [1]..[9] are STRINGs!
+//        [10]     qa
+//    [11..13]     qb, qc, qd
+// WARNING: [1]..[13] are STRINGs!
 
 const regression             = require('regression');
 
@@ -165,8 +167,8 @@ function _doLoop( angle, photoFilename, nowHrTime ) {
 
 
 
-/** Internal: maintain previousDataPointsMag, look for a maximum in magZ,
- *    and when found, computeAngleCorrection (magnet supposed to be at bottom => sensor angle 90 deg)
+/** Internal: maintain previousDataPointsQa, look for a zero-crossing in qa,
+ *    and when found, computeAngleCorrection
  */
 function _keeppreviousDataPointsQaToComputeAngleCorrectionFromQuaternion( nowHrTime, sensorAngle, qa, angularVelocity ) {
 
@@ -176,7 +178,7 @@ function _keeppreviousDataPointsQaToComputeAngleCorrectionFromQuaternion( nowHrT
     }
 
     // First we check we do have a new value (magnetometer measures are not as fast as this loop)
-    if ( qa === previousDataPointsMag[0][2] ) {
+    if ( qa === previousDataPointsQa[0][2] ) {
         return;
     }
     let newLen = previousDataPointsQa.unshift( [ nowHrTime, sensorAngle, qa, angularVelocity ] );    // Add as element [0] of the array
