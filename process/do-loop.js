@@ -137,8 +137,8 @@ function _doLoop( angle, photoFilename, nowHrTime ) {
             // Compute average display time to anticipate angle better
             let elapsedTime = process.hrtime(nowHrTime);
             averageDisplayTimeInNanos = Math.floor( (4 * averageDisplayTimeInNanos + elapsedTime[1]) / 5 );     // weighted average to smooth
-            console.log( "DEBUG: averageDisplayTimeInNanos= "+ Math.floor( averageDisplayTimeInNanos / 1000)
-               + " \t DIFF with elapsed-time is "+ Math.floor( Math.abs(averageDisplayTimeInNanos - elapsedTime[1]) / 1000) +" microseconds =========================" );
+            // console.log( "DEBUG: averageDisplayTimeInNanos= "+ Math.floor( averageDisplayTimeInNanos / 1000)
+            //    + " \t DIFF with elapsed-time is "+ Math.floor( Math.abs(averageDisplayTimeInNanos - elapsedTime[1]) / 1000) +" microseconds =========================" );
         }
 
         // Loop
