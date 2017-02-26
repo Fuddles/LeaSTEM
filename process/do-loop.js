@@ -103,7 +103,8 @@ function doLedDisplayLoop() {
 
     // --- Keep last 5 data points and then correct the angle by detecting the zero crossing of qa
     let qa   = Number.parseFloat( global.bnoValues[10] );            // Quaternion scalar
-// FIXME    _keeppreviousDataPointsQaToComputeAngleCorrectionFromQuaternion( nowHrTime, sensorAngle, qa );
+    _keeppreviousDataPointsQaToComputeAngleCorrectionFromQuaternion(
+            nowHrTime, sensorAngle, qa, angularVelocity );
 
     // --- Keep last 5 data points and then correct the angle by detecting the bottom (peak of magZ)
     //      This is also a min of magY
