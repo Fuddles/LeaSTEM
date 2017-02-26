@@ -2,9 +2,10 @@
 
 const multer = require('multer');
 
-const UPLOAD_DIR         = require("../process/image-functions").UPLOAD_DIR;
-const RESIZED_IMAGE_SIZE = require("../process/image-functions").RESIZED_IMAGE_SIZE;
-const cropResizePromise  = require("../process/image-functions").cropResizePromise;
+const UPLOAD_DIR             = require("../process/image-functions").UPLOAD_DIR;
+const RESIZED_IMAGE_SIZE     = require("../process/image-functions").RESIZED_IMAGE_SIZE;
+const cropResizePromise      = require("../process/image-functions").cropResizePromise;
+const setCurrentPhotoPromise = require('../process/image-functions').setCurrentPhotoPromise;
 
 
 var multerStorage = multer.diskStorage({
@@ -58,9 +59,15 @@ function uploadPhotoPost(req, res, next) {
         cropResizePromise( fname, RESIZED_IMAGE_SIZE )
         .then( img => {
             console.log( "SUCCESS in upload.js > cropResizePromise for image " + fname );
-            global.currentImageFileName = fname;        // FIXME
-
-            // TODO: trigger the LED display!!
+            setCurrentPhotoPromise( fname )
+            .then( fname => {
+                return res.redirect('/?upload=ok');
+            })
+            .catch( err => {
+                console.error("ERROR in /touch-photo > setCurrentPhotoPromise: err =");
+                console.error( err );
+                return res.sendStatus( 500 );
+            });
 
         })
         .catch( err => {
@@ -68,7 +75,7 @@ function uploadPhotoPost(req, res, next) {
             console.error( err );
         });
 
-        return res.redirect('/?upload=ok');
+        return; // res.redirect('/?upload=ok');
     }
 
     console.error("ERROR in API /upload-photo, file saving FAILED");
