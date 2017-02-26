@@ -104,9 +104,9 @@ function doLedDisplayLoop() {
     }
 
     // --- Keep last 5 data points and then correct the angle by detecting the zero crossing of qa
-    let qa   = Number.parseFloat( global.bnoValues[10] );            // Quaternion scalar
-    _keeppreviousDataPointsQaToComputeAngleCorrectionFromQuaternion(
-            nowHrTime, sensorAngle, qa, angularVelocity );
+    // let qa   = Number.parseFloat( global.bnoValues[10] );            // Quaternion scalar
+    // _keeppreviousDataPointsQaToComputeAngleCorrectionFromQuaternion(
+    //         nowHrTime, sensorAngle, qa, angularVelocity );
 
     // --- Keep last 5 data points and then correct the angle by detecting the bottom (peak of magZ)
     //      This is also a min of magY
@@ -116,8 +116,8 @@ function doLedDisplayLoop() {
             nowHrTime, sensorAngle, magZ, magY, angularVelocity);
 
     // --- currentAngle is supposed to correct angle in high rotation speed condition!
-    _doLoop( angle, getCurrentPhoto() );
-    // _doLoop( currentAngle, getCurrentPhoto(), nowHrTime );
+    //_doLoop( angle, getCurrentPhoto() );
+    _doLoop( currentAngle, getCurrentPhoto(), nowHrTime );
 
     // Loop over within _doLoop when lighting-up is complete
 }
