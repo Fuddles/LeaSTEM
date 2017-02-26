@@ -132,14 +132,16 @@ function getLEDPositionsWithDelta( angle ) {
     let sinAngle   = Math.sin( angleInRad );
     let halfSize   = RESIZED_IMAGE_SIZE / 2;
 
-    let deltaX     =   DELTA * halfSize * sinAngle;
-    let deltaY     = - DELTA * halfSize * cosAngle;
+    // let deltaX     =   DELTA * halfSize * sinAngle;
+    // let deltaY     = - DELTA * halfSize * cosAngle;
 
     for (let i = 0; i < NUM_LEDS; i++) {
         let pt = _calcLEDPosition( cosAngle, sinAngle, i );      // Return pt.x and pt.y to be multiplied by imgSize/2
-        let x  = Math.round( pt.x * halfSize + deltaX );
+        // let x  = Math.round( pt.x * halfSize + deltaX );
+        let x  = Math.round( pt.x * halfSize );
         x = Math.min( Math.max( x, 0 ), RESIZED_IMAGE_SIZE - 1 );
-        let y  = Math.round( pt.y * halfSize + deltaY );
+        // let y  = Math.round( pt.y * halfSize + deltaY );
+        let y  = Math.round( pt.y * halfSize );
         y = Math.min( Math.max( y, 0 ), RESIZED_IMAGE_SIZE - 1 );
         resArray[i] = { x: x, y: y };
     }
