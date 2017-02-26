@@ -116,8 +116,8 @@ function doLedDisplayLoop() {
             nowHrTime, sensorAngle, magZ, magY, angularVelocity);
 
     // --- currentAngle is supposed to correct angle in high rotation speed condition!
-    //_doLoop( angle, getCurrentPhoto() );
-    _doLoop( currentAngle, getCurrentPhoto(), nowHrTime );
+    _doLoop( angle, getCurrentPhoto() );
+    // _doLoop( currentAngle, getCurrentPhoto(), nowHrTime );
 
     // Loop over within _doLoop when lighting-up is complete
 }
