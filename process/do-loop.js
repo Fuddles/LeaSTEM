@@ -241,8 +241,8 @@ function _computeAngleCorrectionFromQuaternion() {
     }
 
     let oldAngleCorrect           = angleCorrectionFromQuaternion;
-    // Auto-correct!    // FIXME: should we average??
-    angleCorrectionFromQuaternion = qaZeroSensorAnglePrevValue - sensorAngleAtQaZero;
+    // Auto-correct! We average to avoid bumps.
+    angleCorrectionFromQuaternion = (angleCorrectionFromQuaternion * 4 + (qaZeroSensorAnglePrevValue - sensorAngleAtQaZero)) / 5;
     let correctionAbsDiff         = Math.abs( oldAngleCorrect - angleCorrectionFromQuaternion );
     // Save previous value for next loop
     qaZeroSensorAnglePrevValue    = sensorAngleAtQaZero;
