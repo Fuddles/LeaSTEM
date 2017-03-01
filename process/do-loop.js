@@ -381,9 +381,10 @@ function _computeAngleCorrectionFromBottomMagnet( angularVelocity, magZMaxValue 
                     [ data[2][0],   previousDataPointsMag[1][1] ] ];
     let regrSensorAngle = regression('polynomial', angData, 2);
 
-    // sensorAngleAtMax should be 90, so we auto-correct
+    // sensorAngleAtMax should be 90 deg, so we auto-correct
+    // Bike version with magnets on the top-left side: should be 340 deg
     let sensorAngleAtMax = regrSensorAngle.points[1][1];
-    let newValAngleCorrectionFromBottomMagnet = (470 - sensorAngleAtMax) % 360;    // 90 + 360
+    let newValAngleCorrectionFromBottomMagnet = (700 - sensorAngleAtMax) % 360;    // 340 + 360  // 90 + 360
 
     // TODO : speed correction
     // let angularDrift from last time corrected? Need constant speed?
